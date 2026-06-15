@@ -26,9 +26,8 @@ Untuk akses melalui browser, tambahkan entri pada file `hosts` jika Anda memakai
 ## Struktur Asset
 
 - `public/images/site/` berisi asset aktif: `logo.png` dan `beranda-img.jpg`.
-- `public/images/seed/` berisi gambar fallback dan referensi seed.
-- Upload dari admin disimpan di disk `public` Laravel dan diakses melalui symlink `public/storage`.
-- Folder `_legacy_static_*` adalah arsip static lama dan tidak perlu masuk version control.
+-- `public/images/seed/` berisi gambar fallback dan referensi seed.
+-- Upload dari admin disimpan di disk `public` Laravel dan diakses melalui symlink `public/storage`.
 
 ## Setup
 
