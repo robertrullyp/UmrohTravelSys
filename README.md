@@ -10,6 +10,50 @@ Website profil dan panel admin untuk PT Amara Al Medina Travel. Aplikasi ini mer
 - MySQL/MariaDB
 - Tailwind/Vite untuk asset CSS dan JavaScript
 
+## Requirements
+
+Minimal dan rekomendasi lingkungan untuk menjalankan proyek ini:
+
+- **PHP**: ^8.3 (sesuaikan dengan `composer.json`).
+- **Composer**: versi 2.x.
+- **Node.js**: direkomendasikan Node 18+ (untuk Vite dan build frontend).
+- **npm / pnpm / yarn**: gunakan versi yang sesuai dengan Node (npm 9+ direkomendasikan).
+- **Database**: MySQL atau MariaDB (MySQL 5.7+/8.x atau MariaDB setara).
+
+PHP extensions yang umumnya diperlukan:
+
+- `ctype`
+- `fileinfo`
+- `json`
+- `mbstring`
+- `openssl`
+- `pdo` dan driver database (`pdo_mysql` untuk MySQL/MariaDB)
+- `tokenizer`
+- `xml`
+- `zip` (disarankan untuk installer dan beberapa paket Composer)
+
+Opsional (bergantung fitur yang dipakai):
+
+- `gd` atau `imagick` untuk manipulasi gambar
+- `exif` jika aplikasi memproses metadata gambar
+- `curl` jika ada panggilan HTTP menggunakan ekstensi ini
+
+Perangkat lunak/system tools:
+
+- `git` (untuk kontrol versi dan workflow deploy)
+- `unzip` (dibutuhkan Composer pada beberapa lingkungan)
+- PHP-FPM (untuk deployment) atau built-in PHP server untuk pengujian
+
+Contoh cara memeriksa versi dasar:
+
+```bash
+php -v
+composer --version
+node -v
+npm -v
+mysql --version
+```
+
 ## Akses Lokal
 
 Untuk pengujian lokal, jalankan aplikasi di server development (mis. Valet, Docker, atau built-in PHP server) atau gunakan vhost lokal yang memetakan host ke `127.0.0.1`.
