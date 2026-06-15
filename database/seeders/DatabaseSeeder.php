@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::query()->updateOrCreate(
-            ['email' => config('admin.initial_email', 'admin@lulu.kapul.my.id')],
+            ['email' => config('admin.initial_email', 'admin@example.com')],
             [
                 'name' => config('admin.initial_name', 'Admin'),
                 'password' => config('admin.initial_password', 'rahasia'),
