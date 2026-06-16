@@ -31,9 +31,11 @@ class SystemUpdateTest extends TestCase
             ->get('/admin/settings/system-update')
             ->assertOk()
             ->assertSee('System Update')
-            ->assertSee('Token FAT GitHub')
+            ->assertSee('Ringkasan Sistem')
+            ->assertSee('Catatan Rilis')
             ->assertSee('Input Token FAT')
             ->assertSee(config('admin.version'))
+            ->assertSee('Menambahkan sistem booking publik')
             ->assertSee('https://github.com/robertrullyp/UmrohTravelSys.git');
     }
 
@@ -69,5 +71,14 @@ class SystemUpdateTest extends TestCase
         $service->forgetGitHubToken();
 
         $this->assertDatabaseMissing('site_settings', ['key' => 'update_github_fat']);
+    }
+
+    public function test_latest_release_notes_are_loaded_from_changelog(): void
+    {
+        $notes = app(SystemUpdateService::class)->latestReleaseNotes();
+
+        $this->assertSame('v2026.06.16', $notes['version']);
+        $this->assertSame('2026-06-16', $notes['date']);
+        $this->assertContains('Menambahkan sistem booking publik lengkap dengan cek status booking dan review admin.', $notes['notes']);
     }
 }

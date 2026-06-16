@@ -19,7 +19,7 @@ class SystemUpdateService
     public function info(): array
     {
         return [
-            'version' => config('admin.version', 'v2026.06.16'),
+            'version' => $this->version(),
             'branch' => $this->gitValue(['git', 'rev-parse', '--abbrev-ref', 'HEAD']),
             'commit' => $this->gitValue(['git', 'rev-parse', '--short', 'HEAD']),
             'full_commit' => $this->gitValue(['git', 'rev-parse', 'HEAD']),
@@ -27,6 +27,43 @@ class SystemUpdateService
             'source_repository' => $this->repository(),
             'source_branch' => $this->branch(),
             'github_token' => $this->githubTokenInfo(),
+        ];
+    }
+
+    /**
+     * @return array{version: string, date: string|null, notes: array<int, string>}
+     */
+    public function latestReleaseNotes(): array
+    {
+        $fallback = [
+            'version' => $this->version(),
+            'date' => null,
+            'notes' => [],
+        ];
+        $path = base_path('CHANGELOG.md');
+
+        if (! is_file($path)) {
+            return $fallback;
+        }
+
+        $contents = (string) file_get_contents($path);
+
+        if (! preg_match('/^##\s+\[(?<version>[^\]]+)\](?:\s+-\s+(?<date>[^\r\n]+))?\R(?<body>.*?)(?=^##\s+\[|\z)/ms', $contents, $matches)) {
+            return $fallback;
+        }
+
+        $notes = collect(preg_split('/\R/', trim((string) $matches['body'])) ?: [])
+            ->map(fn (string $line): string => trim($line))
+            ->filter(fn (string $line): bool => str_starts_with($line, '- '))
+            ->map(fn (string $line): string => trim(substr($line, 2)))
+            ->take(6)
+            ->values()
+            ->all();
+
+        return [
+            'version' => trim((string) $matches['version']),
+            'date' => isset($matches['date']) ? trim((string) $matches['date']) : null,
+            'notes' => $notes,
         ];
     }
 
@@ -300,5 +337,18 @@ SH;
     private function truncate(string $output): string
     {
         return mb_strlen($output) > 8000 ? mb_substr($output, 0, 8000) . PHP_EOL . '[output dipotong]' : $output;
+    }
+
+    private function version(): string
+    {
+        $version = (string) config('admin.version', '');
+
+        if ($version !== '') {
+            return $version;
+        }
+
+        $path = base_path('VERSION');
+
+        return is_file($path) ? trim((string) file_get_contents($path)) : 'v2026.06.16';
     }
 }

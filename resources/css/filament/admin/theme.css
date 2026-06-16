@@ -180,6 +180,18 @@
     gap: 14px;
 }
 
+.fi-modal > .fi-modal-close-overlay {
+    z-index: 120 !important;
+}
+
+.fi-modal > .fi-modal-window-ctn {
+    z-index: 130 !important;
+}
+
+.fi-modal-window {
+    max-width: min(100%, 34rem);
+}
+
 .admin-user-menu-card {
     display: grid;
     grid-template-columns: 46px minmax(0, 1fr);

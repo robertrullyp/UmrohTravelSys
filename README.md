@@ -75,6 +75,13 @@ Untuk akses melalui browser, tambahkan entri pada file `hosts` jika Anda memakai
 - `public/images/seed/` berisi gambar fallback dan referensi seed.
 - Upload konten lain dari admin disimpan di disk `public` Laravel dan diakses melalui symlink `public/storage`.
 
+## Versioning dan Changelog
+
+- Versi aplikasi aktif dicatat di `VERSION` dan dibaca juga dari `APP_VERSION` bila environment mengaturnya.
+- Catatan perubahan dicatat di `CHANGELOG.md` dengan format per versi, misalnya `## [v2026.06.16] - 2026-06-16`.
+- Halaman admin `Settings > System Update` menampilkan versi, commit lokal, status token update, dan ringkasan catatan rilis terbaru dari `CHANGELOG.md`.
+- Saat membuat rilis baru, update `VERSION`, tambahkan section baru paling atas di `CHANGELOG.md`, commit, lalu tag versi rilis.
+
 ## Setup
 
 ```bash

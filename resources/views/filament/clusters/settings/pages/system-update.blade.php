@@ -1,61 +1,68 @@
 <x-filament-panels::page>
-    <div class="grid gap-4 xl:grid-cols-3">
-        <x-filament::section>
-            <x-slot name="heading">
-                Informasi Versi
-            </x-slot>
+    <x-filament::section>
+        <x-slot name="heading">
+            Ringkasan Sistem
+        </x-slot>
 
-            <dl class="grid gap-3 text-sm">
-                <div class="flex items-start justify-between gap-4">
-                    <dt class="font-semibold text-gray-500 dark:text-gray-400">Versi aplikasi</dt>
-                    <dd class="text-right font-bold text-gray-950 dark:text-white">{{ $info['version'] ?? '-' }}</dd>
-                </div>
-                <div class="flex items-start justify-between gap-4">
-                    <dt class="font-semibold text-gray-500 dark:text-gray-400">Branch lokal</dt>
-                    <dd class="text-right font-mono text-gray-950 dark:text-white">{{ $info['branch'] ?? '-' }}</dd>
-                </div>
-                <div class="flex items-start justify-between gap-4">
-                    <dt class="font-semibold text-gray-500 dark:text-gray-400">Commit lokal</dt>
-                    <dd class="text-right font-mono text-gray-950 dark:text-white">{{ $info['commit'] ?? '-' }}</dd>
-                </div>
-                <div class="grid gap-1">
-                    <dt class="font-semibold text-gray-500 dark:text-gray-400">Remote aktif</dt>
-                    <dd class="break-all font-mono text-gray-950 dark:text-white">{{ $info['remote_url'] ?? '-' }}</dd>
-                </div>
-                <div class="grid gap-1">
-                    <dt class="font-semibold text-gray-500 dark:text-gray-400">Sumber update</dt>
-                    <dd class="break-all font-mono text-gray-950 dark:text-white">
-                        {{ $info['source_repository'] ?? '-' }} <span class="text-gray-500">({{ $info['source_branch'] ?? 'main' }})</span>
-                    </dd>
-                </div>
-            </dl>
-        </x-filament::section>
-
-        <x-filament::section>
-            <x-slot name="heading">
-                Token FAT GitHub
-            </x-slot>
-
-            <div class="space-y-3 text-sm">
-                <div class="flex items-start justify-between gap-4">
-                    <span class="font-semibold text-gray-500 dark:text-gray-400">Status token</span>
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Versi</div>
+                <div class="mt-1 text-base font-extrabold text-gray-950 dark:text-white">{{ $info['version'] ?? '-' }}</div>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Commit Lokal</div>
+                <div class="mt-1 font-mono text-sm font-bold text-gray-950 dark:text-white">{{ ($info['branch'] ?? '-') . '@' . ($info['commit'] ?? '-') }}</div>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Source</div>
+                <div class="mt-1 text-sm font-bold text-gray-950 dark:text-white">{{ $info['source_branch'] ?? 'main' }}</div>
+                <div class="mt-1 truncate text-xs text-gray-500 dark:text-gray-400">{{ $info['source_repository'] ?? '-' }}</div>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Token FAT</div>
+                <div class="mt-1">
                     @if ($info['github_token']['configured'] ?? false)
-                        <span class="rounded-md bg-success-50 px-2 py-1 font-bold text-success-700 dark:bg-success-500/10 dark:text-success-300">
+                        <span class="rounded-md bg-success-50 px-2 py-1 text-xs font-bold text-success-700 dark:bg-success-500/10 dark:text-success-300">
                             Tersimpan
                         </span>
                     @else
-                        <span class="rounded-md bg-warning-50 px-2 py-1 font-bold text-warning-700 dark:bg-warning-500/10 dark:text-warning-300">
+                        <span class="rounded-md bg-warning-50 px-2 py-1 text-xs font-bold text-warning-700 dark:bg-warning-500/10 dark:text-warning-300">
                             Belum ada
                         </span>
                     @endif
                 </div>
-                <div class="flex items-start justify-between gap-4">
-                    <span class="font-semibold text-gray-500 dark:text-gray-400">Terakhir diperbarui</span>
-                    <span class="text-right font-mono text-gray-950 dark:text-white">{{ $info['github_token']['updated_at'] ?? '-' }}</span>
+                <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $info['github_token']['updated_at'] ?? 'Input token untuk repo private.' }}</div>
+            </div>
+        </div>
+
+        <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+            Remote aktif: <span class="font-mono">{{ $info['remote_url'] ?? '-' }}</span>
+        </div>
+    </x-filament::section>
+
+    <div class="grid gap-4 xl:grid-cols-2">
+        <x-filament::section>
+            <x-slot name="heading">
+                Catatan Rilis
+            </x-slot>
+
+            <div class="space-y-3 text-sm">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-bold text-gray-950 dark:text-white">{{ $releaseNotes['version'] ?? ($info['version'] ?? '-') }}</span>
+                    @if ($releaseNotes['date'] ?? null)
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ $releaseNotes['date'] }}</span>
+                    @endif
                 </div>
-                <p class="text-gray-600 dark:text-gray-300">
-                    Untuk repo private, simpan Fine-grained PAT dengan akses repository ini dan permission minimal <strong>Contents: Read-only</strong>. Token disimpan terenkripsi dan dipakai lewat Git askpass sementara saat check/update.
-                </p>
+
+                @if (! empty($releaseNotes['notes']))
+                    <ul class="list-disc space-y-1 ps-5 text-gray-700 dark:text-gray-300">
+                        @foreach ($releaseNotes['notes'] as $note)
+                            <li>{{ $note }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-gray-600 dark:text-gray-300">Belum ada catatan rilis di CHANGELOG.md.</p>
+                @endif
             </div>
         </x-filament::section>
 
@@ -83,7 +90,7 @@
                 </div>
             @else
                 <p class="text-sm text-gray-600 dark:text-gray-300">
-                    Tekan <strong>Check Update</strong> untuk membandingkan commit lokal dengan branch update resmi.
+                    Tekan <strong>Check Update</strong> untuk membandingkan commit lokal dengan branch update resmi. Untuk repo private, input token FAT terlebih dahulu.
                 </p>
             @endif
         </x-filament::section>

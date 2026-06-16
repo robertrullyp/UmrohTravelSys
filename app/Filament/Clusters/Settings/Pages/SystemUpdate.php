@@ -5,6 +5,7 @@ namespace App\Filament\Clusters\Settings\Pages;
 use App\Filament\Clusters\Settings;
 use App\Services\SystemUpdateService;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -36,6 +37,11 @@ class SystemUpdate extends Page
      */
     public ?array $lastUpdate = null;
 
+    /**
+     * @var array{version: string, date: string|null, notes: array<int, string>}
+     */
+    public array $releaseNotes = [];
+
     public function mount(): void
     {
         $this->refreshInfo();
@@ -49,11 +55,45 @@ class SystemUpdate extends Page
     protected function getHeaderActions(): array
     {
         return [
+            ActionGroup::make([
+                Action::make('saveGitHubToken')
+                    ->label(fn (): string => ($this->info['github_token']['configured'] ?? false) ? 'Ganti Token FAT' : 'Input Token FAT')
+                    ->icon(Heroicon::OutlinedKey)
+                    ->color('primary')
+                    ->form([
+                        TextInput::make('token')
+                            ->label('Fine-grained personal access token')
+                            ->password()
+                            ->revealable()
+                            ->required()
+                            ->minLength(20)
+                            ->helperText('Gunakan Fine-grained PAT GitHub untuk repo ini. Permission minimal: Repository contents read-only. Token disimpan terenkripsi.'),
+                    ])
+                    ->modalHeading('Simpan Token FAT GitHub')
+                    ->modalSubmitActionLabel('Simpan Token')
+                    ->action(fn (array $data): null => $this->saveGitHubToken($data)),
+                Action::make('forgetGitHubToken')
+                    ->label('Hapus Token')
+                    ->icon(Heroicon::OutlinedTrash)
+                    ->color('danger')
+                    ->visible(fn (): bool => $this->info['github_token']['configured'] ?? false)
+                    ->requiresConfirmation()
+                    ->modalHeading('Hapus token GitHub?')
+                    ->modalDescription('Check Update dan Update from GitHub untuk repo private tidak akan bisa berjalan sampai token baru disimpan.')
+                    ->modalSubmitActionLabel('Hapus Token')
+                    ->action(fn (): null => $this->forgetGitHubToken()),
+            ])
+                ->label('Token FAT')
+                ->icon(Heroicon::OutlinedKey)
+                ->button()
+                ->color('primary')
+                ->visible(fn (): bool => (auth()->user()?->can('updates.run') ?? false) && ($this->info['github_token']['configured'] ?? false))
+                ->extraAttributes(['class' => 'system-update-token-action']),
             Action::make('saveGitHubToken')
-                ->label(fn (): string => ($this->info['github_token']['configured'] ?? false) ? 'Ganti Token FAT' : 'Input Token FAT')
+                ->label('Input Token FAT')
                 ->icon(Heroicon::OutlinedKey)
                 ->color('primary')
-                ->visible(fn (): bool => auth()->user()?->can('updates.run') ?? false)
+                ->visible(fn (): bool => (auth()->user()?->can('updates.run') ?? false) && ! ($this->info['github_token']['configured'] ?? false))
                 ->form([
                     TextInput::make('token')
                         ->label('Fine-grained personal access token')
@@ -66,16 +106,6 @@ class SystemUpdate extends Page
                 ->modalHeading('Simpan Token FAT GitHub')
                 ->modalSubmitActionLabel('Simpan Token')
                 ->action(fn (array $data): null => $this->saveGitHubToken($data)),
-            Action::make('forgetGitHubToken')
-                ->label('Hapus Token')
-                ->icon(Heroicon::OutlinedTrash)
-                ->color('danger')
-                ->visible(fn (): bool => (auth()->user()?->can('updates.run') ?? false) && ($this->info['github_token']['configured'] ?? false))
-                ->requiresConfirmation()
-                ->modalHeading('Hapus token GitHub?')
-                ->modalDescription('Check Update dan Update from GitHub untuk repo private tidak akan bisa berjalan sampai token baru disimpan.')
-                ->modalSubmitActionLabel('Hapus Token')
-                ->action(fn (): null => $this->forgetGitHubToken()),
             Action::make('checkUpdate')
                 ->label('Check Update')
                 ->icon(Heroicon::OutlinedMagnifyingGlass)
@@ -157,6 +187,9 @@ class SystemUpdate extends Page
 
     private function refreshInfo(): void
     {
-        $this->info = app(SystemUpdateService::class)->info();
+        $service = app(SystemUpdateService::class);
+
+        $this->info = $service->info();
+        $this->releaseNotes = $service->latestReleaseNotes();
     }
 }
