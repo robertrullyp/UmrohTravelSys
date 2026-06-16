@@ -129,7 +129,7 @@ Jangan simpan credential database, password admin, atau secret `.env` di reposit
 
 Gunakan vhost dengan `DocumentRoot /www/wwwroot/lulu.kapul.my.id/public` dan `AllowOverride All` pada folder `public/` agar `public/.htaccess` aktif. Contoh lengkap ada di `docs/webserver/apache-vhost.conf.example`.
 
-Jika control panel tidak mengizinkan document root ke `public/`, root `.htaccess` dan root `index.php` di repo ini menyediakan fallback Apache yang memblokir file/folder sensitif dan meneruskan request ke `public/`. Fallback ini tetap opsi kedua; gunakan vhost `public/` bila memungkinkan.
+Jika control panel tidak mengizinkan document root ke `public/`, root `.htaccess` dan root `index.php` di repo ini menyediakan fallback Apache yang memblokir file/folder sensitif dan meneruskan request ke `public/`. Template fallback juga tersedia sebagai `.htaccess.example` di root. Fallback ini tetap opsi kedua; gunakan vhost `public/` bila memungkinkan.
 
 ### Nginx
 
