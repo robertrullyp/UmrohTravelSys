@@ -141,7 +141,9 @@ Update sistem tersedia untuk `super-admin` di:
 /admin/settings/system-update
 ```
 
-Halaman ini menampilkan versi aplikasi, branch, commit, remote aktif, dan menyediakan pengecekan remote serta tombol update dari `APP_UPDATE_REPOSITORY`. Tombol update menjalankan `git fetch`, reset ke branch update, install dependency, build frontend, migrasi, dan optimize cache. Gunakan hanya setelah repository server sudah mengarah ke remote resmi.
+Halaman ini menampilkan versi aplikasi, branch, commit, remote aktif, dan menyediakan pengecekan remote serta tombol update dari `APP_UPDATE_REPOSITORY`. Untuk repository private, simpan Fine-grained personal access token GitHub melalui tombol `Input Token FAT` di halaman ini. Permission minimal token: repository terpilih `robertrullyp/UmrohTravelSys` dengan `Contents: Read-only`. Token disimpan terenkripsi di database dan dipakai lewat Git askpass sementara, bukan disisipkan ke URL remote.
+
+Tombol update menjalankan `git fetch`, reset ke branch update, install dependency, build frontend, migrasi, dan optimize cache. Gunakan hanya setelah repository server sudah mengarah ke remote resmi.
 
 ## Test dan Build
 

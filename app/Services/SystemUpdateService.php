@@ -2,12 +2,17 @@
 
 namespace App\Services;
 
+use App\Models\SiteSetting;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class SystemUpdateService
 {
+    private const GITHUB_TOKEN_KEY = 'update_github_fat';
+
     /**
      * @return array<string, mixed>
      */
@@ -21,7 +26,38 @@ class SystemUpdateService
             'remote_url' => $this->gitValue(['git', 'config', '--get', 'remote.origin.url']),
             'source_repository' => $this->repository(),
             'source_branch' => $this->branch(),
+            'github_token' => $this->githubTokenInfo(),
         ];
+    }
+
+    /**
+     * @return array{configured: bool, updated_at: string|null}
+     */
+    public function githubTokenInfo(): array
+    {
+        $setting = SiteSetting::query()
+            ->where('key', self::GITHUB_TOKEN_KEY)
+            ->first();
+
+        return [
+            'configured' => filled($setting?->value),
+            'updated_at' => $setting?->updated_at?->toDateTimeString(),
+        ];
+    }
+
+    public function storeGitHubToken(string $token): void
+    {
+        SiteSetting::query()->updateOrCreate(
+            ['key' => self::GITHUB_TOKEN_KEY],
+            ['value' => Crypt::encryptString(trim($token))],
+        );
+    }
+
+    public function forgetGitHubToken(): void
+    {
+        SiteSetting::query()
+            ->where('key', self::GITHUB_TOKEN_KEY)
+            ->delete();
     }
 
     /**
@@ -30,7 +66,11 @@ class SystemUpdateService
     public function check(): array
     {
         $info = $this->info();
-        $remote = $this->run(['git', 'ls-remote', '--heads', $this->repository(), $this->branch()], timeout: 60);
+        $remote = $this->run(
+            ['git', 'ls-remote', '--heads', $this->repository(), $this->branch()],
+            timeout: 60,
+            withGitCredentials: true,
+        );
         $remoteHash = $this->extractRemoteHash($remote['output']);
         $status = 'remote_empty_or_unreachable';
 
@@ -76,7 +116,11 @@ class SystemUpdateService
         $successful = true;
 
         foreach ($commands as $command) {
-            $step = $this->run($command, timeout: 900);
+            $step = $this->run(
+                $command,
+                timeout: 900,
+                withGitCredentials: $command[0] === 'git' && $command[1] === 'fetch',
+            );
             $steps[] = $step;
 
             if (! $step['successful']) {
@@ -108,16 +152,34 @@ class SystemUpdateService
      * @param  array<int, string>  $command
      * @return array<string, mixed>
      */
-    private function run(array $command, int $timeout = 120): array
+    private function run(array $command, int $timeout = 120, bool $withGitCredentials = false): array
     {
-        $process = new Process($command, base_path(), null, null, $timeout);
+        $askPassPath = null;
+        $environment = null;
+
+        if ($withGitCredentials) {
+            $environment = ['GIT_TERMINAL_PROMPT' => '0'];
+            $token = $this->githubToken();
+
+            if ($token) {
+                $askPassPath = $this->createAskPassScript();
+                $environment['GIT_ASKPASS'] = $askPassPath;
+                $environment['GITHUB_FINE_GRAINED_TOKEN'] = $token;
+            }
+        }
+
+        $process = new Process($command, base_path(), $environment, null, $timeout);
         $output = '';
 
         try {
             $process->run();
-            $output = trim($process->getOutput() . PHP_EOL . $process->getErrorOutput());
+            $output = trim($this->redactSecrets($process->getOutput() . PHP_EOL . $process->getErrorOutput()));
         } catch (ProcessTimedOutException $exception) {
             $output = $exception->getMessage();
+        } finally {
+            if ($askPassPath) {
+                @unlink($askPassPath);
+            }
         }
 
         return [
@@ -140,6 +202,56 @@ class SystemUpdateService
         }
 
         return trim((string) $result['output']) ?: '-';
+    }
+
+    private function githubToken(): ?string
+    {
+        $encrypted = SiteSetting::query()
+            ->where('key', self::GITHUB_TOKEN_KEY)
+            ->value('value');
+
+        if (! $encrypted) {
+            return null;
+        }
+
+        try {
+            $token = Crypt::decryptString($encrypted);
+        } catch (DecryptException) {
+            return null;
+        }
+
+        return filled($token) ? $token : null;
+    }
+
+    private function createAskPassScript(): string
+    {
+        $directory = storage_path('framework/cache');
+
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $path = $directory . '/git-askpass-' . bin2hex(random_bytes(8)) . '.sh';
+        $script = <<<'SH'
+#!/bin/sh
+case "$1" in
+    *Username*) echo "x-access-token" ;;
+    *Password*) printf '%s' "$GITHUB_FINE_GRAINED_TOKEN" ;;
+    *) echo "" ;;
+esac
+SH;
+
+        file_put_contents($path, $script);
+        chmod($path, 0700);
+
+        return $path;
+    }
+
+    private function redactSecrets(string $output): string
+    {
+        $token = $this->githubToken();
+
+        return $token ? str_replace($token, '[github-token-redacted]', $output) : $output;
     }
 
     private function extractRemoteHash(string $output): ?string

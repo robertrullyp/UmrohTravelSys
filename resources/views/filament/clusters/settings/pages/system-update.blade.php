@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <div class="grid gap-4 lg:grid-cols-2">
+    <div class="grid gap-4 xl:grid-cols-3">
         <x-filament::section>
             <x-slot name="heading">
                 Informasi Versi
@@ -29,6 +29,34 @@
                     </dd>
                 </div>
             </dl>
+        </x-filament::section>
+
+        <x-filament::section>
+            <x-slot name="heading">
+                Token FAT GitHub
+            </x-slot>
+
+            <div class="space-y-3 text-sm">
+                <div class="flex items-start justify-between gap-4">
+                    <span class="font-semibold text-gray-500 dark:text-gray-400">Status token</span>
+                    @if ($info['github_token']['configured'] ?? false)
+                        <span class="rounded-md bg-success-50 px-2 py-1 font-bold text-success-700 dark:bg-success-500/10 dark:text-success-300">
+                            Tersimpan
+                        </span>
+                    @else
+                        <span class="rounded-md bg-warning-50 px-2 py-1 font-bold text-warning-700 dark:bg-warning-500/10 dark:text-warning-300">
+                            Belum ada
+                        </span>
+                    @endif
+                </div>
+                <div class="flex items-start justify-between gap-4">
+                    <span class="font-semibold text-gray-500 dark:text-gray-400">Terakhir diperbarui</span>
+                    <span class="text-right font-mono text-gray-950 dark:text-white">{{ $info['github_token']['updated_at'] ?? '-' }}</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Untuk repo private, simpan Fine-grained PAT dengan akses repository ini dan permission minimal <strong>Contents: Read-only</strong>. Token disimpan terenkripsi dan dipakai lewat Git askpass sementara saat check/update.
+                </p>
+            </div>
         </x-filament::section>
 
         <x-filament::section>
