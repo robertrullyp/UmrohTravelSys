@@ -1,0 +1,21 @@
+<VirtualHost *:80>
+    ServerName lulu.kapul.my.id
+    ServerAdmin webmaster@lulu.kapul.my.id
+
+    DocumentRoot /www/wwwroot/lulu.kapul.my.id/public
+
+    <Directory /www/wwwroot/lulu.kapul.my.id>
+        AllowOverride None
+        Require all denied
+    </Directory>
+
+    <Directory /www/wwwroot/lulu.kapul.my.id/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/lulu.kapul.my.id-error.log
+    CustomLog ${APACHE_LOG_DIR}/lulu.kapul.my.id-access.log combined
+</VirtualHost>
+

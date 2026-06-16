@@ -12,3 +12,4 @@ Semua perubahan penting proyek ini dicatat di file ini. Format mengikuti ringkas
 - Menambahkan System Update untuk update source dari GitHub repo resmi.
 - Menambahkan dukungan Fine-grained personal access token GitHub untuk repo private.
 - Merapikan sidebar admin, logo, dashboard, visitor chart, dark/light mode, dan responsive UI publik.
+- Menambahkan dokumentasi deployment Apache/Nginx dan root fallback untuk hosting terbatas.

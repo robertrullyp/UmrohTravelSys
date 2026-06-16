@@ -1,1 +1,29 @@
- 
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Block sensitive project files when a constrained host points the
+    # document root to the repository root instead of /public.
+    RewriteCond %{REQUEST_URI} !^/\.well-known/
+    RewriteRule (^|/)\. - [F,L]
+    RewriteRule ^(app|bootstrap|config|database|docs|node_modules|resources|routes|storage|tests|vendor)(/|$) - [F,L]
+    RewriteRule ^(artisan|composer\.(json|lock)|package(-lock)?\.json|package\.json|phpunit\.xml|vite\.config\.js|VERSION|CHANGELOG\.md|README\.md)$ - [F,L]
+
+    # Serve public assets from /public without exposing the rest of the app.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -d
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Route all other requests to Laravel.
+    RewriteRule ^$ public/index.php [L]
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/index.php [L]
+</IfModule>
+
+<FilesMatch "(^\.|\.env$|\.user\.ini$|composer\.(json|lock)$|package(-lock)?\.json$|package\.json$|phpunit\.xml$|vite\.config\.js$|VERSION$|CHANGELOG\.md$|README\.md$)">
+    Require all denied
+</FilesMatch>

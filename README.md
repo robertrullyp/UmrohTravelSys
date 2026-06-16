@@ -1,6 +1,6 @@
 # PT Amara Al Medina Travel
 
-Website profil dan panel admin untuk PT Amara Al Medina Travel. Aplikasi ini merupakan sistem berbasis Laravel dengan panel admin Filament untuk mengelola konten (paket umrah, jadwal, galeri, profil perusahaan, dan kontak).
+Website profil, booking, dan panel admin untuk PT Amara Al Medina Travel. Aplikasi ini merupakan sistem berbasis Laravel dengan panel admin Filament untuk mengelola konten publik, paket umrah, jadwal, booking, galeri, profil perusahaan, kontak, pengaturan website, dan account management berbasis RBAC.
 
 ## Stack
 
@@ -113,12 +113,34 @@ Jangan simpan credential database, password admin, atau secret `.env` di reposit
 
 ## Deployment (vhost / server)
 
-- Document root harus diarahkan ke `public/`.
+- **Rekomendasi utama**: document root harus diarahkan ke `public/`.
+- `public/index.php` tetap front controller Laravel utama. File `index.php` di root hanya shim kompatibilitas untuk hosting yang tidak bisa mengarah ke `public/`.
 - Aktifkan rewrite Laravel sehingga semua permintaan diarahkan ke `public/index.php`.
 - Gunakan PHP-FPM 8.3 (atau versi yang kompatibel).
 - Pastikan `storage/` dan `bootstrap/cache/` writable oleh user web server.
 - Jalankan `php artisan storage:link` setelah deploy.
 - Pastikan asset Livewire dan route publik dapat diakses dari server produksi.
+- Contoh konfigurasi webserver tersedia di:
+  - `docs/webserver/apache-vhost.conf.example`
+  - `docs/webserver/nginx.conf.example`
+  - `docs/webserver/apache-root-fallback.md`
+
+### Apache
+
+Gunakan vhost dengan `DocumentRoot /www/wwwroot/lulu.kapul.my.id/public` dan `AllowOverride All` pada folder `public/` agar `public/.htaccess` aktif. Contoh lengkap ada di `docs/webserver/apache-vhost.conf.example`.
+
+Jika control panel tidak mengizinkan document root ke `public/`, root `.htaccess` dan root `index.php` di repo ini menyediakan fallback Apache yang memblokir file/folder sensitif dan meneruskan request ke `public/`. Fallback ini tetap opsi kedua; gunakan vhost `public/` bila memungkinkan.
+
+### Nginx
+
+Nginx tidak membaca `.htaccess`, jadi jangan mengandalkan root fallback untuk Nginx. Arahkan `root` langsung ke:
+
+```nginx
+root /www/wwwroot/lulu.kapul.my.id/public;
+try_files $uri $uri/ /index.php?$query_string;
+```
+
+Contoh lengkap ada di `docs/webserver/nginx.conf.example`. Sesuaikan `fastcgi_pass` dengan socket/port PHP-FPM server.
 
 ## Admin
 
