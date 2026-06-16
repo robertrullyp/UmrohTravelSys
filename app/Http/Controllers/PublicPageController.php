@@ -101,7 +101,7 @@ class PublicPageController extends Controller
     protected function sharedData(): array
     {
         return [
-            'profile' => CompanyProfile::query()->where('is_active', true)->first(),
+            'profile' => CompanyProfile::query()->whereKey(1)->where('is_active', true)->first(),
             'contact' => Contact::query()->where('is_active', true)->first(),
             'settings' => SiteSetting::query()->pluck('value', 'key'),
         ];

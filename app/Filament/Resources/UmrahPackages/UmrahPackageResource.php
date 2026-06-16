@@ -18,6 +18,8 @@ class UmrahPackageResource extends PermissionResource
 {
     protected static ?string $model = UmrahPackage::class;
 
+    protected static ?string $recordRouteKeyName = 'slug';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static ?string $navigationLabel = 'Paket Umrah';
     protected static ?string $modelLabel = 'Paket Umrah';

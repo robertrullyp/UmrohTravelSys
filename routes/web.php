@@ -11,6 +11,8 @@ Route::redirect('/admin/site-settings/{record}/edit', '/admin/settings/website')
 Route::redirect('/admin/users', '/admin/settings/users');
 Route::redirect('/admin/roles', '/admin/settings/roles');
 Route::redirect('/admin/permissions', '/admin/settings/permissions');
+Route::redirect('/admin/company-profiles/create', '/admin/company-profiles');
+Route::redirect('/admin/company-profiles/{record}/edit', '/admin/company-profiles');
 
 Route::middleware(TrackVisitor::class)->controller(PublicPageController::class)->group(function (): void {
     Route::get('/', 'home')->name('home');

@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateCompanyProfile extends CreateRecord
 {
     protected static string $resource = CompanyProfileResource::class;
+
+    public function mount(): void
+    {
+        $this->redirect(CompanyProfileResource::getUrl('index'), navigate: false);
+    }
 }

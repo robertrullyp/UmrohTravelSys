@@ -3,16 +3,14 @@
 namespace App\Filament\Resources\CompanyProfiles;
 
 use App\Filament\Resources\PermissionResource;
-use App\Filament\Resources\CompanyProfiles\Pages\CreateCompanyProfile;
 use App\Filament\Resources\CompanyProfiles\Pages\EditCompanyProfile;
 use App\Filament\Resources\CompanyProfiles\Pages\ListCompanyProfiles;
 use App\Filament\Resources\CompanyProfiles\Schemas\CompanyProfileForm;
-use App\Filament\Resources\CompanyProfiles\Tables\CompanyProfilesTable;
 use App\Models\CompanyProfile;
 use BackedEnum;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
 
 class CompanyProfileResource extends PermissionResource
 {
@@ -34,9 +32,19 @@ class CompanyProfileResource extends PermissionResource
         return CompanyProfileForm::configure($schema);
     }
 
-    public static function table(Table $table): Table
+    public static function canCreate(): bool
     {
-        return CompanyProfilesTable::configure($table);
+        return false;
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return false;
     }
 
     public static function getRelations(): array
@@ -50,7 +58,6 @@ class CompanyProfileResource extends PermissionResource
     {
         return [
             'index' => ListCompanyProfiles::route('/'),
-            'create' => CreateCompanyProfile::route('/create'),
             'edit' => EditCompanyProfile::route('/{record}/edit'),
         ];
     }
