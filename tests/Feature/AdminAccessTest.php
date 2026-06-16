@@ -2,8 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\Contacts\ContactResource;
+use App\Filament\Resources\Galleries\GalleryResource;
+use App\Filament\Resources\Schedules\ScheduleResource;
+use App\Filament\Resources\UmrahPackages\UmrahPackageResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AdminAccessTest extends TestCase
@@ -32,12 +37,17 @@ class AdminAccessTest extends TestCase
             'password' => 'password',
             'is_admin' => true,
         ]);
+        $admin->syncRoles([Role::findByName('super-admin')]);
 
         $this->actingAs($admin)
             ->get('/admin')
             ->assertOk()
             ->assertSee('Dashboard')
-            ->assertSee('Grafik Pengunjung');
+            ->assertSee('Grafik Pengunjung')
+            ->assertSee(UmrahPackageResource::getUrl('index'), false)
+            ->assertSee(ScheduleResource::getUrl('index'), false)
+            ->assertSee(GalleryResource::getUrl('index'), false)
+            ->assertSee(ContactResource::getUrl('index'), false);
     }
 
     public function test_admin_can_open_profile_page(): void
@@ -48,6 +58,7 @@ class AdminAccessTest extends TestCase
             'password' => 'password',
             'is_admin' => true,
         ]);
+        $admin->syncRoles([Role::findByName('super-admin')]);
 
         $this->actingAs($admin)
             ->get('/admin/profile')
@@ -57,6 +68,7 @@ class AdminAccessTest extends TestCase
             ->assertSee('Kata sandi baru')
             ->assertSee('Konfirmasi Kata sandi baru')
             ->assertSee('Mode Terang')
+            ->assertSee('Keluar')
             ->assertDontSee('admin-topbar-theme-switcher');
     }
 
@@ -69,6 +81,7 @@ class AdminAccessTest extends TestCase
             'avatar_path' => 'avatars/admin.jpg',
             'is_admin' => true,
         ]);
+        $admin->syncRoles([Role::findByName('super-admin')]);
 
         $this->assertStringContainsString('/storage/avatars/admin.jpg', $admin->getFilamentAvatarUrl());
     }

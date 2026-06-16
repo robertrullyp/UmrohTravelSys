@@ -34,7 +34,8 @@ PHP extensions yang umumnya diperlukan:
 
 Opsional (bergantung fitur yang dipakai):
 
-- `gd` atau `imagick` untuk manipulasi gambar
+- `gd` untuk crop/resize/kompres upload logo dan favicon dari Website Settings
+- `imagick` bila dibutuhkan oleh ekstensi lain, tetapi optimizer bawaan memakai GD
 - `exif` jika aplikasi memproses metadata gambar
 - `curl` jika ada panggilan HTTP menggunakan ekstensi ini
 
@@ -58,20 +59,21 @@ mysql --version
 
 Untuk pengujian lokal, jalankan aplikasi di server development (mis. Valet, Docker, atau built-in PHP server) atau gunakan vhost lokal yang memetakan host ke `127.0.0.1`.
 
-Contoh pengecekan endpoint lokal menggunakan header Host (ganti `local.test` dengan host lokal Anda jika perlu):
+Contoh pengecekan endpoint lokal menggunakan header Host:
 
 ```bash
-curl -H 'Host: local.test' http://127.0.0.1/
-curl -H 'Host: local.test' http://127.0.0.1/admin/login
+curl -H 'Host: lulu.kapul.my.id' http://127.0.0.1/
+curl -H 'Host: lulu.kapul.my.id' http://127.0.0.1/admin/login
 ```
 
 Untuk akses melalui browser, tambahkan entri pada file `hosts` jika Anda memakai host custom, atau akses langsung pada alamat yang dikonfigurasi oleh environment Anda.
 
 ## Struktur Asset
 
-- `public/images/site/` berisi asset aktif: `logo.png` dan `beranda-img.jpg`.
--- `public/images/seed/` berisi gambar fallback dan referensi seed.
--- Upload dari admin disimpan di disk `public` Laravel dan diakses melalui symlink `public/storage`.
+- `public/images/site/` berisi asset default aktif: `logo.png` dan `beranda-img.jpg`.
+- `public/images/site/uploads/` berisi upload runtime dari Website Settings dan tidak masuk git.
+- `public/images/seed/` berisi gambar fallback dan referensi seed.
+- Upload konten lain dari admin disimpan di disk `public` Laravel dan diakses melalui symlink `public/storage`.
 
 ## Setup
 
@@ -92,9 +94,13 @@ Seeder admin awal membaca environment berikut bila tersedia:
 ```env
 ADMIN_INITIAL_EMAIL=
 ADMIN_INITIAL_PASSWORD=
+APP_VERSION=v2026.06.16
+APP_UPDATE_REPOSITORY=https://github.com/robertrullyp/UmrohTravelSys.git
+APP_UPDATE_BRANCH=main
 ```
 
 Disk upload publik memakai URL relatif `/storage` secara default. Jika perlu override, gunakan `FILESYSTEM_PUBLIC_URL`.
+Disk `site_public` untuk Website Settings memakai URL relatif secara default agar aman pada HTTP/HTTPS; jika perlu override, gunakan `SITE_PUBLIC_URL`.
 
 Jangan simpan credential database, password admin, atau secret `.env` di repository.
 
@@ -115,9 +121,27 @@ Panel admin tersedia di:
 /admin/login
 ```
 
-Akses panel dibatasi untuk user dengan flag admin. Setelah login berhasil, user diarahkan ke dashboard Filament untuk mengelola paket umrah, jadwal, galeri, profil, kontak, dan pengaturan website.
+Akses panel dibatasi oleh RBAC (`panel.access`) menggunakan `spatie/laravel-permission`. Seeder memberi `ADMIN_INITIAL_EMAIL` role `super-admin`, sehingga akun awal dapat mengelola konten, booking, Website Settings, Users, Roles, dan Permissions.
 
-Dashboard juga menampilkan grafik pengunjung 14 hari terakhir. Tracking hanya berjalan untuk route publik dan menyimpan hash IP/user-agent, bukan IP mentah.
+Dashboard menampilkan ringkasan booking dan grafik pengunjung dengan filter rentang waktu. Tracking hanya berjalan untuk route publik dan menyimpan hash IP/user-agent, bukan IP mentah.
+
+Pengaturan website berada di:
+
+```text
+/admin/settings/website
+```
+
+Halaman ini menyediakan upload logo, favicon, gambar hero beranda, teks hero, dan nomor WhatsApp CTA. Route lama `/admin/site-settings` diarahkan ke halaman ini untuk kompatibilitas.
+
+Logo dan favicon yang diupload melalui Website Settings otomatis dibatasi ukurannya dan dikompresi dengan GD sebelum path disimpan ke `site_settings`.
+
+Update sistem tersedia untuk `super-admin` di:
+
+```text
+/admin/settings/system-update
+```
+
+Halaman ini menampilkan versi aplikasi, branch, commit, remote aktif, dan menyediakan pengecekan remote serta tombol update dari `APP_UPDATE_REPOSITORY`. Tombol update menjalankan `git fetch`, reset ke branch update, install dependency, build frontend, migrasi, dan optimize cache. Gunakan hanya setelah repository server sudah mengarah ke remote resmi.
 
 ## Test dan Build
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\UmrahPackages;
 
+use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\UmrahPackages\Pages\CreateUmrahPackage;
 use App\Filament\Resources\UmrahPackages\Pages\EditUmrahPackage;
 use App\Filament\Resources\UmrahPackages\Pages\ListUmrahPackages;
@@ -9,12 +10,11 @@ use App\Filament\Resources\UmrahPackages\Schemas\UmrahPackageForm;
 use App\Filament\Resources\UmrahPackages\Tables\UmrahPackagesTable;
 use App\Models\UmrahPackage;
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class UmrahPackageResource extends Resource
+class UmrahPackageResource extends PermissionResource
 {
     protected static ?string $model = UmrahPackage::class;
 
@@ -23,6 +23,11 @@ class UmrahPackageResource extends Resource
     protected static ?string $modelLabel = 'Paket Umrah';
     protected static ?string $pluralModelLabel = 'Paket Umrah';
     protected static ?int $navigationSort = 2;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'packages';
+    }
 
     public static function form(Schema $schema): Schema
     {

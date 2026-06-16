@@ -6,7 +6,7 @@
 <section class="page-hero compact">
     <div class="container">
         <h1>{{ $package->name }}</h1>
-        <p>Home / Paket Umrah / {{ $package->name }}</p>
+        <p>Informasi fasilitas, jadwal, dan ketersediaan booking {{ $package->name }}.</p>
     </div>
 </section>
 
@@ -29,6 +29,7 @@
                     <li>{{ is_array($include) ? ($include['item'] ?? '') : $include }}</li>
                 @endforeach
             </ul>
+            <a class="btn btn-pink" href="{{ route('bookings.package', $package) }}">Booking Paket Ini</a>
         </div>
     </div>
 </section>
@@ -37,20 +38,27 @@
     <div class="container section-muted-frame">
         <div class="section-heading">
             <h2>Jadwal Paket Ini</h2>
-            <p>Konfirmasi ketersediaan kuota melalui WhatsApp admin.</p>
+            <p>Pilih jadwal yang tersedia dan ajukan booking langsung.</p>
         </div>
         <div class="table-card">
             <table>
-                <thead><tr><th>Tanggal</th><th>Kuota</th><th>Status</th></tr></thead>
+                <thead><tr><th>Tanggal</th><th>Kuota</th><th>Status</th><th>Aksi</th></tr></thead>
                 <tbody>
                     @forelse ($schedules as $schedule)
                         <tr>
                             <td>{{ $schedule->departure_date->translatedFormat('d F Y') }}</td>
                             <td>{{ $schedule->quota }}</td>
                             <td><span class="status">{{ $schedule->status }}</span></td>
-                        </tr>
+                            <td>
+                                @if ($schedule->quota > 0 && ! $schedule->departure_date->lt(today()))
+                                    <a class="table-link" href="{{ route('bookings.package', $package) }}">Booking</a>
+                                @else
+                                    <span class="muted-text">Tidak tersedia</span>
+                                @endif
+                            </td>
+                            </tr>
                     @empty
-                        <tr><td colspan="3">Belum ada jadwal untuk paket ini.</td></tr>
+                        <tr><td colspan="4">Belum ada jadwal untuk paket ini.</td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -24,7 +24,10 @@
                         <div><dt>Hotel</dt><dd>{{ $package->makkah_hotel }} · {{ $package->madinah_hotel }}</dd></div>
                         <div><dt>Keberangkatan</dt><dd>{{ $package->departure_month }}</dd></div>
                     </dl>
-                    <a class="btn btn-green" href="{{ route('packages.show', $package) }}">Lihat Detail Paket</a>
+                    <div class="package-actions">
+                        <a class="btn btn-green" href="{{ route('packages.show', $package) }}">Lihat Detail Paket</a>
+                        <a class="btn btn-pink" href="{{ route('bookings.package', $package) }}">Booking Paket</a>
+                    </div>
                 </div>
             </article>
         @endforeach

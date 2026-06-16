@@ -98,7 +98,7 @@ class PublicPageController extends Controller
         return view('public.contact', $this->sharedData());
     }
 
-    private function sharedData(): array
+    protected function sharedData(): array
     {
         return [
             'profile' => CompanyProfile::query()->where('is_active', true)->first(),

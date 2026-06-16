@@ -233,9 +233,75 @@ const initializeHeroParallax = () => {
     window.addEventListener('resize', schedule, { passive: true });
 };
 
+const initializeBookingForm = () => {
+    const form = document.querySelector('[data-booking-form]');
+
+    if (!form) {
+        return;
+    }
+
+    const packageSelect = form.querySelector('[data-booking-package]');
+    const scheduleSelect = form.querySelector('[data-booking-schedule]');
+    const quotaHint = form.querySelector('[data-booking-quota]');
+    const pilgrimsInput = form.querySelector('[data-booking-pilgrims]');
+
+    if (!packageSelect || !scheduleSelect) {
+        return;
+    }
+
+    const scheduleOptions = Array.from(scheduleSelect.options)
+        .filter((option) => option.value)
+        .map((option) => ({
+            value: option.value,
+            label: option.textContent,
+            packageId: option.dataset.package,
+            quota: option.dataset.quota,
+            selected: option.selected,
+        }));
+
+    const renderSchedules = () => {
+        const previousValue = scheduleSelect.value;
+        const packageId = packageSelect.value;
+        const placeholder = new Option(packageId ? 'Pilih jadwal' : 'Pilih paket terlebih dahulu', '');
+        scheduleSelect.replaceChildren(placeholder);
+
+        scheduleOptions
+            .filter((option) => option.packageId === packageId)
+            .forEach((option) => {
+                const element = new Option(option.label, option.value);
+                element.dataset.quota = option.quota;
+                element.selected = option.value === previousValue || option.selected;
+                scheduleSelect.add(element);
+                option.selected = false;
+            });
+
+        scheduleSelect.dispatchEvent(new Event('change'));
+    };
+
+    const updateQuota = () => {
+        const option = scheduleSelect.selectedOptions[0];
+        const quota = Number(option?.dataset.quota || 0);
+
+        if (quotaHint) {
+            quotaHint.textContent = quota > 0
+                ? `Sisa kuota saat ini: ${quota} kursi.`
+                : 'Pilih jadwal untuk melihat sisa kuota.';
+        }
+
+        if (pilgrimsInput && quota > 0) {
+            pilgrimsInput.max = String(quota);
+        }
+    };
+
+    packageSelect.addEventListener('change', renderSchedules);
+    scheduleSelect.addEventListener('change', updateQuota);
+    renderSchedules();
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initializePublicNavigation();
     initializeRevealMotion();
     initializeHeroParallax();
     initializeGalleryLightbox();
+    initializeBookingForm();
 });

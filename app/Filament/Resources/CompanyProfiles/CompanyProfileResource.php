@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CompanyProfiles;
 
+use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\CompanyProfiles\Pages\CreateCompanyProfile;
 use App\Filament\Resources\CompanyProfiles\Pages\EditCompanyProfile;
 use App\Filament\Resources\CompanyProfiles\Pages\ListCompanyProfiles;
@@ -9,12 +10,11 @@ use App\Filament\Resources\CompanyProfiles\Schemas\CompanyProfileForm;
 use App\Filament\Resources\CompanyProfiles\Tables\CompanyProfilesTable;
 use App\Models\CompanyProfile;
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class CompanyProfileResource extends Resource
+class CompanyProfileResource extends PermissionResource
 {
     protected static ?string $model = CompanyProfile::class;
 
@@ -23,6 +23,11 @@ class CompanyProfileResource extends Resource
     protected static ?string $modelLabel = 'Profil';
     protected static ?string $pluralModelLabel = 'Profil';
     protected static ?int $navigationSort = 5;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'profiles';
+    }
 
     public static function form(Schema $schema): Schema
     {

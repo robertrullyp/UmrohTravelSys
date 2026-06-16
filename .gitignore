@@ -23,6 +23,7 @@ pnpm-debug.log*
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot
+/public/images/site/uploads
 /public/storage
 /storage/*.key
 /storage/pail

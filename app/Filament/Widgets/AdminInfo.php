@@ -2,7 +2,8 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Contact;
+use App\Filament\Resources\Bookings\BookingResource;
+use App\Models\Booking;
 use App\Models\Schedule;
 use Filament\Widgets\Widget;
 
@@ -20,12 +21,24 @@ class AdminInfo extends Widget
     protected function getViewData(): array
     {
         return [
-            'contact' => Contact::query()->where('is_active', true)->first(),
-            'nextSchedule' => Schedule::query()
+            'pendingCount' => Booking::query()->where('status', Booking::STATUS_PENDING)->count(),
+            'approvedTodayCount' => Booking::query()
+                ->where('status', Booking::STATUS_APPROVED)
+                ->whereDate('approved_at', today())
+                ->count(),
+            'latestBooking' => Booking::query()
+                ->with(['umrahPackage', 'schedule'])
+                ->latest()
+                ->first(),
+            'lowQuotaSchedules' => Schedule::query()
                 ->with('umrahPackage')
                 ->where('is_active', true)
                 ->orderBy('departure_date')
-                ->first(),
+                ->whereDate('departure_date', '>=', today())
+                ->where('quota', '<=', 5)
+                ->limit(4)
+                ->get(),
+            'bookingIndexUrl' => BookingResource::getUrl('index'),
         ];
     }
 }

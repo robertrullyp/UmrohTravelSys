@@ -1,6 +1,6 @@
 @php
-    $logoUrl = asset('images/site/logo.png');
-    $faviconUrl = asset('images/site/logo.png');
+    $logoUrl = asset($settings->get('brand_logo_path', 'images/site/logo.png') ?: 'images/site/logo.png');
+    $faviconUrl = asset($settings->get('favicon_path', 'images/site/logo.png') ?: 'images/site/logo.png');
     $whatsappRaw = $contact?->whatsapp ?? $settings->get('cta_whatsapp', '');
     $whatsapp = preg_replace('/\D+/', '', $whatsappRaw);
     $whatsapp = str_starts_with($whatsapp, '0') ? '62' . substr($whatsapp, 1) : $whatsapp;
@@ -21,6 +21,7 @@
         ['label' => 'Profil', 'route' => 'profile'],
         ['label' => 'Paket Umrah', 'route' => 'packages'],
         ['label' => 'Jadwal', 'route' => 'schedules'],
+        ['label' => 'Booking', 'route' => 'bookings.create'],
         ['label' => 'Galeri', 'route' => 'galleries'],
         ['label' => 'Kontak', 'route' => 'contact'],
     ];
@@ -45,7 +46,7 @@
 
             <nav class="site-nav" id="public-navigation" aria-label="Navigasi utama" data-public-nav-menu>
                 @foreach ($navItems as $item)
-                    <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs($item['route']) || ($item['route'] === 'packages' && request()->routeIs('packages.*'))])>
+                    <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs($item['route']) || ($item['route'] === 'packages' && request()->routeIs('packages.*')) || ($item['route'] === 'bookings.create' && request()->routeIs('bookings.*'))])>
                         {{ $item['label'] }}
                     </a>
                 @endforeach

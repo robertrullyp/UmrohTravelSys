@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Contacts;
 
+use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\Contacts\Pages\CreateContact;
 use App\Filament\Resources\Contacts\Pages\EditContact;
 use App\Filament\Resources\Contacts\Pages\ListContacts;
@@ -9,12 +10,11 @@ use App\Filament\Resources\Contacts\Schemas\ContactForm;
 use App\Filament\Resources\Contacts\Tables\ContactsTable;
 use App\Models\Contact;
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class ContactResource extends Resource
+class ContactResource extends PermissionResource
 {
     protected static ?string $model = Contact::class;
 
@@ -23,6 +23,11 @@ class ContactResource extends Resource
     protected static ?string $modelLabel = 'Kontak';
     protected static ?string $pluralModelLabel = 'Kontak';
     protected static ?int $navigationSort = 6;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'contacts';
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -9,8 +9,12 @@ use App\Models\Schedule;
 use App\Models\SiteSetting;
 use App\Models\UmrahPackage;
 use App\Models\User;
+use App\Support\AdminPermissions;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -22,7 +26,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::query()->updateOrCreate(
+        $admin = User::query()->updateOrCreate(
             ['email' => config('admin.initial_email', 'admin@example.com')],
             [
                 'name' => config('admin.initial_name', 'Admin'),
@@ -30,6 +34,22 @@ class DatabaseSeeder extends Seeder
                 'is_admin' => true,
             ],
         );
+
+        $permissions = collect(AdminPermissions::all())
+            ->map(fn (string $permission): Permission => Permission::query()->firstOrCreate([
+                'name' => $permission,
+                'guard_name' => 'web',
+            ]));
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $superAdmin = Role::findOrCreate('super-admin', 'web');
+        $superAdmin->syncPermissions($permissions->pluck('name')->all());
+
+        $adminRole = Role::findOrCreate('admin', 'web');
+        $adminRole->syncPermissions(AdminPermissions::operationalAdmin());
+
+        $admin->syncRoles([$superAdmin->name]);
 
         CompanyProfile::query()->updateOrCreate(
             ['id' => 1],
@@ -115,11 +135,11 @@ class DatabaseSeeder extends Seeder
         }
 
         $scheduleRows = [
-            ['Umroh Plus Tarim Paket 19 Hari', '2024-10-10', 20],
-            ['Umroh Reguler 12 Hari', '2024-10-18', 25],
-            ['Umroh Ramadhan 15 Hari', '2024-10-25', 20],
-            ['Umroh Plus Turki 16 Hari', '2024-11-05', 20],
-            ['Umroh Promo 9 Hari', '2024-11-12', 30],
+            ['Umroh Plus Tarim Paket 19 Hari', now()->addMonths(1)->day(10)->toDateString(), 20],
+            ['Umroh Reguler 12 Hari', now()->addMonths(1)->day(18)->toDateString(), 25],
+            ['Umroh Ramadhan 15 Hari', now()->addMonths(2)->day(5)->toDateString(), 20],
+            ['Umroh Plus Turki 16 Hari', now()->addMonths(2)->day(15)->toDateString(), 20],
+            ['Umroh Promo 9 Hari', now()->addMonths(3)->day(12)->toDateString(), 30],
         ];
 
         foreach ($scheduleRows as [$packageName, $date, $quota]) {
@@ -140,11 +160,11 @@ class DatabaseSeeder extends Seeder
         }
 
         $galleryRows = [
-            ['City Tour Madinah', '2025-04-04', 'galleries/public-galeri.jpeg'],
-            ['Jamaah di Masjid Nabawi', '2025-04-04', 'galleries/gallery-grid.jpeg'],
-            ['Perjalanan ke Mekkah', '2025-04-05', 'galleries/public-galeri.jpeg'],
-            ['Ziarah Raudhah', '2025-04-05', 'galleries/gallery-grid.jpeg'],
-            ['Foto Bersama Jamaah', '2025-04-05', 'galleries/public-galeri.jpeg'],
+            ['City Tour Madinah', now()->subDays(45)->toDateString(), 'galleries/public-galeri.jpeg'],
+            ['Jamaah di Masjid Nabawi', now()->subDays(42)->toDateString(), 'galleries/gallery-grid.jpeg'],
+            ['Perjalanan ke Mekkah', now()->subDays(39)->toDateString(), 'galleries/public-galeri.jpeg'],
+            ['Ziarah Raudhah', now()->subDays(36)->toDateString(), 'galleries/gallery-grid.jpeg'],
+            ['Foto Bersama Jamaah', now()->subDays(33)->toDateString(), 'galleries/public-galeri.jpeg'],
         ];
 
         foreach ($galleryRows as $index => [$title, $date, $image]) {

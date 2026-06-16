@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Schedules;
 
+use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\Schedules\Pages\CreateSchedule;
 use App\Filament\Resources\Schedules\Pages\EditSchedule;
 use App\Filament\Resources\Schedules\Pages\ListSchedules;
@@ -9,12 +10,11 @@ use App\Filament\Resources\Schedules\Schemas\ScheduleForm;
 use App\Filament\Resources\Schedules\Tables\SchedulesTable;
 use App\Models\Schedule;
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class ScheduleResource extends Resource
+class ScheduleResource extends PermissionResource
 {
     protected static ?string $model = Schedule::class;
 
@@ -23,6 +23,11 @@ class ScheduleResource extends Resource
     protected static ?string $modelLabel = 'Jadwal';
     protected static ?string $pluralModelLabel = 'Jadwal';
     protected static ?int $navigationSort = 3;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'schedules';
+    }
 
     public static function form(Schema $schema): Schema
     {

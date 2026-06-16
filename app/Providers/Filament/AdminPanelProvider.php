@@ -5,7 +5,9 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\Login as AdminLogin;
 use App\Filament\Pages\Auth\EditProfile as AdminEditProfile;
 use App\Filament\Pages\Dashboard;
+use App\Models\SiteSetting;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,9 +34,12 @@ class AdminPanelProvider extends PanelProvider
             ->login(AdminLogin::class)
             ->profile(page: AdminEditProfile::class, isSimple: false)
             ->brandName('PT Amara Al Medina Travel')
-            ->brandLogo(asset('images/site/logo.png'))
+            ->brandLogo(SiteSetting::assetUrl('brand_logo_path', 'images/site/logo.png'))
             ->brandLogoHeight('4.75rem')
-            ->favicon(asset('images/site/logo.png'))
+            ->favicon(SiteSetting::assetUrl('favicon_path', 'images/site/logo.png'))
+            ->sidebarCollapsibleOnDesktop()
+            ->sidebarWidth('18rem')
+            ->collapsedSidebarWidth('4.75rem')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
                 'primary' => Color::hex('#d61a6a'),
@@ -42,11 +47,33 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->userMenuItems([
                 'profile' => fn (Action $action): Action => $action->label('My Account'),
+                'logout' => fn (Action $action): Action => $action
+                    ->label('Keluar')
+                    ->color('danger')
+                    ->url(null)
+                    ->postToUrl(false)
+                    ->requiresConfirmation()
+                    ->modalHeading('Keluar dari panel admin?')
+                    ->modalDescription('Sesi admin akan diakhiri dan Anda perlu login kembali untuk mengakses panel.')
+                    ->modalSubmitActionLabel('Keluar')
+                    ->action(function () {
+                        Filament::auth()->logout();
+
+                        request()->session()->invalidate();
+                        request()->session()->regenerateToken();
+
+                        return redirect()->to(Filament::getLoginUrl());
+                    }),
             ])
             ->renderHook(
                 PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
                 fn (): string => view('filament.partials.user-menu-profile-card')->render(),
             )
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_START,
+                fn (): string => view('filament.partials.sidebar-brand')->render(),
+            )
+            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\Filament\Clusters')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->pages([
                 Dashboard::class,

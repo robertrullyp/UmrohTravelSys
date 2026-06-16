@@ -20,6 +20,11 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $title = 'Dashboard';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->can('panel.access') ?? false;
+    }
+
     public function getTitle(): string|Htmlable
     {
         return 'Dashboard';
