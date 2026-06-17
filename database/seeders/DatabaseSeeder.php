@@ -152,6 +152,7 @@ class DatabaseSeeder extends Seeder
             Schedule::query()->updateOrCreate(
                 ['umrah_package_id' => $package->id, 'departure_date' => $date],
                 [
+                    'capacity' => $quota,
                     'quota' => $quota,
                     'status' => 'Tersedia',
                     'is_active' => true,
@@ -190,6 +191,7 @@ class DatabaseSeeder extends Seeder
                 'latitude' => -2.331994,
                 'longitude' => 115.471695,
                 'is_active' => true,
+                'is_primary' => true,
             ],
         );
 

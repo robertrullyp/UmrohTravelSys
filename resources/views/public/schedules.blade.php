@@ -19,6 +19,7 @@
                     <th>Tanggal Keberangkatan</th>
                     <th>Paket</th>
                     <th>Kuota</th>
+                    <th>Tersedia</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -28,6 +29,7 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $schedule->departure_date->translatedFormat('d F Y') }}</td>
                         <td>{{ $schedule->umrahPackage?->name }}</td>
+                        <td>{{ $schedule->capacity }}</td>
                         <td>{{ $schedule->quota }}</td>
                         <td><span class="status">{{ $schedule->status }}</span></td>
                     </tr>

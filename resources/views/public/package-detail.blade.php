@@ -42,11 +42,12 @@
         </div>
         <div class="table-card">
             <table>
-                <thead><tr><th>Tanggal</th><th>Kuota</th><th>Status</th><th>Aksi</th></tr></thead>
+                <thead><tr><th>Tanggal</th><th>Kuota</th><th>Tersedia</th><th>Status</th><th>Aksi</th></tr></thead>
                 <tbody>
                     @forelse ($schedules as $schedule)
                         <tr>
                             <td>{{ $schedule->departure_date->translatedFormat('d F Y') }}</td>
+                            <td>{{ $schedule->capacity }}</td>
                             <td>{{ $schedule->quota }}</td>
                             <td><span class="status">{{ $schedule->status }}</span></td>
                             <td>
@@ -58,7 +59,7 @@
                             </td>
                             </tr>
                     @empty
-                        <tr><td colspan="4">Belum ada jadwal untuk paket ini.</td></tr>
+                        <tr><td colspan="5">Belum ada jadwal untuk paket ini.</td></tr>
                     @endforelse
                 </tbody>
             </table>

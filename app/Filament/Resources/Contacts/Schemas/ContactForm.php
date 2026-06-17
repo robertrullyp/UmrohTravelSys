@@ -47,6 +47,10 @@ class ContactForm
                         Toggle::make('is_active')
                             ->label('Tampilkan')
                             ->default(true),
+                        Toggle::make('is_primary')
+                            ->label('Utama')
+                            ->helperText('Kontak utama dipakai untuk footer, tombol WhatsApp, dan peta utama.')
+                            ->default(false),
                     ]),
             ]);
     }

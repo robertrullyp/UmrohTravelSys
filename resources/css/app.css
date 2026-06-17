@@ -456,8 +456,12 @@ th {
 .gallery-grid,
 .gallery-page-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 10px;
+}
+
+.gallery-page-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .gallery-tile,
@@ -943,6 +947,82 @@ th {
     margin: 0;
 }
 
+.contact-list {
+    align-content: start;
+    padding: 0;
+    gap: 10px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.contact-public-card {
+    display: grid;
+    gap: 12px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--white);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.contact-public-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.contact-public-card-header h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.contact-public-card-header span {
+    flex: none;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(214, 26, 106, 0.1);
+    color: var(--pink);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.contact-public-list {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+}
+
+.contact-public-list div {
+    display: grid;
+    gap: 3px;
+}
+
+.contact-public-list dt {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.contact-public-list dd {
+    margin: 0;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.contact-public-list a {
+    color: var(--green);
+    font-weight: 800;
+}
+
+.contact-public-list a:hover,
+.contact-public-list a:focus-visible {
+    color: var(--pink);
+}
+
 .map-panel {
     overflow: hidden;
     display: flex;
@@ -1042,9 +1122,7 @@ th {
 .footer-link {
     color: var(--bar-link);
     font-weight: 700;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
+    text-decoration: none;
     overflow-wrap: anywhere;
 }
 
@@ -1052,6 +1130,12 @@ th {
 .footer-link:focus {
     color: #ff8abc;
     outline: 0;
+}
+
+.footer-link:focus-visible {
+    border-radius: 4px;
+    outline: 2px solid color-mix(in srgb, var(--bar-accent) 70%, transparent);
+    outline-offset: 3px;
 }
 
 .footer-bottom {
@@ -1257,6 +1341,7 @@ html.motion-ready .site-footer [data-reveal] {
     .package-wide,
     .info-panel,
     .contact-panel,
+    .contact-public-card,
     .map-panel,
     .table-card,
     .gallery-card,
@@ -1294,6 +1379,15 @@ html.motion-ready .site-footer [data-reveal] {
 
     .booking-success {
         color: #8df0bd;
+    }
+
+    .contact-public-list a {
+        color: #8df0bd;
+    }
+
+    .contact-public-list a:hover,
+    .contact-public-list a:focus-visible {
+        color: #ff8abc;
     }
 
     .page-hero {
@@ -1339,6 +1433,10 @@ html.motion-ready .site-footer [data-reveal] {
     .contact-section .contact-panel {
         gap: 12px;
         padding: 18px;
+    }
+
+    .contact-section .contact-list {
+        padding: 0;
     }
 
     .contact-section .contact-panel h2 {

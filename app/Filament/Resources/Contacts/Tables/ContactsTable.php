@@ -9,23 +9,31 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ContactsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->description('Kontak utama tampil di footer dan CTA. Semua kontak aktif tampil berurutan di halaman kontak publik.')
             ->columns([
                 TextColumn::make('address')->label('Alamat')->limit(60),
                 TextColumn::make('whatsapp')->label('WhatsApp')->searchable(),
                 TextColumn::make('email')->label('Email')->searchable(),
                 TextColumn::make('instagram')->label('Instagram'),
+                IconColumn::make('is_primary')->label('Utama')->boolean(),
                 IconColumn::make('is_active')->label('Tampil')->boolean(),
             ])
-            ->defaultSort('updated_at', 'desc')
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query
+                ->orderByDesc('is_primary')
+                ->latest('updated_at')
+                ->latest('id'))
             ->filters([
                 //
             ])
+            ->emptyStateHeading('Belum ada kontak')
+            ->emptyStateDescription('Tambahkan kontak lalu aktifkan. Tandai satu kontak sebagai utama untuk footer dan CTA.')
             ->recordActions([
                 EditAction::make()
                     ->label('Edit')

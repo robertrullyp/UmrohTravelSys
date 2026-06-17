@@ -33,6 +33,7 @@
     padding: 24px 28px 22px;
     border-radius: 8px;
     background: #ffffff;
+    color-scheme: light;
     box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
 }
 
@@ -73,18 +74,26 @@
 .fi-simple-page .fi-input-wrp {
     border-radius: 6px;
     min-height: 40px;
-    background: #ffffff;
+    background: #ffffff !important;
+    color-scheme: light;
 }
 
-.fi-simple-page .fi-input {
+.fi-simple-page .fi-input,
+.fi-simple-page input,
+.fi-simple-page textarea,
+.fi-simple-page select {
+    background-color: #ffffff !important;
     color: #111827 !important;
-    -webkit-text-fill-color: #111827;
+    -webkit-text-fill-color: #111827 !important;
     caret-color: #111827;
+    color-scheme: light;
 }
 
-.fi-simple-page .fi-input::placeholder {
+.fi-simple-page .fi-input::placeholder,
+.fi-simple-page input::placeholder,
+.fi-simple-page textarea::placeholder {
     color: #6b7280 !important;
-    -webkit-text-fill-color: #6b7280;
+    -webkit-text-fill-color: #6b7280 !important;
     opacity: 1;
 }
 
@@ -180,6 +189,39 @@
     gap: 14px;
 }
 
+.fi-page-sub-navigation-sidebar-ctn {
+    color: #334155;
+}
+
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item a,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-group-button {
+    color: #334155 !important;
+    background: transparent;
+}
+
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item-label,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item-icon,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-group-button-label,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-group-button-icon {
+    color: currentColor !important;
+}
+
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item a:hover,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-group-button:hover,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item a:focus-visible,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-group-button:focus-visible {
+    background: rgba(7, 129, 67, 0.08);
+    color: #056334 !important;
+}
+
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item.fi-active a,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item-active a,
+.fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item a[aria-current="page"] {
+    background: #d61a6a;
+    color: #ffffff !important;
+    box-shadow: 0 10px 22px rgba(214, 26, 106, 0.18);
+}
+
 .fi-modal > .fi-modal-close-overlay {
     z-index: 120 !important;
 }
@@ -192,18 +234,62 @@
     max-width: min(100%, 34rem);
 }
 
+.fi-no {
+    inset: auto 16px auto auto !important;
+    top: 76px !important;
+    z-index: 110 !important;
+    width: min(24rem, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px);
+    align-items: flex-end !important;
+    justify-content: flex-start !important;
+}
+
+.fi-no .fi-no-notification {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.18);
+}
+
+@media (min-width: 1024px) {
+    .fi-company-profile-singleton .fi-page-main {
+        padding-top: 0;
+    }
+
+    .fi-company-profile-singleton .fi-page-header-main-ctn {
+        padding-block: 6px;
+    }
+
+    .fi-company-profile-singleton .fi-page-content {
+        gap: 10px;
+    }
+
+    .fi-company-profile-singleton .fi-section-header {
+        padding-block: 10px;
+    }
+
+    .fi-company-profile-singleton .fi-section-content-ctn {
+        padding-block: 12px;
+    }
+
+    .fi-company-profile-singleton .fi-fo-component-ctn {
+        gap: 12px;
+    }
+}
+
 .admin-user-menu-card {
     display: grid;
-    grid-template-columns: 46px minmax(0, 1fr);
-    gap: 10px;
-    align-items: center;
-    padding: 10px 12px 8px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    justify-items: center;
+    padding: 14px 14px 12px;
     border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    text-align: center;
 }
 
 .fi-dropdown-panel:has(.admin-user-menu-card) {
-    width: min(316px, calc(100vw - 24px)) !important;
-    min-width: min(316px, calc(100vw - 24px)) !important;
+    width: min(328px, calc(100vw - 24px)) !important;
+    min-width: min(328px, calc(100vw - 24px)) !important;
 }
 
 .admin-user-menu-footer-actions {
@@ -383,15 +469,18 @@
 }
 
 .admin-user-menu-card-avatar {
-    width: 46px;
-    height: 46px;
+    width: 74px;
+    height: 74px;
     border: 2px solid rgba(214, 26, 106, 0.22);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
 }
 
 .admin-user-menu-card-body {
+    width: 100%;
     min-width: 0;
     display: grid;
     gap: 2px;
+    justify-items: center;
 }
 
 .admin-user-menu-card-body strong,
@@ -410,6 +499,18 @@
 .admin-user-menu-card-body span {
     color: #64748b;
     font-size: 12px;
+}
+
+.admin-user-menu-card-role {
+    display: inline-flex;
+    max-width: 100%;
+    margin-top: 4px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(7, 129, 67, 0.08);
+    color: #056334 !important;
+    font-size: 11px !important;
+    font-weight: 800;
 }
 
 .fi-page-header {
@@ -632,6 +733,23 @@
         #056e3d;
 }
 
+.dark .fi-page-sub-navigation-sidebar-ctn {
+    color: #d8e7df;
+}
+
+.dark .fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item a,
+.dark .fi-page-sub-navigation-sidebar-ctn .fi-sidebar-group-button {
+    color: #d8e7df !important;
+}
+
+.dark .fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item a:hover,
+.dark .fi-page-sub-navigation-sidebar-ctn .fi-sidebar-group-button:hover,
+.dark .fi-page-sub-navigation-sidebar-ctn .fi-sidebar-item a:focus-visible,
+.dark .fi-page-sub-navigation-sidebar-ctn .fi-sidebar-group-button:focus-visible {
+    background: rgba(151, 216, 182, 0.12);
+    color: #ffffff !important;
+}
+
 .dark .fi-page-header-heading,
 .dark .fi-header-heading,
 .dark .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-value,
@@ -742,8 +860,14 @@
     color: #b7c6bf;
 }
 
+.dark .admin-user-menu-card-role {
+    background: rgba(16, 185, 129, 0.14);
+    color: #8df0bd !important;
+}
+
 .dark .fi-simple-page-content {
     background: #ffffff;
+    color-scheme: light;
 }
 
 .dark .fi-simple-page .fi-simple-header-heading,
@@ -771,6 +895,12 @@
 }
 
 @media (max-width: 768px) {
+    .fi-no {
+        top: 72px !important;
+        right: 12px !important;
+        width: min(22rem, calc(100vw - 24px)) !important;
+    }
+
     .fi-topbar-ctn {
         z-index: 95;
     }

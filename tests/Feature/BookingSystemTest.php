@@ -217,6 +217,7 @@ class BookingSystemTest extends TestCase
     {
         $reviewer = User::query()->firstOrFail();
         $schedule = Schedule::query()->firstOrFail();
+        $initialCapacity = $schedule->capacity;
         $initialQuota = $schedule->quota;
         $booking = $this->makeBooking($schedule, 4);
         $service = app(BookingStatusService::class);
@@ -224,6 +225,7 @@ class BookingSystemTest extends TestCase
         $approved = $service->approve($booking, $reviewer, 'Data lengkap.');
 
         $this->assertSame(Booking::STATUS_APPROVED, $approved->status);
+        $this->assertSame($initialCapacity, $schedule->refresh()->capacity);
         $this->assertSame($initialQuota - 4, $schedule->refresh()->quota);
         $this->assertNotNull($approved->quota_deducted_at);
 
@@ -235,6 +237,7 @@ class BookingSystemTest extends TestCase
     {
         $reviewer = User::query()->firstOrFail();
         $schedule = Schedule::query()->firstOrFail();
+        $initialCapacity = $schedule->capacity;
         $initialQuota = $schedule->quota;
         $service = app(BookingStatusService::class);
 
@@ -249,6 +252,7 @@ class BookingSystemTest extends TestCase
         $cancelled = $service->cancel($approved, $reviewer, 'Batal dari jamaah.');
 
         $this->assertSame(Booking::STATUS_CANCELLED, $cancelled->status);
+        $this->assertSame($initialCapacity, $schedule->refresh()->capacity);
         $this->assertSame($initialQuota, $schedule->refresh()->quota);
         $this->assertNotNull($cancelled->quota_restored_at);
     }

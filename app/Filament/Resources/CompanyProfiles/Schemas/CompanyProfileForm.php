@@ -27,7 +27,7 @@ class CompanyProfileForm
                         Textarea::make('about')
                             ->label('Tentang Perusahaan')
                             ->required()
-                            ->rows(5),
+                            ->rows(4),
                         FileUpload::make('photo_path')
                             ->label('Foto')
                             ->image()
@@ -36,12 +36,10 @@ class CompanyProfileForm
                         Textarea::make('vision')
                             ->label('Visi')
                             ->required()
-                            ->rows(3)
-                            ->columnSpanFull(),
+                            ->rows(3),
                         TagsInput::make('missions')
                             ->label('Misi')
-                            ->placeholder('Tambah misi')
-                            ->columnSpanFull(),
+                            ->placeholder('Tambah misi'),
                         Toggle::make('is_active')
                             ->label('Tampilkan')
                             ->default(true),

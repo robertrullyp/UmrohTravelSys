@@ -56,7 +56,7 @@ class SystemUpdateService
             ->map(fn (string $line): string => trim($line))
             ->filter(fn (string $line): bool => str_starts_with($line, '- '))
             ->map(fn (string $line): string => trim(substr($line, 2)))
-            ->take(6)
+            ->take(4)
             ->values()
             ->all();
 

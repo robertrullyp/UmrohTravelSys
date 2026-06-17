@@ -28,10 +28,16 @@ class ScheduleForm
                         DatePicker::make('departure_date')
                             ->label('Tanggal Keberangkatan')
                             ->required(),
-                        TextInput::make('quota')
+                        TextInput::make('capacity')
                             ->label('Kuota')
                             ->numeric()
+                            ->minValue(0)
                             ->required(),
+                        TextInput::make('quota')
+                            ->label('Tersedia')
+                            ->helperText('Sisa kuota tersedia. Kosongkan saat tambah jadwal agar otomatis sama dengan Kuota.')
+                            ->numeric()
+                            ->minValue(0),
                         Select::make('status')
                             ->label('Status')
                             ->options([
@@ -40,7 +46,8 @@ class ScheduleForm
                                 'Penuh' => 'Penuh',
                             ])
                             ->default('Tersedia')
-                            ->required(),
+                            ->disabled()
+                            ->dehydrated(false),
                         Textarea::make('notes')
                             ->label('Catatan')
                             ->rows(3)

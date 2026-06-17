@@ -19,7 +19,8 @@ class SchedulesTable
             ->columns([
                 TextColumn::make('departure_date')->label('Tanggal')->date('d F Y')->sortable(),
                 TextColumn::make('umrahPackage.name')->label('Paket')->searchable(),
-                TextColumn::make('quota')->label('Kuota')->sortable(),
+                TextColumn::make('capacity')->label('Kuota')->sortable(),
+                TextColumn::make('quota')->label('Tersedia')->sortable()->suffix(' kursi'),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()

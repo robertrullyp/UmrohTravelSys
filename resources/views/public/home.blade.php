@@ -66,6 +66,9 @@
             </a>
         @endforeach
     </div>
+    <div class="section-action">
+        <a class="btn btn-pink" href="{{ route('packages') }}">Lihat Semua Paket</a>
+    </div>
 </section>
 
 <section class="section section-muted">
@@ -81,6 +84,7 @@
                         <th>Tanggal</th>
                         <th>Paket</th>
                         <th>Kuota</th>
+                        <th>Tersedia</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,11 +92,15 @@
                         <tr>
                             <td>{{ $schedule->departure_date->translatedFormat('d F Y') }}</td>
                             <td>{{ $schedule->umrahPackage?->name }}</td>
+                            <td>{{ $schedule->capacity }}</td>
                             <td>{{ $schedule->quota }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+        </div>
+        <div class="section-action">
+            <a class="btn btn-green" href="{{ route('schedules') }}">Lihat Semua Jadwal</a>
         </div>
     </div>
 </section>

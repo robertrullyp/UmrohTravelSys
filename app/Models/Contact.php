@@ -18,6 +18,7 @@ class Contact extends Model
         'latitude',
         'longitude',
         'is_active',
+        'is_primary',
     ];
 
     protected function casts(): array
@@ -26,6 +27,27 @@ class Contact extends Model
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
             'is_active' => 'boolean',
+            'is_primary' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Contact $contact): void {
+            if ($contact->is_primary) {
+                $contact->is_active = true;
+            }
+        });
+
+        static::saved(function (Contact $contact): void {
+            if (! $contact->is_primary) {
+                return;
+            }
+
+            static::query()
+                ->whereKeyNot($contact->getKey())
+                ->where('is_primary', true)
+                ->update(['is_primary' => false]);
+        });
     }
 }

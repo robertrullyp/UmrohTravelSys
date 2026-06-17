@@ -14,6 +14,7 @@ class Schedule extends Model
     protected $fillable = [
         'umrah_package_id',
         'departure_date',
+        'capacity',
         'quota',
         'status',
         'notes',
@@ -24,6 +25,8 @@ class Schedule extends Model
     {
         return [
             'departure_date' => 'date',
+            'capacity' => 'integer',
+            'quota' => 'integer',
             'is_active' => 'boolean',
         ];
     }

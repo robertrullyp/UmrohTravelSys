@@ -31,7 +31,7 @@
                     </strong>
                 </div>
                 <div>
-                    <span>Kuota menipis</span>
+                    <span>Tersedia menipis</span>
                     <strong>
                         {{ $lowQuotaSchedules->isNotEmpty() ? $lowQuotaSchedules->count() . ' jadwal' : '-' }}
                     </strong>
@@ -43,7 +43,7 @@
                     @foreach ($lowQuotaSchedules as $schedule)
                         <a href="{{ $bookingIndexUrl }}" class="admin-info-low-quota-item">
                             <strong>{{ $schedule->umrahPackage?->name }}</strong>
-                            <span>{{ $schedule->departure_date->translatedFormat('d F Y') }} · {{ $schedule->quota }} kursi</span>
+                            <span>{{ $schedule->departure_date->translatedFormat('d F Y') }} · tersedia {{ $schedule->quota }} dari {{ $schedule->capacity }} kursi</span>
                         </a>
                     @endforeach
                 </div>

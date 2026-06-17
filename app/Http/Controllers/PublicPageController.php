@@ -29,7 +29,8 @@ class PublicPageController extends Controller
             'schedules' => Schedule::query()
                 ->with('umrahPackage')
                 ->where('is_active', true)
-                ->orderBy('departure_date')
+                ->latest('created_at')
+                ->latest('id')
                 ->limit(5)
                 ->get(),
             'galleries' => Gallery::query()
@@ -100,9 +101,18 @@ class PublicPageController extends Controller
 
     protected function sharedData(): array
     {
+        $contacts = Contact::query()
+            ->where('is_active', true)
+            ->orderByDesc('is_primary')
+            ->latest('updated_at')
+            ->latest('id')
+            ->get();
+        $primaryContact = $contacts->firstWhere('is_primary', true) ?? $contacts->first();
+
         return [
             'profile' => CompanyProfile::query()->whereKey(1)->where('is_active', true)->first(),
-            'contact' => Contact::query()->where('is_active', true)->first(),
+            'contact' => $primaryContact,
+            'contacts' => $contacts,
             'settings' => SiteSetting::query()->pluck('value', 'key'),
         ];
     }

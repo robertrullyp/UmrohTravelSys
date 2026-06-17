@@ -28,6 +28,14 @@ class ListCompanyProfiles extends EditRecord
         return 'Profil';
     }
 
+    public function getPageClasses(): array
+    {
+        return [
+            ...parent::getPageClasses(),
+            'fi-company-profile-singleton',
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [];
