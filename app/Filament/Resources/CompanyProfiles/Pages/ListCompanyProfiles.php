@@ -5,6 +5,7 @@ namespace App\Filament\Resources\CompanyProfiles\Pages;
 use App\Filament\Resources\CompanyProfiles\CompanyProfileResource;
 use App\Models\CompanyProfile;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Model;
 
 class ListCompanyProfiles extends EditRecord
@@ -26,6 +27,11 @@ class ListCompanyProfiles extends EditRecord
     public function getBreadcrumb(): string
     {
         return 'Profil';
+    }
+
+    public function getMaxContentWidth(): Width | string | null
+    {
+        return Width::Full;
     }
 
     public function getPageClasses(): array

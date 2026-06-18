@@ -56,15 +56,23 @@
     letter-spacing: 0;
 }
 
-.fi-simple-page .fi-fo-field-wrp-label {
-    color: #111827;
+.fi-simple-page .fi-fo-field-wrp-label,
+.fi-simple-page .fi-fo-field-wrp-label *,
+.fi-simple-page .fi-fo-field-label,
+.fi-simple-page .fi-fo-field-label *,
+.fi-simple-page label,
+.fi-simple-page label * {
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 900;
 }
 
 .fi-simple-page .fi-fo-field-label-content,
 .fi-simple-page .fi-fo-field-label-content * {
-    color: #111827;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
+    font-weight: 900;
 }
 
 .fi-simple-page .fi-fo-field-label-required-mark {
@@ -254,6 +262,9 @@
 @media (min-width: 1024px) {
     .fi-company-profile-singleton .fi-page-main {
         padding-top: 0;
+        padding-inline: 18px;
+        max-width: none !important;
+        width: 100%;
     }
 
     .fi-company-profile-singleton .fi-page-header-main-ctn {
@@ -262,6 +273,15 @@
 
     .fi-company-profile-singleton .fi-page-content {
         gap: 10px;
+        max-width: none;
+    }
+
+    .fi-company-profile-singleton .fi-form,
+    .fi-company-profile-singleton form,
+    .fi-company-profile-singleton .fi-section,
+    .fi-company-profile-singleton .fi-section-content-ctn {
+        max-width: none;
+        width: 100%;
     }
 
     .fi-company-profile-singleton .fi-section-header {
@@ -274,6 +294,10 @@
 
     .fi-company-profile-singleton .fi-fo-component-ctn {
         gap: 12px;
+    }
+
+    .fi-company-profile-singleton textarea {
+        min-height: 86px;
     }
 }
 
@@ -872,7 +896,8 @@
 
 .dark .fi-simple-page .fi-simple-header-heading,
 .dark .fi-simple-page .fi-fo-field-wrp-label {
-    color: #111827;
+    color: #0f172a !important;
+    -webkit-text-fill-color: #0f172a !important;
 }
 
 @media (max-width: 560px) {

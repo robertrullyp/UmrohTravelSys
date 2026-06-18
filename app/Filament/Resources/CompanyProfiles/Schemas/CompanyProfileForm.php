@@ -17,32 +17,36 @@ class CompanyProfileForm
         return $schema
             ->components([
                 Section::make('Profil Perusahaan')
-                    ->columns(2)
+                    ->columns(3)
+                    ->columnSpanFull()
                     ->schema([
                         TextInput::make('company_name')
                             ->label('Nama Perusahaan')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpanFull(),
+                            ->columnSpan(2),
+                        Toggle::make('is_active')
+                            ->label('Tampilkan')
+                            ->default(true),
                         Textarea::make('about')
                             ->label('Tentang Perusahaan')
                             ->required()
-                            ->rows(4),
+                            ->rows(3)
+                            ->columnSpan(2),
                         FileUpload::make('photo_path')
                             ->label('Foto')
                             ->image()
+                            ->imagePreviewHeight('120')
                             ->disk('public')
                             ->directory('profiles'),
                         Textarea::make('vision')
                             ->label('Visi')
                             ->required()
-                            ->rows(3),
+                            ->rows(2),
                         TagsInput::make('missions')
                             ->label('Misi')
-                            ->placeholder('Tambah misi'),
-                        Toggle::make('is_active')
-                            ->label('Tampilkan')
-                            ->default(true),
+                            ->placeholder('Tambah misi')
+                            ->columnSpan(2),
                     ]),
             ]);
     }
