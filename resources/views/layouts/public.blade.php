@@ -25,6 +25,10 @@
         ['label' => 'Galeri', 'route' => 'galleries'],
         ['label' => 'Kontak', 'route' => 'contact'],
     ];
+    $pageTitle = isset($seo) ? $seo->title : trim($__env->yieldContent('title', 'PT Amara Al Medina Travel'));
+    $pageDescription = isset($seo)
+        ? $seo->description
+        : trim($__env->yieldContent('description', 'Informasi paket umrah, jadwal keberangkatan, galeri, profil, dan kontak PT Amara Al Medina Travel.'));
 @endphp
 
 <!doctype html>
@@ -32,8 +36,35 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'PT Amara Al Medina Travel')</title>
-    <meta name="description" content="@yield('description', 'Informasi paket umrah, jadwal keberangkatan, galeri, profil, dan kontak PT Amara Al Medina Travel.')">
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $pageDescription }}">
+    @if (isset($seo))
+        <meta name="robots" content="{{ $seo->robots }}">
+        @if ($seo->canonical)
+            <link rel="canonical" href="{{ $seo->canonical }}">
+        @endif
+        @if ($seo->googleSiteVerification)
+            <meta name="google-site-verification" content="{{ $seo->googleSiteVerification }}">
+        @endif
+        <meta property="og:locale" content="id_ID">
+        <meta property="og:type" content="{{ $seo->type }}">
+        <meta property="og:site_name" content="{{ $seo->siteName }}">
+        <meta property="og:title" content="{{ $seo->title }}">
+        <meta property="og:description" content="{{ $seo->description }}">
+        @if ($seo->canonical)
+            <meta property="og:url" content="{{ $seo->canonical }}">
+        @endif
+        <meta property="og:image" content="{{ $seo->image }}">
+        <meta property="og:image:alt" content="{{ $seo->imageAlt }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $seo->title }}">
+        <meta name="twitter:description" content="{{ $seo->description }}">
+        <meta name="twitter:image" content="{{ $seo->image }}">
+        <meta name="twitter:image:alt" content="{{ $seo->imageAlt }}">
+        @if ($seo->structuredData !== [])
+            <script type="application/ld+json">{!! json_encode($seo->structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+        @endif
+    @endif
     <link rel="icon" href="{{ $faviconUrl }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -41,7 +72,7 @@
     <header class="site-header">
         <div class="container header-inner" data-public-nav>
             <a class="brand" href="{{ route('home') }}" aria-label="PT Amara Al Medina Travel">
-                <img src="{{ $logoUrl }}" alt="PT Amara Al Medina Travel">
+                <img src="{{ $logoUrl }}" alt="PT Amara Al Medina Travel" width="2048" height="2048" decoding="async">
             </a>
 
             <nav class="site-nav" id="public-navigation" aria-label="Navigasi utama" data-public-nav-menu>
@@ -79,7 +110,7 @@
     <footer class="site-footer">
         <div class="container footer-compact">
             <div class="footer-brand">
-                <img class="footer-logo" src="{{ $logoUrl }}" alt="PT Amara Al Medina Travel">
+                <img class="footer-logo" src="{{ $logoUrl }}" alt="PT Amara Al Medina Travel" width="2048" height="2048" loading="lazy" decoding="async">
                 <p>Perjalanan ibadah umrah yang amanah, nyaman, dan terpercaya bersama tim profesional.</p>
             </div>
             @if ($contact?->address)

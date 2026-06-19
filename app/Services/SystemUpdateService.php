@@ -138,10 +138,11 @@ class SystemUpdateService
     {
         $branch = $this->branch();
         $php = $this->phpBinary();
+        $composer = $this->composerCommand($php);
         $commands = [
             ['git', 'fetch', 'origin', $branch],
             ['git', 'reset', '--hard', "origin/{$branch}"],
-            ['composer', 'install', '--no-dev', '--optimize-autoloader'],
+            [...$composer, 'install', '--no-dev', '--optimize-autoloader'],
             ['npm', 'ci'],
             ['npm', 'run', 'build'],
             [$php, 'artisan', 'migrate', '--force'],
@@ -210,7 +211,7 @@ class SystemUpdateService
 
         try {
             $process->run();
-            $output = trim($this->redactSecrets($process->getOutput() . PHP_EOL . $process->getErrorOutput()));
+            $output = trim($this->redactSecrets($process->getOutput().PHP_EOL.$process->getErrorOutput()));
         } catch (ProcessTimedOutException $exception) {
             $output = $exception->getMessage();
         } finally {
@@ -268,7 +269,7 @@ class SystemUpdateService
             mkdir($directory, 0755, true);
         }
 
-        $path = $directory . '/git-askpass-' . bin2hex(random_bytes(8)) . '.sh';
+        $path = $directory.'/git-askpass-'.bin2hex(random_bytes(8)).'.sh';
         $script = <<<'SH'
 #!/bin/sh
 case "$1" in
@@ -324,6 +325,20 @@ SH;
     }
 
     /**
+     * @return array<int, string>
+     */
+    private function composerCommand(string $php): array
+    {
+        foreach (['/usr/local/bin/composer', '/usr/bin/composer'] as $composer) {
+            if (is_file($composer)) {
+                return [$php, $composer];
+            }
+        }
+
+        return ['composer'];
+    }
+
+    /**
      * @param  array<int, string>  $command
      */
     private function formatCommand(array $command): string
@@ -336,7 +351,7 @@ SH;
 
     private function truncate(string $output): string
     {
-        return mb_strlen($output) > 8000 ? mb_substr($output, 0, 8000) . PHP_EOL . '[output dipotong]' : $output;
+        return mb_strlen($output) > 8000 ? mb_substr($output, 0, 8000).PHP_EOL.'[output dipotong]' : $output;
     }
 
     private function version(): string
@@ -349,6 +364,6 @@ SH;
 
         $path = base_path('VERSION');
 
-        return is_file($path) ? trim((string) file_get_contents($path)) : 'v2026.06.16';
+        return is_file($path) ? trim((string) file_get_contents($path)) : 'v2026.06.19';
     }
 }

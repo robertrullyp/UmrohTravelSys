@@ -14,7 +14,7 @@
     <div class="container package-list">
         @foreach ($packages as $package)
             <article class="package-wide">
-                <img src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}">
+                <img src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}" width="1200" height="900" loading="lazy" decoding="async">
                 <div class="package-content">
                     <h2>{{ $package->name }}</h2>
                     <span class="price">Rp {{ number_format((float) $package->price, 0, ',', '.') }} / Orang</span>

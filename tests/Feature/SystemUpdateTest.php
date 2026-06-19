@@ -30,16 +30,23 @@ class SystemUpdateTest extends TestCase
         $this->actingAs($superAdmin)
             ->get('/admin/settings/system-update')
             ->assertOk()
-            ->assertSee('System Update')
-            ->assertSee('Ringkasan Sistem')
-            ->assertSee('Versi aplikasi')
-            ->assertSee('Rilis terakhir')
-            ->assertSee('Status update')
-            ->assertSee('Catatan Rilis')
-            ->assertSee('Input Token FAT')
+            ->assertSee('Pembaruan Sistem')
+            ->assertSee('Status Saat Ini')
+            ->assertSee('Pembaruan belum diperiksa')
+            ->assertSee('Versi terpasang')
+            ->assertSee('Koneksi pembaruan')
+            ->assertSee('Belum terhubung')
+            ->assertSee('Pembaruan Terakhir')
+            ->assertSee('Cek Pembaruan')
+            ->assertSee('Perbarui Sekarang')
+            ->assertSee('Atur Akses GitHub')
             ->assertSee(config('admin.version'))
-            ->assertSee('Menambahkan sistem booking publik')
-            ->assertSee('https://github.com/robertrullyp/UmrohTravelSys.git');
+            ->assertSee('Website kini lebih siap ditemukan di Google')
+            ->assertDontSee('Detail Update')
+            ->assertDontSee('Commit lokal')
+            ->assertDontSee('Source update')
+            ->assertDontSee('Remote aktif')
+            ->assertDontSee('Output pengecekan remote');
     }
 
     public function test_operational_admin_cannot_open_system_update(): void
@@ -58,7 +65,7 @@ class SystemUpdateTest extends TestCase
 
     public function test_github_fat_is_stored_encrypted_for_system_update(): void
     {
-        $token = 'github_pat_' . str_repeat('a', 48);
+        $token = 'github_pat_'.str_repeat('a', 48);
         $service = app(SystemUpdateService::class);
 
         $service->storeGitHubToken($token);
@@ -80,8 +87,8 @@ class SystemUpdateTest extends TestCase
     {
         $notes = app(SystemUpdateService::class)->latestReleaseNotes();
 
-        $this->assertSame('v2026.06.16', $notes['version']);
-        $this->assertSame('2026-06-16', $notes['date']);
-        $this->assertContains('Menambahkan sistem booking publik lengkap dengan cek status booking dan review admin.', $notes['notes']);
+        $this->assertSame('v2026.06.19', $notes['version']);
+        $this->assertSame('2026-06-19', $notes['date']);
+        $this->assertContains('Website kini lebih siap ditemukan di Google melalui sitemap, canonical, metadata sosial, dan structured data.', $notes['notes']);
     }
 }

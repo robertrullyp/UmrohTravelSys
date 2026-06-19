@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\VisitorLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ReflectionClass;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class VisitorTrackingTest extends TestCase
@@ -47,13 +46,7 @@ class VisitorTrackingTest extends TestCase
 
     public function test_admin_dashboard_contains_visitor_chart(): void
     {
-        $admin = User::query()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.test',
-            'password' => 'password',
-            'is_admin' => true,
-        ]);
-        $admin->syncRoles([Role::findByName('super-admin')]);
+        $admin = User::query()->where('email', config('admin.initial_email'))->firstOrFail();
 
         $this->actingAs($admin)
             ->get('/admin')

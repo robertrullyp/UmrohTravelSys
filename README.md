@@ -1,93 +1,112 @@
 # PT Amara Al Medina Travel
 
-Website profil, booking, dan panel admin untuk PT Amara Al Medina Travel. Aplikasi ini merupakan sistem berbasis Laravel dengan panel admin Filament untuk mengelola konten publik, paket umrah, jadwal, booking, galeri, profil perusahaan, kontak, pengaturan website, dan account management berbasis RBAC.
+Sistem website publik, pemesanan umrah, dan panel administrasi PT Amara Al Medina Travel. Aplikasi menangani konten publik, paket dan jadwal, alur booking dengan kontrol kuota, galeri, kontak, SEO teknis, analitik pengunjung, RBAC, serta pembaruan aplikasi dari repository resmi.
 
-## Stack
+**Versi saat ini:** `v2026.06.19`
 
-- PHP 8.3
-- Laravel 13
-- Filament 5 untuk panel admin `/admin`
-- MySQL/MariaDB
-- Tailwind/Vite untuk asset CSS dan JavaScript
+## Teknologi
 
-## Requirements
+- PHP 8.3 dan Laravel 13.15
+- Filament 5.6 dengan Livewire 4.3 untuk panel `/admin`
+- Spatie Laravel Permission 8 untuk role dan permission
+- MySQL/MariaDB untuk produksi; SQLite in-memory untuk test
+- Tailwind CSS 4.3 dan Vite 8 untuk asset frontend
+- PHPUnit 12 untuk automated test
 
-Minimal dan rekomendasi lingkungan untuk menjalankan proyek ini:
+## Fitur Sistem
 
-- **PHP**: ^8.3 (sesuaikan dengan `composer.json`).
-- **Composer**: versi 2.x.
-- **Node.js**: direkomendasikan Node 18+ (untuk Vite dan build frontend).
-- **npm / pnpm / yarn**: gunakan versi yang sesuai dengan Node (npm 9+ direkomendasikan).
-- **Database**: MySQL atau MariaDB (MySQL 5.7+/8.x atau MariaDB setara).
+### Website publik
 
-PHP extensions yang umumnya diperlukan:
+- Beranda, profil perusahaan, paket umrah, detail paket, jadwal, galeri, kontak, dan booking.
+- Konten hanya mengambil record aktif dan mengikuti urutan yang dikelola admin.
+- Kontak utama dipakai untuk CTA, footer, WhatsApp, telepon, email, peta, dan structured data.
+- Gambar hero diprioritaskan untuk LCP; gambar di bawah fold memakai lazy loading dan dimensi stabil.
+- Tracking pengunjung mencatat tanggal, path, route, serta hash IP/user-agent. IP dan user-agent mentah tidak disimpan.
 
-- `ctype`
-- `fileinfo`
-- `json`
-- `mbstring`
-- `openssl`
-- `pdo` dan driver database (`pdo_mysql` untuk MySQL/MariaDB)
-- `tokenizer`
-- `xml`
-- `zip` (disarankan untuk installer dan beberapa paket Composer)
+### Booking dan kuota
 
-Opsional (bergantung fitur yang dipakai):
+- Pengunjung memilih paket serta jadwal aktif, mendatang, dan masih memiliki kuota.
+- Input divalidasi ulang di server; submit dan lookup dilindungi rate limit.
+- Booking baru berstatus `pending` dan memperoleh nomor booking serta public token acak 48 karakter.
+- Status dapat dicari dengan nomor booking dan WhatsApp. Pesan gagal dibuat generik untuk mengurangi enumerasi data.
+- Halaman status mem-mask nomor WhatsApp/email dan tidak boleh diindeks mesin pencari.
+- Approval mengunci booking dan jadwal dalam transaksi database sebelum mengurangi kuota.
+- Reject tidak mengurangi kuota. Cancel booking approved mengembalikan kuota tepat satu kali.
+- Status jadwal otomatis menjadi `Tersedia`, `Hampir Penuh`, atau `Penuh` sesuai sisa kuota.
 
-- `gd` untuk crop/resize/kompres upload logo dan favicon dari Website Settings
-- `imagick` bila dibutuhkan oleh ekstensi lain, tetapi optimizer bawaan memakai GD
-- `exif` jika aplikasi memproses metadata gambar
-- `curl` jika ada panggilan HTTP menggunakan ekstensi ini
+### Panel admin
 
-Perangkat lunak/system tools:
+- Dashboard ringkas, statistik konten, booking menunggu review, dan grafik pengunjung.
+- CRUD paket, jadwal, galeri, profil perusahaan, kontak, booking, user, role, dan permission.
+- Review booking: approve, reject, cancel, catatan admin, alasan penolakan, dan audit reviewer/waktu.
+- Website Settings untuk logo, favicon, hero, CTA WhatsApp, metadata SEO global, serta metadata setiap halaman.
+- Metadata SEO paket dapat diatur per paket, termasuk social image dan pilihan indexable.
+- My Account untuk nama, email, avatar, password, mode tampilan, dan logout terkonfirmasi.
+- Pembaruan Sistem untuk cek versi, mengatur akses GitHub, dan menjalankan update terkontrol.
 
-- `git` (untuk kontrol versi dan workflow deploy)
-- `unzip` (dibutuhkan Composer pada beberapa lingkungan)
-- PHP-FPM (untuk deployment) atau built-in PHP server untuk pengujian
+### SEO dan Google Search
 
-Contoh cara memeriksa versi dasar:
+- Server-rendered title, description, canonical, robots, Open Graph, dan Twitter Card.
+- JSON-LD `TravelAgency`, `WebSite`, `BreadcrumbList`, serta `Product`/`Offer` pada detail paket.
+- Sitemap dinamis di `/sitemap.xml`; `robots.txt` menunjuk sitemap produksi.
+- HTTP, host, dan trailing slash dinormalisasi ke URL pada `APP_URL` saat production.
+- Halaman publik utama dan `/booking` indexable.
+- Form booking paket memakai `noindex,follow`.
+- Status booking dan seluruh admin memakai `noindex,nofollow,nosnippet` serta `X-Robots-Tag`.
+- Verifikasi Search Console dapat disimpan dari Website Settings. Aktivasi property dan submit sitemap tetap dilakukan di Google Search Console.
+
+## Role dan Permission
+
+- `super-admin`: seluruh resource, account management, permission, dan system update.
+- `admin`: operasional konten dan booking; tidak memperoleh akses user/role/permission/system update.
+- User lain hanya dapat membuka panel jika memiliki `panel.access`.
+- Resource memakai permission `{resource}.{view|create|update|delete}`.
+- Aksi khusus booking: `bookings.approve`, `bookings.reject`, `bookings.cancel`.
+- Aksi update: `updates.view`, `updates.run`.
+
+Daftar permission didefinisikan di `app/Support/AdminPermissions.php` dan disinkronkan oleh seeder.
+
+## Struktur Penting
+
+```text
+app/Filament/              panel admin, resource, page, dan widget
+app/Http/Controllers/      halaman publik, booking, dan sitemap
+app/Http/Middleware/       canonical redirect, security header, noindex, tracking
+app/Services/              booking status, SEO, image optimizer, system update
+app/Support/               daftar permission dan data SEO
+database/migrations/       schema dan perubahan database
+resources/views/public/    halaman publik Blade
+resources/views/filament/  view custom panel admin
+tests/Feature/             coverage workflow publik, admin, RBAC, SEO, dan update
+docs/webserver/            contoh konfigurasi Apache/Nginx
+```
+
+## Kebutuhan Server
+
+- PHP `^8.3` untuk CLI dan PHP-FPM.
+- Composer 2.x.
+- Node.js `^20.19.0` atau `>=22.12.0` dan npm yang kompatibel.
+- MySQL 8/MariaDB setara.
+- Git dan unzip.
+- Extension PHP: `ctype`, `curl`, `dom`, `fileinfo`, `gd`, `intl`, `json`, `mbstring`, `openssl`, `pdo_mysql`, `tokenizer`, `xml`, `xmlreader`, `xmlwriter`, dan `zip`.
+
+Server ini memiliki lebih dari satu binary PHP. Gunakan `/usr/bin/php8.3` untuk Artisan, Composer, Pint, dan PHPUnit karena binary `php` default tidak memuat semua extension yang diperlukan.
+
+Pemeriksaan platform:
 
 ```bash
-php -v
-composer --version
+/usr/bin/php8.3 -m
+/usr/bin/php8.3 /usr/local/bin/composer check-platform-reqs --no-dev
 node -v
 npm -v
-mysql --version
 ```
-
-## Akses Lokal
-
-Untuk pengujian lokal, jalankan aplikasi di server development (mis. Valet, Docker, atau built-in PHP server) atau gunakan vhost lokal yang memetakan host ke `127.0.0.1`.
-
-Contoh pengecekan endpoint lokal menggunakan header Host:
-
-```bash
-curl -H 'Host: lulu.kapul.my.id' http://127.0.0.1/
-curl -H 'Host: lulu.kapul.my.id' http://127.0.0.1/admin/login
-```
-
-Untuk akses melalui browser, tambahkan entri pada file `hosts` jika Anda memakai host custom, atau akses langsung pada alamat yang dikonfigurasi oleh environment Anda.
-
-## Struktur Asset
-
-- `public/images/site/` berisi asset default aktif: `logo.png` dan `beranda-img.jpg`.
-- `public/images/site/uploads/` berisi upload runtime dari Website Settings dan tidak masuk git.
-- `public/images/seed/` berisi gambar fallback dan referensi seed.
-- Upload konten lain dari admin disimpan di disk `public` Laravel dan diakses melalui symlink `public/storage`.
-
-## Versioning dan Changelog
-
-- Versi aplikasi aktif dicatat di `VERSION` dan dibaca juga dari `APP_VERSION` bila environment mengaturnya.
-- Catatan perubahan dicatat di `CHANGELOG.md` dengan format per versi, misalnya `## [v2026.06.16] - 2026-06-16`.
-- Halaman admin `Settings > System Update` menampilkan versi, commit lokal, status token update, dan ringkasan catatan rilis terbaru dari `CHANGELOG.md`.
-- Saat membuat rilis baru, update `VERSION`, tambahkan section baru paling atas di `CHANGELOG.md`, commit, lalu tag versi rilis.
 
 ## Setup
 
 ```bash
-composer install
-npm install
 cp .env.example .env
+/usr/bin/php8.3 /usr/local/bin/composer install
+npm ci
 /usr/bin/php8.3 artisan key:generate
 /usr/bin/php8.3 artisan migrate --seed
 /usr/bin/php8.3 artisan storage:link
@@ -96,93 +115,104 @@ npm run build
 /usr/bin/php8.3 artisan filament:optimize
 ```
 
-Seeder admin awal membaca environment berikut bila tersedia:
+Sebelum `migrate --seed`, isi credential admin awal. Seeder akan berhenti jika salah satunya kosong:
 
 ```env
-ADMIN_INITIAL_EMAIL=
-ADMIN_INITIAL_PASSWORD=
-APP_VERSION=v2026.06.16
+ADMIN_INITIAL_NAME=Admin
+ADMIN_INITIAL_EMAIL=admin@example.com
+ADMIN_INITIAL_PASSWORD=gunakan-password-kuat
+```
+
+Jangan commit `.env`, credential database, password admin, token GitHub, atau secret lainnya.
+
+## Environment Penting
+
+```env
+APP_NAME="PT Amara Al Medina Travel"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://lulu.kapul.my.id
+APP_LOCALE=id
+APP_VERSION=v2026.06.19
+
+SEO_CANONICAL_REDIRECT=true
 APP_UPDATE_REPOSITORY=https://github.com/robertrullyp/UmrohTravelSys.git
 APP_UPDATE_BRANCH=main
+
+FILESYSTEM_PUBLIC_URL=/storage
+SITE_PUBLIC_URL=
 ```
 
-Disk upload publik memakai URL relatif `/storage` secara default. Jika perlu override, gunakan `FILESYSTEM_PUBLIC_URL`.
-Disk `site_public` untuk Website Settings memakai URL relatif secara default agar aman pada HTTP/HTTPS; jika perlu override, gunakan `SITE_PUBLIC_URL`.
+- `APP_URL` adalah sumber canonical, sitemap, social image, dan redirect HTTPS.
+- `APP_VERSION` harus sama dengan file `VERSION` dan versi terbaru di `CHANGELOG.md`.
+- Upload konten memakai disk `public` dan symlink `/storage`.
+- Upload branding/SEO dari Website Settings memakai disk `site_public` di `public/images/site/uploads`.
 
-Jangan simpan credential database, password admin, atau secret `.env` di repository.
+## Deployment
 
-## Deployment (vhost / server)
+Document root harus diarahkan ke direktori `public/`. Contoh tersedia di:
 
-- **Rekomendasi utama**: document root harus diarahkan ke `public/`.
-- `public/index.php` tetap front controller Laravel utama. File `index.php` di root hanya shim kompatibilitas untuk hosting yang tidak bisa mengarah ke `public/`.
-- Aktifkan rewrite Laravel sehingga semua permintaan diarahkan ke `public/index.php`.
-- Gunakan PHP-FPM 8.3 (atau versi yang kompatibel).
-- Pastikan `storage/` dan `bootstrap/cache/` writable oleh user web server.
-- Jalankan `php artisan storage:link` setelah deploy.
-- Pastikan asset Livewire dan route publik dapat diakses dari server produksi.
-- Contoh konfigurasi webserver tersedia di:
-  - `docs/webserver/apache-vhost.conf.example`
-  - `docs/webserver/nginx.conf.example`
-  - `docs/webserver/apache-root-fallback.md`
+- `docs/webserver/nginx.conf.example`
+- `docs/webserver/apache-vhost.conf.example`
+- `docs/webserver/apache-root-fallback.md`
 
-### Apache
+Checklist deployment:
 
-Gunakan vhost dengan `DocumentRoot /www/wwwroot/lulu.kapul.my.id/public` dan `AllowOverride All` pada folder `public/` agar `public/.htaccess` aktif. Contoh lengkap ada di `docs/webserver/apache-vhost.conf.example`.
+1. Set `APP_ENV=production`, `APP_DEBUG=false`, dan `APP_URL` HTTPS.
+2. Pastikan PHP-FPM serta CLI memakai PHP 8.3 dengan extension yang sama.
+3. Pastikan `storage/` dan `bootstrap/cache/` writable oleh user web server.
+4. Jalankan Composer menggunakan `/usr/bin/php8.3`.
+5. Jalankan migration, build asset, `storage:link`, `optimize`, dan `filament:optimize`.
+6. Pastikan `/`, `/admin/login`, `/sitemap.xml`, `/robots.txt`, dan `/up` dapat diakses sesuai fungsinya.
+7. Pastikan HTTP merespons `301` ke HTTPS dan file seperti `.env`/`composer.json` tidak dapat diakses publik.
 
-Jika control panel tidak mengizinkan document root ke `public/`, root `.htaccess` dan root `index.php` di repo ini menyediakan fallback Apache yang memblokir file/folder sensitif dan meneruskan request ke `public/`. Template fallback juga tersedia sebagai `.htaccess.example` di root. Fallback ini tetap opsi kedua; gunakan vhost `public/` bila memungkinkan.
+Security header `X-Content-Type-Options`, `X-Frame-Options`, dan `Referrer-Policy` dipasang oleh aplikasi. HSTS tetap dikonfigurasi di web server TLS.
 
-### Nginx
+Queue memakai driver database, tetapi saat ini tidak ada workflow wajib yang bergantung pada worker queue. Tidak ada scheduled task yang terdaftar.
 
-Nginx tidak membaca `.htaccess`, jadi jangan mengandalkan root fallback untuk Nginx. Arahkan `root` langsung ke:
+## System Update
 
-```nginx
-root /www/wwwroot/lulu.kapul.my.id/public;
-try_files $uri $uri/ /index.php?$query_string;
-```
+Halaman `/admin/settings/system-update` hanya tersedia untuk user dengan `updates.view`; eksekusi update membutuhkan `updates.run`.
 
-Contoh lengkap ada di `docs/webserver/nginx.conf.example`. Sesuaikan `fastcgi_pass` dengan socket/port PHP-FPM server.
+Untuk repository privat, simpan Fine-grained GitHub token dengan akses minimal `Contents: Read-only`. Token dienkripsi di database, diteruskan melalui temporary `GIT_ASKPASS`, disensor dari output, lalu file sementara dihapus.
 
-## Admin
+Urutan update:
 
-Panel admin tersedia di:
+1. `git fetch origin <branch>`
+2. `git reset --hard origin/<branch>`
+3. Composer install production melalui PHP 8.3
+4. `npm ci` dan build asset
+5. Migration database
+6. Cache Laravel dan Filament
 
-```text
-/admin/login
-```
+Peringatan operasional:
 
-Akses panel dibatasi oleh RBAC (`panel.access`) menggunakan `spatie/laravel-permission`. Seeder memberi `ADMIN_INITIAL_EMAIL` role `super-admin`, sehingga akun awal dapat mengelola konten, booking, Website Settings, Users, Roles, dan Permissions.
+- Update melakukan hard reset. Commit dan push seluruh perubahan sebelum menjalankannya.
+- Buat backup database dan file upload sebelum update besar.
+- Update berhenti pada command pertama yang gagal dan belum memiliki rollback otomatis.
+- Jalankan hanya dari repository/branch resmi dengan worktree bersih.
 
-Dashboard menampilkan ringkasan booking dan grafik pengunjung dengan filter rentang waktu. Tracking hanya berjalan untuk route publik dan menyimpan hash IP/user-agent, bukan IP mentah.
-
-Pengaturan website berada di:
-
-```text
-/admin/settings/website
-```
-
-Halaman ini menyediakan upload logo, favicon, gambar hero beranda, teks hero, dan nomor WhatsApp CTA. Route lama `/admin/site-settings` diarahkan ke halaman ini untuk kompatibilitas.
-
-Logo dan favicon yang diupload melalui Website Settings otomatis dibatasi ukurannya dan dikompresi dengan GD sebelum path disimpan ke `site_settings`.
-
-Update sistem tersedia untuk `super-admin` di:
-
-```text
-/admin/settings/system-update
-```
-
-Halaman ini menampilkan versi aplikasi, branch, commit, remote aktif, dan menyediakan pengecekan remote serta tombol update dari `APP_UPDATE_REPOSITORY`. Untuk repository private, simpan Fine-grained personal access token GitHub melalui tombol `Input Token FAT` di halaman ini. Permission minimal token: repository terpilih `robertrullyp/UmrohTravelSys` dengan `Contents: Read-only`. Token disimpan terenkripsi di database dan dipakai lewat Git askpass sementara, bukan disisipkan ke URL remote.
-
-Tombol update menjalankan `git fetch`, reset ke branch update, install dependency, build frontend, migrasi, dan optimize cache. Gunakan hanya setelah repository server sudah mengarah ke remote resmi.
-
-## Test dan Build
-
-Jalankan test dan build seperti biasa untuk proyek Laravel + frontend:
+## Test, Format, dan Audit
 
 ```bash
-php artisan test
+/usr/bin/php8.3 artisan test
+/usr/bin/php8.3 vendor/bin/pint --test
+/usr/bin/php8.3 /usr/local/bin/composer validate --no-check-publish
+/usr/bin/php8.3 /usr/local/bin/composer audit --locked
+npm audit --audit-level=low
 npm run build
-php artisan optimize
-php artisan filament:optimize
 ```
 
-Untuk smoke-check lokal, panggil endpoint publik yang relevan menggunakan host atau alamat yang sesuai dengan konfigurasi lokal Anda.
+Audit sistem terbaru tersedia di `docs/SYSTEM_AUDIT.md`.
+
+## Versioning dan Rilis
+
+Versi memakai format `vYYYY.MM.DD`.
+
+Untuk membuat rilis:
+
+1. Pastikan test, audit dependency, dan build lulus.
+2. Perbarui `VERSION`, fallback `config/admin.php`, `.env.example`, dan `APP_VERSION` produksi.
+3. Tambahkan section paling atas di `CHANGELOG.md` dengan bahasa yang dapat dipahami admin.
+4. Commit seluruh perubahan, buat tag yang sama dengan versi, lalu push ke repository resmi.
+5. Setelah deploy, periksa halaman publik, booking, sitemap, security header, dan panel admin.

@@ -12,10 +12,11 @@ use App\Models\User;
 use App\Support\AdminPermissions;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\PermissionRegistrar;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
+use RuntimeException;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -26,11 +27,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $adminEmail = trim((string) config('admin.initial_email'));
+        $adminPassword = (string) config('admin.initial_password');
+
+        if ($adminEmail === '' || $adminPassword === '') {
+            throw new RuntimeException('ADMIN_INITIAL_EMAIL dan ADMIN_INITIAL_PASSWORD wajib diisi sebelum menjalankan seeder.');
+        }
+
         $admin = User::query()->updateOrCreate(
-            ['email' => config('admin.initial_email', 'admin@example.com')],
+            ['email' => $adminEmail],
             [
                 'name' => config('admin.initial_name', 'Admin'),
-                'password' => config('admin.initial_password', 'rahasia'),
+                'password' => $adminPassword,
                 'is_admin' => true,
             ],
         );
@@ -203,6 +211,32 @@ class DatabaseSeeder extends Seeder
             'hero_title' => 'Nyaman, Aman & Terpercaya',
             'hero_subtitle' => 'PT. Amara Al Medina Travel siap menjadi mitra perjalanan ibadah terbaik Anda dengan pelayanan profesional dan amanah.',
             'cta_whatsapp' => '082252239507',
+            'seo_site_name' => 'PT Amara Al Medina Travel',
+            'seo_default_title' => 'PT Amara Al Medina Travel - Travel Umrah Terpercaya',
+            'seo_default_description' => 'Informasi paket umrah, jadwal keberangkatan, galeri, profil, dan kontak PT Amara Al Medina Travel.',
+            'seo_default_image_path' => 'images/site/beranda-img.jpg',
+            'google_site_verification' => '',
+            'seo_home_title' => 'PT Amara Al Medina Travel - Travel Umrah Terpercaya',
+            'seo_home_description' => 'Paket dan jadwal umrah bersama PT Amara Al Medina Travel dengan pelayanan profesional dan amanah.',
+            'seo_home_image_path' => '',
+            'seo_profile_title' => 'Profil - PT Amara Al Medina Travel',
+            'seo_profile_description' => 'Profil, visi, misi, dan komitmen pelayanan PT Amara Al Medina Travel.',
+            'seo_profile_image_path' => '',
+            'seo_packages_title' => 'Paket Umrah - PT Amara Al Medina Travel',
+            'seo_packages_description' => 'Pilihan paket umrah dengan fasilitas, harga, dan jadwal keberangkatan yang jelas.',
+            'seo_packages_image_path' => '',
+            'seo_schedules_title' => 'Jadwal Keberangkatan - PT Amara Al Medina Travel',
+            'seo_schedules_description' => 'Jadwal keberangkatan dan ketersediaan kuota paket umrah PT Amara Al Medina Travel.',
+            'seo_schedules_image_path' => '',
+            'seo_galleries_title' => 'Galeri Kegiatan - PT Amara Al Medina Travel',
+            'seo_galleries_description' => 'Dokumentasi kegiatan jamaah bersama PT Amara Al Medina Travel.',
+            'seo_galleries_image_path' => '',
+            'seo_contact_title' => 'Kontak - PT Amara Al Medina Travel',
+            'seo_contact_description' => 'Alamat, WhatsApp, email, dan lokasi PT Amara Al Medina Travel.',
+            'seo_contact_image_path' => '',
+            'seo_booking_title' => 'Booking Umrah - PT Amara Al Medina Travel',
+            'seo_booking_description' => 'Ajukan booking paket umrah PT Amara Al Medina Travel secara online.',
+            'seo_booking_image_path' => '',
         ];
 
         foreach ($settings as $key => $value) {

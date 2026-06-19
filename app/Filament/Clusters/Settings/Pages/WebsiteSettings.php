@@ -8,8 +8,8 @@ use App\Services\SiteImageOptimizer;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -23,10 +23,15 @@ use Filament\Support\Icons\Heroicon;
 class WebsiteSettings extends Page
 {
     protected static ?string $cluster = Settings::class;
+
     protected static ?string $slug = 'website';
+
     protected static ?string $title = 'Website Settings';
+
     protected static ?string $navigationLabel = 'Website Settings';
+
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedPaintBrush;
+
     protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.clusters.settings.pages.website-settings';
@@ -135,6 +140,47 @@ class WebsiteSettings extends Page
                             ->maxLength(32)
                             ->regex('/^[0-9+()\s-]{8,32}$/'),
                     ]),
+                Section::make('SEO Global')
+                    ->description('Fallback metadata, social preview, dan verifikasi Google Search Console.')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('seo_site_name')
+                            ->label('Nama Situs')
+                            ->required()
+                            ->maxLength(70),
+                        TextInput::make('seo_default_title')
+                            ->label('Judul Default')
+                            ->required()
+                            ->maxLength(70),
+                        Textarea::make('seo_default_description')
+                            ->label('Deskripsi Default')
+                            ->required()
+                            ->rows(3)
+                            ->maxLength(170)
+                            ->columnSpanFull(),
+                        FileUpload::make('seo_default_image_path')
+                            ->label('Social Preview Default')
+                            ->helperText('Disarankan 1200x630. Gambar ini menjadi fallback Open Graph dan Twitter Card.')
+                            ->disk('site_public')
+                            ->directory('images/site/uploads')
+                            ->image()
+                            ->imageEditor()
+                            ->imageCropAspectRatio('1200:630')
+                            ->orientImagesFromExif()
+                            ->automaticallyResizeImagesMode('cover')
+                            ->automaticallyResizeImagesToWidth('1200')
+                            ->automaticallyResizeImagesToHeight('630')
+                            ->imageResizeUpscale(false)
+                            ->maxSize(4096)
+                            ->columnSpanFull(),
+                        TextInput::make('google_site_verification')
+                            ->label('Google Site Verification')
+                            ->helperText('Isi hanya token content dari meta tag Google Search Console, bukan seluruh tag HTML.')
+                            ->maxLength(255)
+                            ->regex('/^[A-Za-z0-9_-]+$/')
+                            ->columnSpanFull(),
+                    ]),
+                ...$this->seoPageSections(),
                 Section::make('Advanced')
                     ->description('Nilai teknis key-value. Hanya gunakan jika perlu troubleshooting.')
                     ->collapsed()
@@ -185,7 +231,7 @@ class WebsiteSettings extends Page
         $data = $this->form->getState();
 
         foreach ($this->settingsKeys() as $key) {
-            $value = $this->normalizeSettingValue($data[$key] ?? null);
+            $value = $this->normalizeSettingValue($data[$key] ?? null, $key);
 
             if ($value === '' && $this->isAssetSetting($key)) {
                 $value = SiteSetting::getValue($key, $this->settingDefaults()[$key]);
@@ -212,7 +258,7 @@ class WebsiteSettings extends Page
      */
     private function settingsState(): array
     {
-        return [
+        $state = [
             'brand_logo_path' => SiteSetting::getValue('brand_logo_path', 'images/site/logo.png'),
             'favicon_path' => SiteSetting::getValue('favicon_path', 'images/site/logo.png'),
             'hero_image_path' => SiteSetting::getValue('hero_image_path', 'images/site/beranda-img.jpg'),
@@ -221,6 +267,12 @@ class WebsiteSettings extends Page
             'hero_subtitle' => SiteSetting::getValue('hero_subtitle', 'PT. Amara Al Medina Travel siap menjadi mitra perjalanan ibadah terbaik Anda dengan pelayanan profesional dan amanah.'),
             'cta_whatsapp' => SiteSetting::getValue('cta_whatsapp', '082252239507'),
         ];
+
+        foreach ($this->seoSettingDefaults() as $key => $default) {
+            $state[$key] = SiteSetting::getValue($key, $default);
+        }
+
+        return $state;
     }
 
     /**
@@ -253,16 +305,23 @@ class WebsiteSettings extends Page
             'hero_title',
             'hero_subtitle',
             'cta_whatsapp',
+            ...array_keys($this->seoSettingDefaults()),
         ];
     }
 
-    private function normalizeSettingValue(mixed $value): string
+    private function normalizeSettingValue(mixed $value, ?string $key = null): string
     {
         if (is_array($value)) {
             $value = reset($value);
         }
 
-        return trim((string) $value);
+        $value = (string) $value;
+
+        if ($key === 'google_site_verification' || ($key !== null && str_starts_with($key, 'seo_') && ! str_ends_with($key, '_path'))) {
+            $value = strip_tags($value);
+        }
+
+        return trim($value);
     }
 
     private function optimizeUploadedAsset(string $key, string $value): void
@@ -270,7 +329,8 @@ class WebsiteSettings extends Page
         $profile = match ($key) {
             'brand_logo_path' => 'logo',
             'favicon_path' => 'favicon',
-            default => null,
+            'seo_default_image_path' => 'social',
+            default => str_starts_with($key, 'seo_') && str_ends_with($key, '_image_path') ? 'social' : null,
         };
 
         if (! $profile || $value === '') {
@@ -282,6 +342,86 @@ class WebsiteSettings extends Page
 
     private function displaySettingValue(string $key): string
     {
-        return $this->normalizeSettingValue(data_get($this->data, $key));
+        return $this->normalizeSettingValue(data_get($this->data, $key), $key);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function seoSettingDefaults(): array
+    {
+        $defaults = [
+            'seo_site_name' => 'PT Amara Al Medina Travel',
+            'seo_default_title' => 'PT Amara Al Medina Travel - Travel Umrah Terpercaya',
+            'seo_default_description' => 'Informasi paket umrah, jadwal keberangkatan, galeri, profil, dan kontak PT Amara Al Medina Travel.',
+            'seo_default_image_path' => 'images/site/beranda-img.jpg',
+            'google_site_verification' => '',
+        ];
+
+        foreach ($this->seoPageDefaults() as $page => $pageDefaults) {
+            $defaults["seo_{$page}_title"] = $pageDefaults['title'];
+            $defaults["seo_{$page}_description"] = $pageDefaults['description'];
+            $defaults["seo_{$page}_image_path"] = '';
+        }
+
+        return $defaults;
+    }
+
+    /**
+     * @return array<string, array{title: string, description: string}>
+     */
+    private function seoPageDefaults(): array
+    {
+        return [
+            'home' => ['title' => 'PT Amara Al Medina Travel - Travel Umrah Terpercaya', 'description' => 'Paket dan jadwal umrah bersama PT Amara Al Medina Travel dengan pelayanan profesional dan amanah.'],
+            'profile' => ['title' => 'Profil - PT Amara Al Medina Travel', 'description' => 'Profil, visi, misi, dan komitmen pelayanan PT Amara Al Medina Travel.'],
+            'packages' => ['title' => 'Paket Umrah - PT Amara Al Medina Travel', 'description' => 'Pilihan paket umrah dengan fasilitas, harga, dan jadwal keberangkatan yang jelas.'],
+            'schedules' => ['title' => 'Jadwal Keberangkatan - PT Amara Al Medina Travel', 'description' => 'Jadwal keberangkatan dan ketersediaan kuota paket umrah PT Amara Al Medina Travel.'],
+            'galleries' => ['title' => 'Galeri Kegiatan - PT Amara Al Medina Travel', 'description' => 'Dokumentasi kegiatan jamaah bersama PT Amara Al Medina Travel.'],
+            'contact' => ['title' => 'Kontak - PT Amara Al Medina Travel', 'description' => 'Alamat, WhatsApp, email, dan lokasi PT Amara Al Medina Travel.'],
+            'booking' => ['title' => 'Booking Umrah - PT Amara Al Medina Travel', 'description' => 'Ajukan booking paket umrah PT Amara Al Medina Travel secara online.'],
+        ];
+    }
+
+    /**
+     * @return array<int, Section>
+     */
+    private function seoPageSections(): array
+    {
+        return collect(SiteSetting::SEO_PAGES)
+            ->map(function (string $label, string $page): Section {
+                return Section::make('SEO - '.$label)
+                    ->description('Metadata khusus halaman '.strtolower($label).'.')
+                    ->collapsed($page !== 'home')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make("seo_{$page}_title")
+                            ->label('SEO Title')
+                            ->required()
+                            ->maxLength(70),
+                        Textarea::make("seo_{$page}_description")
+                            ->label('Meta Description')
+                            ->required()
+                            ->rows(3)
+                            ->maxLength(170),
+                        FileUpload::make("seo_{$page}_image_path")
+                            ->label('Social Preview Image')
+                            ->helperText('Opsional. Jika kosong, social preview default digunakan.')
+                            ->disk('site_public')
+                            ->directory('images/site/uploads')
+                            ->image()
+                            ->imageEditor()
+                            ->imageCropAspectRatio('1200:630')
+                            ->orientImagesFromExif()
+                            ->automaticallyResizeImagesMode('cover')
+                            ->automaticallyResizeImagesToWidth('1200')
+                            ->automaticallyResizeImagesToHeight('630')
+                            ->imageResizeUpscale(false)
+                            ->maxSize(4096)
+                            ->columnSpanFull(),
+                    ]);
+            })
+            ->values()
+            ->all();
     }
 }

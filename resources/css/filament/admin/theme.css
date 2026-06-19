@@ -1,4 +1,27 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+@source '../../../../app/Filament/**/*.php';
+@source '../../../../resources/views/filament/**/*.blade.php';
+
+.system-update-status-icon {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    flex: 0 0 1.5rem;
+}
+
+.system-update-list-icon {
+    width: 1rem !important;
+    height: 1rem !important;
+    margin-top: 0.25rem;
+    flex: 0 0 1rem;
+}
+
+.system-update-status-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: 0 0 0.5rem;
+    border-radius: 9999px;
+}
 
 .fi-simple-layout {
     min-height: 100svh;

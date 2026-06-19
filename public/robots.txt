@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://lulu.kapul.my.id/sitemap.xml

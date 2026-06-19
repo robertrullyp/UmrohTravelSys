@@ -1,177 +1,150 @@
 @php
     $status = $lastCheck['status'] ?? null;
+    $tokenConfigured = $info['github_token']['configured'] ?? false;
     $statusLabel = match ($status) {
-        'up_to_date' => 'Sudah terbaru',
-        'update_available' => 'Update tersedia',
-        'remote_empty_or_unreachable' => 'Tidak dapat dicek',
-        default => 'Belum dicek',
+        'up_to_date' => 'Aplikasi sudah menggunakan versi terbaru',
+        'update_available' => 'Pembaruan baru tersedia',
+        'remote_empty_or_unreachable' => $tokenConfigured ? 'Pembaruan belum dapat diperiksa' : 'Akses pembaruan belum diatur',
+        default => 'Pembaruan belum diperiksa',
     };
-    $statusClass = match ($status) {
-        'up_to_date' => 'bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-300',
-        'update_available' => 'bg-warning-50 text-warning-700 dark:bg-warning-500/10 dark:text-warning-300',
-        'remote_empty_or_unreachable' => 'bg-danger-50 text-danger-700 dark:bg-danger-500/10 dark:text-danger-300',
-        default => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+    $statusDescription = match ($status) {
+        'up_to_date' => 'Tidak ada tindakan yang perlu dilakukan saat ini.',
+        'update_available' => 'Klik Perbarui Sekarang untuk memasang versi terbaru.',
+        'remote_empty_or_unreachable' => $tokenConfigured
+            ? 'Sistem belum dapat terhubung ke GitHub. Coba cek kembali beberapa saat lagi.'
+            : 'Klik Atur Akses GitHub, simpan token akses, lalu cek pembaruan kembali.',
+        default => $tokenConfigured
+            ? 'Klik Cek Pembaruan untuk memastikan aplikasi menggunakan versi terbaru.'
+            : 'Atur akses GitHub terlebih dahulu agar sistem dapat mencari pembaruan.',
     };
+    $statusPanelClass = match ($status) {
+        'up_to_date' => 'border-success-200 bg-success-50 dark:border-success-500/30 dark:bg-success-500/10',
+        'update_available' => 'border-warning-200 bg-warning-50 dark:border-warning-500/30 dark:bg-warning-500/10',
+        'remote_empty_or_unreachable' => 'border-danger-200 bg-danger-50 dark:border-danger-500/30 dark:bg-danger-500/10',
+        default => 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/60',
+    };
+    $statusTextClass = match ($status) {
+        'up_to_date' => 'text-success-700 dark:text-success-300',
+        'update_available' => 'text-warning-700 dark:text-warning-300',
+        'remote_empty_or_unreachable' => 'text-danger-700 dark:text-danger-300',
+        default => 'text-gray-700 dark:text-gray-200',
+    };
+    $formatDate = static function (?string $value, bool $withTime = false): ?string {
+        if (blank($value)) {
+            return null;
+        }
+
+        try {
+            return \Carbon\Carbon::parse($value)
+                ->locale('id')
+                ->translatedFormat($withTime ? 'd M Y, H.i' : 'd F Y');
+        } catch (\Throwable) {
+            return $value;
+        }
+    };
+    $checkedAt = $formatDate($lastCheck['checked_at'] ?? null, true);
     $releaseVersion = $releaseNotes['version'] ?? ($info['version'] ?? '-');
-    $releaseDate = $releaseNotes['date'] ?? null;
-    $localCommit = $info['commit'] ?? '-';
-    $remoteHash = $lastCheck['remote_hash'] ?? null;
-    $remoteShort = $remoteHash ? substr((string) $remoteHash, 0, 7) : '-';
+    $releaseDate = $formatDate($releaseNotes['date'] ?? null);
 @endphp
 
 <x-filament-panels::page>
     <x-filament::section>
         <x-slot name="heading">
-            Ringkasan Sistem
+            Status Saat Ini
         </x-slot>
 
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Versi aplikasi</div>
-                <div class="mt-1 text-base font-extrabold text-gray-950 dark:text-white">{{ $info['version'] ?? '-' }}</div>
-            </div>
+        <div class="rounded-lg border p-4 {{ $statusPanelClass }}">
+            <div class="flex items-start gap-3">
+                @switch($status)
+                    @case('up_to_date')
+                        <x-heroicon-o-check-circle class="system-update-status-icon text-success-600 dark:text-success-400" />
+                        @break
+                    @case('update_available')
+                        <x-heroicon-o-arrow-down-circle class="system-update-status-icon text-warning-600 dark:text-warning-400" />
+                        @break
+                    @case('remote_empty_or_unreachable')
+                        <x-heroicon-o-exclamation-triangle class="system-update-status-icon text-danger-600 dark:text-danger-400" />
+                        @break
+                    @default
+                        <x-heroicon-o-information-circle class="system-update-status-icon text-gray-500 dark:text-gray-400" />
+                @endswitch
 
-            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Rilis terakhir</div>
-                <div class="mt-1 text-sm font-extrabold text-gray-950 dark:text-white">{{ $releaseVersion }}</div>
-                @if ($releaseDate)
-                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $releaseDate }}</div>
-                @endif
-            </div>
-
-            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Commit lokal</div>
-                <div class="mt-1 font-mono text-sm font-bold text-gray-950 dark:text-white">{{ ($info['branch'] ?? '-') . '@' . $localCommit }}</div>
-                @if ($remoteShort !== '-')
-                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">Remote: <span class="font-mono">{{ $remoteShort }}</span></div>
-                @endif
-            </div>
-
-            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Source update</div>
-                <div class="mt-1 text-sm font-bold text-gray-950 dark:text-white">{{ $info['source_branch'] ?? 'main' }}</div>
-                <div class="mt-1 truncate text-xs text-gray-500 dark:text-gray-400">{{ $info['source_repository'] ?? '-' }}</div>
-            </div>
-
-            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Token FAT</div>
-                <div class="mt-1">
-                    @if ($info['github_token']['configured'] ?? false)
-                        <span class="rounded-md bg-success-50 px-2 py-1 text-xs font-bold text-success-700 dark:bg-success-500/10 dark:text-success-300">
-                            Tersimpan
-                        </span>
-                    @else
-                        <span class="rounded-md bg-warning-50 px-2 py-1 text-xs font-bold text-warning-700 dark:bg-warning-500/10 dark:text-warning-300">
-                            Belum ada
-                        </span>
+                <div class="min-w-0">
+                    <p class="font-bold {{ $statusTextClass }}">{{ $statusLabel }}</p>
+                    <p class="mt-1 text-sm leading-6 text-gray-700 dark:text-gray-300">{{ $statusDescription }}</p>
+                    @if ($checkedAt)
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Diperiksa {{ $checkedAt }}</p>
                     @endif
                 </div>
-                <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $info['github_token']['updated_at'] ?? 'Diperlukan untuk repo private.' }}</div>
-            </div>
-
-            <div class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-                <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Status update</div>
-                <div class="mt-1">
-                    <span class="rounded-md px-2 py-1 text-xs font-bold {{ $statusClass }}">{{ $statusLabel }}</span>
-                </div>
-                <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    {{ $lastCheck['checked_at'] ?? 'Belum pernah dicek.' }}
-                </div>
             </div>
         </div>
 
-        <div class="mt-3 truncate text-xs text-gray-500 dark:text-gray-400">
-            Remote aktif: <span class="font-mono">{{ $info['remote_url'] ?? '-' }}</span>
-        </div>
+        <dl class="mt-4 grid gap-4 sm:grid-cols-2 sm:divide-x sm:divide-gray-200 dark:sm:divide-gray-700">
+            <div class="sm:pe-4">
+                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Versi terpasang</dt>
+                <dd class="mt-1 text-base font-bold text-gray-950 dark:text-white">{{ $info['version'] ?? '-' }}</dd>
+            </div>
+
+            <div class="sm:ps-4">
+                <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Koneksi pembaruan</dt>
+                <dd class="mt-1 flex items-center gap-2 text-sm font-bold {{ $tokenConfigured ? 'text-success-700 dark:text-success-300' : 'text-warning-700 dark:text-warning-300' }}">
+                    <span class="system-update-status-dot {{ $tokenConfigured ? 'bg-success-500' : 'bg-warning-500' }}"></span>
+                    {{ $tokenConfigured ? 'Terhubung ke GitHub' : 'Belum terhubung' }}
+                </dd>
+            </div>
+        </dl>
     </x-filament::section>
 
-    <div class="grid gap-4 xl:grid-cols-2">
-        <x-filament::section>
-            <x-slot name="heading">
-                Catatan Rilis
-            </x-slot>
+    <x-filament::section>
+        <x-slot name="heading">
+            Pembaruan Terakhir
+        </x-slot>
 
-            <div class="space-y-3 text-sm">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="font-bold text-gray-950 dark:text-white">{{ $releaseVersion }}</span>
-                    @if ($releaseDate)
-                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ $releaseDate }}</span>
-                    @endif
-                </div>
+        <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span class="font-bold text-gray-950 dark:text-white">{{ $releaseVersion }}</span>
+            @if ($releaseDate)
+                <span class="text-xs text-gray-500 dark:text-gray-400">Dirilis {{ $releaseDate }}</span>
+            @endif
+        </div>
 
-                @if (! empty($releaseNotes['notes']))
-                    <ul class="list-disc space-y-1 ps-5 text-gray-700 dark:text-gray-300">
-                        @foreach ($releaseNotes['notes'] as $note)
-                            <li>{{ $note }}</li>
-                        @endforeach
-                    </ul>
-                @else
-                    <p class="text-gray-600 dark:text-gray-300">Belum ada catatan rilis di CHANGELOG.md.</p>
-                @endif
-            </div>
-        </x-filament::section>
-
-        <x-filament::section>
-            <x-slot name="heading">
-                Detail Update
-            </x-slot>
-
-            <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-                <div class="grid gap-2 sm:grid-cols-2">
-                    <div>
-                        <span class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Local</span>
-                        <span class="font-mono text-gray-950 dark:text-white">{{ $localCommit }}</span>
-                    </div>
-                    <div>
-                        <span class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Remote</span>
-                        <span class="font-mono text-gray-950 dark:text-white">{{ $remoteShort }}</span>
-                    </div>
-                </div>
-
-                <p>
-                    Gunakan <strong>Check Update</strong> untuk membandingkan commit lokal dengan source update resmi.
-                    Untuk repo private, simpan Token FAT terlebih dahulu.
-                </p>
-
-                @if ($lastCheck)
-                    <details class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-                        <summary class="cursor-pointer text-sm font-bold text-gray-950 dark:text-white">Output pengecekan remote</summary>
-                        <pre class="mt-3 max-h-44 overflow-auto rounded-lg bg-gray-950 p-3 text-xs text-gray-100">{{ $lastCheck['step']['output'] ?? '-' }}</pre>
-                    </details>
-                @endif
-            </div>
-        </x-filament::section>
-    </div>
+        @if (! empty($releaseNotes['notes']))
+            <ul class="mt-4 space-y-3">
+                @foreach (array_slice($releaseNotes['notes'], 0, 3) as $note)
+                    <li class="flex items-start gap-3 text-sm leading-6 text-gray-700 dark:text-gray-300">
+                        <x-heroicon-o-check class="system-update-list-icon text-success-600 dark:text-success-400" />
+                        <span>{{ $note }}</span>
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <p class="mt-3 text-sm text-gray-600 dark:text-gray-300">Belum ada informasi pembaruan.</p>
+        @endif
+    </x-filament::section>
 
     @if ($lastUpdate)
         <x-filament::section>
             <x-slot name="heading">
-                Output Update Terakhir
+                Hasil Pembaruan
             </x-slot>
 
-            <div class="space-y-3">
-                <div class="flex flex-wrap items-center gap-3 text-sm">
-                    <span class="font-semibold text-gray-500 dark:text-gray-400">Waktu:</span>
-                    <span class="font-mono text-gray-950 dark:text-white">{{ $lastUpdate['updated_at'] ?? '-' }}</span>
-                    <span class="rounded-md px-2 py-1 font-bold {{ ($lastUpdate['successful'] ?? false) ? 'bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-300' : 'bg-danger-50 text-danger-700 dark:bg-danger-500/10 dark:text-danger-300' }}">
-                        {{ ($lastUpdate['successful'] ?? false) ? 'Sukses' : 'Gagal' }}
-                    </span>
+            <div class="flex items-start gap-3">
+                @if ($lastUpdate['successful'] ?? false)
+                    <x-heroicon-o-check-circle class="system-update-status-icon text-success-600 dark:text-success-400" />
+                @else
+                    <x-heroicon-o-x-circle class="system-update-status-icon text-danger-600 dark:text-danger-400" />
+                @endif
+
+                <div>
+                    <p class="font-bold text-gray-950 dark:text-white">
+                        {{ ($lastUpdate['successful'] ?? false) ? 'Pembaruan berhasil dipasang' : 'Pembaruan belum berhasil' }}
+                    </p>
+                    @if ($lastUpdate['updated_at'] ?? null)
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ $formatDate($lastUpdate['updated_at'], true) }}</p>
+                    @endif
+                    @if (! ($lastUpdate['successful'] ?? false))
+                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Coba cek pembaruan kembali. Jika masih gagal, hubungi pengelola sistem.</p>
+                    @endif
                 </div>
-
-                <details class="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
-                    <summary class="cursor-pointer text-sm font-bold text-gray-950 dark:text-white">Lihat detail command update</summary>
-
-                    <div class="mt-3 grid gap-3">
-                        @foreach (($lastUpdate['steps'] ?? []) as $step)
-                            <details class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-950">
-                                <summary class="cursor-pointer text-sm font-bold text-gray-950 dark:text-white">
-                                    {{ $step['successful'] ? 'OK' : 'ERROR' }}: {{ $step['command'] }}
-                                </summary>
-                                <pre class="mt-3 max-h-64 overflow-auto rounded-lg bg-gray-950 p-3 text-xs text-gray-100">{{ $step['output'] ?: '-' }}</pre>
-                            </details>
-                        @endforeach
-                    </div>
-                </details>
             </div>
         </x-filament::section>
     @endif

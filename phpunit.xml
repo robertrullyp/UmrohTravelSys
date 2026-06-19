@@ -19,6 +19,8 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="ADMIN_INITIAL_EMAIL" value="admin@example.test"/>
+        <env name="ADMIN_INITIAL_PASSWORD" value="password"/>
         <env name="APP_CONFIG_CACHE" value="bootstrap/cache/config-testing.php"/>
         <env name="APP_EVENTS_CACHE" value="bootstrap/cache/events-testing.php"/>
         <env name="APP_ROUTES_CACHE" value="bootstrap/cache/routes-testing.php"/>

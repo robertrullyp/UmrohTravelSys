@@ -24,6 +24,7 @@ class SiteImageOptimizer
         return match ($profile) {
             'logo' => $this->optimize($absolutePath, maxWidth: 640, maxHeight: 360, cropSquare: false, quality: 82),
             'favicon' => $this->optimize($absolutePath, maxWidth: 512, maxHeight: 512, cropSquare: true, quality: 82),
+            'social' => $this->optimize($absolutePath, maxWidth: 1200, maxHeight: 630, cropSquare: false, quality: 82),
             default => null,
         };
     }
@@ -88,7 +89,7 @@ class SiteImageOptimizer
             $srcHeight,
         );
 
-        $temporaryPath = $absolutePath . '.optimized';
+        $temporaryPath = $absolutePath.'.optimized';
         $saved = $this->saveImage($target, $temporaryPath, $type, $quality);
 
         imagedestroy($source);

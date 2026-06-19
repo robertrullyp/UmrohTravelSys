@@ -31,7 +31,7 @@
             </article>
         </div>
         <div class="profile-photo">
-            <img src="{{ $profile?->photo_path ? asset('storage/' . $profile->photo_path) : asset('images/seed/profile-office.jpeg') }}" alt="Profil PT Amara Al Medina Travel">
+            <img src="{{ $profile?->photo_path ? asset('storage/' . $profile->photo_path) : asset('images/seed/profile-office.jpeg') }}" alt="Profil PT Amara Al Medina Travel" width="800" height="1000" loading="lazy" decoding="async">
         </div>
     </div>
 </section>

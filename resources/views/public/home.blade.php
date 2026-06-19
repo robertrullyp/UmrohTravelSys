@@ -57,7 +57,7 @@
     <div class="container package-grid">
         @foreach ($packages as $package)
             <a class="package-card" href="{{ route('packages.show', $package) }}">
-                <img src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}">
+                <img src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}" width="1600" height="1100" loading="lazy" decoding="async">
                 <div>
                     <h3>{{ $package->name }}</h3>
                     <span class="price">Rp {{ number_format((float) $package->price, 0, ',', '.') }} / Orang</span>
@@ -113,7 +113,7 @@
     <div class="container gallery-grid">
         @foreach ($galleries as $gallery)
             <a href="{{ route('galleries') }}" class="gallery-tile">
-                <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}">
+                <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}" width="1200" height="900" loading="lazy" decoding="async">
             </a>
         @endforeach
     </div>

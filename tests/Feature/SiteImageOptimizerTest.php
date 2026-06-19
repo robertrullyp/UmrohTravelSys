@@ -43,6 +43,24 @@ class SiteImageOptimizerTest extends TestCase
         }
     }
 
+    public function test_social_image_is_resized_to_preview_bounds(): void
+    {
+        $this->skipIfGdIsMissing();
+
+        $path = $this->createUploadImage('social', 2400, 1260);
+
+        try {
+            $result = app(SiteImageOptimizer::class)->optimizePublicUpload($path['relative'], 'social');
+            [$width, $height] = getimagesize($path['absolute']);
+
+            $this->assertNotNull($result);
+            $this->assertLessThanOrEqual(1200, $width);
+            $this->assertLessThanOrEqual(630, $height);
+        } finally {
+            @unlink($path['absolute']);
+        }
+    }
+
     private function skipIfGdIsMissing(): void
     {
         if (! extension_loaded('gd')) {
@@ -61,8 +79,8 @@ class SiteImageOptimizerTest extends TestCase
             mkdir($directory, 0755, true);
         }
 
-        $filename = $prefix . '-' . uniqid('', true) . '.png';
-        $absolute = $directory . DIRECTORY_SEPARATOR . $filename;
+        $filename = $prefix.'-'.uniqid('', true).'.png';
+        $absolute = $directory.DIRECTORY_SEPARATOR.$filename;
         $image = imagecreatetruecolor($width, $height);
         $color = imagecolorallocate($image, 214, 26, 106);
 
@@ -71,7 +89,7 @@ class SiteImageOptimizerTest extends TestCase
         imagedestroy($image);
 
         return [
-            'relative' => 'images/site/uploads/' . $filename,
+            'relative' => 'images/site/uploads/'.$filename,
             'absolute' => $absolute,
         ];
     }

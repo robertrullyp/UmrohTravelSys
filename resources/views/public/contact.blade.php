@@ -92,7 +92,7 @@
             @if ($mapContact?->map_embed_url)
                 <iframe src="{{ $mapContact->map_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Peta PT Amara Al Medina Travel"></iframe>
             @else
-                <img src="{{ asset('images/seed/map-preview.jpeg') }}" alt="Peta lokasi PT Amara Al Medina Travel">
+                <img src="{{ asset('images/seed/map-preview.jpeg') }}" alt="Peta lokasi PT Amara Al Medina Travel" width="1200" height="800" loading="lazy" decoding="async">
             @endif
         </div>
     </div>

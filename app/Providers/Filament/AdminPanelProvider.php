@@ -2,9 +2,11 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Auth\Login as AdminLogin;
 use App\Filament\Pages\Auth\EditProfile as AdminEditProfile;
+use App\Filament\Pages\Auth\Login as AdminLogin;
 use App\Filament\Pages\Dashboard;
+use App\Http\Middleware\PrivateNoIndex;
+use App\Http\Middleware\SecurityHeaders;
 use App\Models\SiteSetting;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -73,6 +75,10 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::SIDEBAR_START,
                 fn (): string => view('filament.partials.sidebar-brand')->render(),
             )
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => '<meta name="robots" content="noindex,nofollow,nosnippet">',
+            )
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\Filament\Clusters')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->pages([
@@ -89,6 +95,8 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SecurityHeaders::class,
+                PrivateNoIndex::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

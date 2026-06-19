@@ -23,7 +23,7 @@
                     data-gallery-title="{{ $gallery->title }}"
                     aria-label="Lihat foto {{ $gallery->title }}"
                 >
-                    <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}">
+                    <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}" width="1200" height="900" loading="lazy" decoding="async">
                 </button>
                 <figcaption>
                     <strong>{{ $gallery->title }}</strong>

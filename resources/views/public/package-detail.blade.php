@@ -12,7 +12,7 @@
 
 <section class="section">
     <div class="container package-detail">
-        <img class="detail-image" src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}">
+        <img class="detail-image" src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}" width="800" height="1000" loading="lazy" decoding="async">
         <div class="detail-content">
             <span class="price">Rp {{ number_format((float) $package->price, 0, ',', '.') }} / Orang</span>
             <p>{{ $package->description }}</p>

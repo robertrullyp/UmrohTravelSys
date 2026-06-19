@@ -8,14 +8,14 @@ use App\Models\Gallery;
 use App\Models\Schedule;
 use App\Models\SiteSetting;
 use App\Models\UmrahPackage;
+use App\Services\SeoService;
 use Illuminate\Contracts\View\View;
 
 class PublicPageController extends Controller
 {
     public function home(): View
     {
-        return view('public.home', [
-            ...$this->sharedData(),
+        return view('public.home', $this->publicViewData('home', [
             'featuredPackage' => UmrahPackage::query()
                 ->where('is_active', true)
                 ->orderByDesc('is_featured')
@@ -38,65 +38,75 @@ class PublicPageController extends Controller
                 ->orderBy('sort_order')
                 ->limit(6)
                 ->get(),
-        ]);
+        ]));
     }
 
     public function profile(): View
     {
-        return view('public.profile', $this->sharedData());
+        return view('public.profile', $this->publicViewData('profile'));
     }
 
     public function packages(): View
     {
-        return view('public.packages', [
-            ...$this->sharedData(),
+        return view('public.packages', $this->publicViewData('packages', [
             'packages' => UmrahPackage::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->get(),
-        ]);
+        ]));
     }
 
     public function packageDetail(UmrahPackage $package): View
     {
         abort_unless($package->is_active, 404);
 
-        return view('public.package-detail', [
-            ...$this->sharedData(),
+        $schedules = $package->schedules()
+            ->where('is_active', true)
+            ->orderBy('departure_date')
+            ->get();
+
+        return view('public.package-detail', $this->publicViewData('package', [
             'package' => $package,
-            'schedules' => $package->schedules()
-                ->where('is_active', true)
-                ->orderBy('departure_date')
-                ->get(),
-        ]);
+            'schedules' => $schedules,
+        ]));
     }
 
     public function schedules(): View
     {
-        return view('public.schedules', [
-            ...$this->sharedData(),
+        return view('public.schedules', $this->publicViewData('schedules', [
             'schedules' => Schedule::query()
                 ->with('umrahPackage')
                 ->where('is_active', true)
                 ->orderBy('departure_date')
                 ->get(),
-        ]);
+        ]));
     }
 
     public function galleries(): View
     {
-        return view('public.galleries', [
-            ...$this->sharedData(),
+        return view('public.galleries', $this->publicViewData('galleries', [
             'galleries' => Gallery::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->get(),
-        ]);
+        ]));
     }
 
     public function contact(): View
     {
-        return view('public.contact', $this->sharedData());
+        return view('public.contact', $this->publicViewData('contact'));
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function publicViewData(string $page, array $data = []): array
+    {
+        $viewData = [...$this->sharedData(), ...$data];
+        $viewData['seo'] = app(SeoService::class)->forPage($page, $viewData);
+
+        return $viewData;
     }
 
     protected function sharedData(): array

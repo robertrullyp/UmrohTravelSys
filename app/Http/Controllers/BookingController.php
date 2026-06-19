@@ -35,11 +35,11 @@ class BookingController extends PublicPageController
             ->orderBy('sort_order')
             ->get();
 
-        return view('public.booking-form', [
-            ...$this->sharedData(),
+        return view('public.booking-form', $this->publicViewData($package ? 'booking-package' : 'booking', [
             'packages' => $packages,
             'selectedPackage' => $package,
-        ]);
+            'package' => $package,
+        ]));
     }
 
     public function store(StoreBookingRequest $request): RedirectResponse
@@ -99,16 +99,15 @@ class BookingController extends PublicPageController
 
     public function show(Booking $booking): View
     {
-        return view('public.booking-detail', [
-            ...$this->sharedData(),
+        return view('public.booking-detail', $this->publicViewData('booking-detail', [
             'booking' => $booking->load(['umrahPackage', 'schedule']),
-        ]);
+        ]));
     }
 
     private function generateBookingNumber(): string
     {
         do {
-            $number = 'AMA-' . now()->format('ymd') . '-' . Str::upper(Str::random(6));
+            $number = 'AMA-'.now()->format('ymd').'-'.Str::upper(Str::random(6));
         } while (Booking::query()->where('booking_number', $number)->exists());
 
         return $number;
@@ -119,7 +118,7 @@ class BookingController extends PublicPageController
         $digits = preg_replace('/\D+/', '', $value) ?? '';
 
         if (str_starts_with($digits, '0')) {
-            return '62' . substr($digits, 1);
+            return '62'.substr($digits, 1);
         }
 
         return $digits;

@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Status Booking ' . $booking->booking_number)
+@section('title', 'Status Booking - PT Amara Al Medina Travel')
 
 @php
     $adminWhatsappRaw = $contact?->whatsapp ?? $settings->get('cta_whatsapp', '');

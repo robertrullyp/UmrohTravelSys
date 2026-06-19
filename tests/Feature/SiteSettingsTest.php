@@ -31,7 +31,11 @@ class SiteSettingsTest extends TestCase
             ->assertSee('Favicon')
             ->assertSee('Gambar Hero Beranda')
             ->assertSee('Highlight Judul')
-            ->assertSee('Nomor WhatsApp CTA');
+            ->assertSee('Nomor WhatsApp CTA')
+            ->assertSee('SEO Global')
+            ->assertSee('Google Site Verification')
+            ->assertSee('SEO - Beranda')
+            ->assertSee('SEO - Booking');
     }
 
     public function test_legacy_settings_routes_redirect_to_settings_cluster(): void
@@ -75,9 +79,23 @@ class SiteSettingsTest extends TestCase
             'hero_title',
             'hero_subtitle',
             'cta_whatsapp',
+            'seo_site_name',
+            'seo_default_title',
+            'seo_default_description',
+            'seo_default_image_path',
+            'google_site_verification',
         ] as $key) {
             $this->assertTrue(SiteSetting::isSystemKey($key));
             $this->assertDatabaseHas('site_settings', ['key' => $key]);
+        }
+
+        foreach (array_keys(SiteSetting::SEO_PAGES) as $page) {
+            foreach (['title', 'description', 'image_path'] as $field) {
+                $key = "seo_{$page}_{$field}";
+
+                $this->assertTrue(SiteSetting::isSystemKey($key));
+                $this->assertDatabaseHas('site_settings', ['key' => $key]);
+            }
         }
     }
 }
