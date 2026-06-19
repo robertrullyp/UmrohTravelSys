@@ -24,10 +24,12 @@ class UmrahPackagesTable
                 TextColumn::make('price')->label('Harga')->money('IDR')->sortable(),
                 IconColumn::make('is_featured')->label('Utama')->boolean(),
                 IconColumn::make('is_active')->label('Tampil')->boolean(),
+                IconColumn::make('is_indexable')->label('Google')->boolean(),
             ])
             ->defaultSort('sort_order')
             ->filters([
                 TernaryFilter::make('is_active')->label('Status Tampil'),
+                TernaryFilter::make('is_indexable')->label('Indeks Google'),
             ])
             ->recordActions([
                 EditAction::make()

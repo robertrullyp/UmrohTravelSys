@@ -75,6 +75,40 @@ class UmrahPackageForm
                             ->numeric()
                             ->default(0),
                     ]),
+                Section::make('SEO & Google Search')
+                    ->description('Kosongkan metadata untuk memakai nama, deskripsi, dan gambar paket sebagai fallback.')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('seo_title')
+                            ->label('SEO Title')
+                            ->maxLength(70)
+                            ->helperText('Maksimal 70 karakter dan tanpa HTML.'),
+                        Toggle::make('is_indexable')
+                            ->label('Izinkan Google mengindeks paket')
+                            ->default(true)
+                            ->helperText('Paket tetap dapat dibuka saat nonaktif, tetapi dikeluarkan dari sitemap dan diberi noindex.'),
+                        Textarea::make('seo_description')
+                            ->label('Meta Description')
+                            ->rows(3)
+                            ->maxLength(170)
+                            ->helperText('Maksimal 170 karakter dan harus merangkum isi paket.')
+                            ->columnSpanFull(),
+                        FileUpload::make('seo_image_path')
+                            ->label('Social Preview Image')
+                            ->helperText('Disarankan 1200x630. Jika kosong, gambar utama paket digunakan.')
+                            ->image()
+                            ->disk('public')
+                            ->directory('packages/seo')
+                            ->imageEditor()
+                            ->imageCropAspectRatio('1200:630')
+                            ->orientImagesFromExif()
+                            ->automaticallyResizeImagesMode('cover')
+                            ->automaticallyResizeImagesToWidth('1200')
+                            ->automaticallyResizeImagesToHeight('630')
+                            ->imageResizeUpscale(false)
+                            ->maxSize(4096)
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 }
