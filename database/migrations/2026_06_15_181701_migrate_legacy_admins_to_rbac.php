@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -52,7 +53,7 @@ return new class extends Migration
             ->each(function (int $userId) use ($roleId): void {
                 DB::table('model_has_roles')->insertOrIgnore([
                     'role_id' => $roleId,
-                    'model_type' => \App\Models\User::class,
+                    'model_type' => User::class,
                     'model_id' => $userId,
                 ]);
             });

@@ -35,8 +35,15 @@ class CompanyProfileForm
                             ->columnSpan(2),
                         FileUpload::make('photo_path')
                             ->label('Foto')
+                            ->helperText('Tampil di halaman Profil publik. Gunakan foto kantor, tim, atau legalitas yang jelas.')
                             ->image()
+                            ->imageEditor()
+                            ->orientImagesFromExif()
                             ->imagePreviewHeight('120')
+                            ->maxSize(4096)
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
                             ->disk('public')
                             ->directory('profiles'),
                         Textarea::make('vision')

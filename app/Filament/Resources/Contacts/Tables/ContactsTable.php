@@ -8,6 +8,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -20,8 +21,8 @@ class ContactsTable
             ->columns([
                 TextColumn::make('address')->label('Alamat')->limit(60),
                 TextColumn::make('whatsapp')->label('WhatsApp')->searchable(),
-                TextColumn::make('email')->label('Email')->searchable(),
-                TextColumn::make('instagram')->label('Instagram'),
+                TextColumn::make('email')->label('Email')->searchable()->visibleFrom('md'),
+                TextColumn::make('instagram')->label('Instagram')->visibleFrom('lg')->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_primary')->label('Utama')->boolean(),
                 IconColumn::make('is_active')->label('Tampil')->boolean(),
             ])
@@ -43,11 +44,12 @@ class ContactsTable
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
                     ->color('danger'),
-            ])
+            ], position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()->label('Hapus terpilih'),
                 ]),
-            ]);
+            ])
+            ->stackedOnMobile();
     }
 }

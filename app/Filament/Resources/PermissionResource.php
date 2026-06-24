@@ -11,7 +11,7 @@ abstract class PermissionResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can(static::permissionPrefix() . '.view') ?? false;
+        return auth()->user()?->can(static::permissionPrefix().'.view') ?? false;
     }
 
     public static function canView(Model $record): bool
@@ -21,21 +21,21 @@ abstract class PermissionResource extends Resource
 
     public static function canCreate(): bool
     {
-        return auth()->user()?->can(static::permissionPrefix() . '.create') ?? false;
+        return auth()->user()?->can(static::permissionPrefix().'.create') ?? false;
     }
 
     public static function canEdit(Model $record): bool
     {
-        return auth()->user()?->can(static::permissionPrefix() . '.update') ?? false;
+        return auth()->user()?->can(static::permissionPrefix().'.update') ?? false;
     }
 
     public static function canDelete(Model $record): bool
     {
-        return auth()->user()?->can(static::permissionPrefix() . '.delete') ?? false;
+        return auth()->user()?->can(static::permissionPrefix().'.delete') ?? false;
     }
 
     public static function canDeleteAny(): bool
     {
-        return auth()->user()?->can(static::permissionPrefix() . '.delete') ?? false;
+        return auth()->user()?->can(static::permissionPrefix().'.delete') ?? false;
     }
 }

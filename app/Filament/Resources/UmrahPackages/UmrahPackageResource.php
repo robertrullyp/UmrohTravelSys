@@ -21,9 +21,13 @@ class UmrahPackageResource extends PermissionResource
     protected static ?string $recordRouteKeyName = 'slug';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static ?string $navigationLabel = 'Paket Umrah';
+
     protected static ?string $modelLabel = 'Paket Umrah';
+
     protected static ?string $pluralModelLabel = 'Paket Umrah';
+
     protected static ?int $navigationSort = 2;
 
     protected static function permissionPrefix(): string

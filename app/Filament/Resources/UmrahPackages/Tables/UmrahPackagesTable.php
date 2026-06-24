@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
@@ -18,13 +19,13 @@ class UmrahPackagesTable
     {
         return $table
             ->columns([
-                ImageColumn::make('image_path')->label('Gambar')->disk('public')->square()->imageSize(58),
+                ImageColumn::make('image_path')->label('Gambar')->disk('public')->square()->imageSize(58)->visibleFrom('md'),
                 TextColumn::make('name')->label('Nama Paket')->searchable()->sortable(),
                 TextColumn::make('duration_days')->label('Durasi')->suffix(' Hari')->sortable(),
                 TextColumn::make('price')->label('Harga')->money('IDR')->sortable(),
-                IconColumn::make('is_featured')->label('Utama')->boolean(),
+                IconColumn::make('is_featured')->label('Utama')->boolean()->visibleFrom('lg'),
                 IconColumn::make('is_active')->label('Tampil')->boolean(),
-                IconColumn::make('is_indexable')->label('Google')->boolean(),
+                IconColumn::make('is_indexable')->label('Google')->boolean()->visibleFrom('md'),
             ])
             ->defaultSort('sort_order')
             ->filters([
@@ -40,11 +41,12 @@ class UmrahPackagesTable
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
                     ->color('danger'),
-            ])
+            ], position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()->label('Hapus terpilih'),
                 ]),
-            ]);
+            ])
+            ->stackedOnMobile();
     }
 }

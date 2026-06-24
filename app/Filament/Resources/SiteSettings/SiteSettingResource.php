@@ -20,11 +20,17 @@ class SiteSettingResource extends PermissionResource
     protected static ?string $model = SiteSetting::class;
 
     protected static ?string $cluster = Settings::class;
+
     protected static bool $shouldRegisterNavigation = false;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
-    protected static ?string $navigationLabel = 'Pengaturan';
-    protected static ?string $modelLabel = 'Pengaturan';
-    protected static ?string $pluralModelLabel = 'Pengaturan';
+
+    protected static ?string $navigationLabel = 'Pengaturan Teknis';
+
+    protected static ?string $modelLabel = 'Pengaturan Teknis';
+
+    protected static ?string $pluralModelLabel = 'Pengaturan Teknis';
+
     protected static ?int $navigationSort = 7;
 
     protected static function permissionPrefix(): string

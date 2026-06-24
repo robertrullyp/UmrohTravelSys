@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\Galleries;
 
-use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\Galleries\Pages\CreateGallery;
 use App\Filament\Resources\Galleries\Pages\EditGallery;
 use App\Filament\Resources\Galleries\Pages\ListGalleries;
 use App\Filament\Resources\Galleries\Schemas\GalleryForm;
 use App\Filament\Resources\Galleries\Tables\GalleriesTable;
+use App\Filament\Resources\PermissionResource;
 use App\Models\Gallery;
 use BackedEnum;
 use Filament\Schemas\Schema;
@@ -19,9 +19,13 @@ class GalleryResource extends PermissionResource
     protected static ?string $model = Gallery::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
+
     protected static ?string $navigationLabel = 'Galeri';
+
     protected static ?string $modelLabel = 'Galeri';
+
     protected static ?string $pluralModelLabel = 'Galeri';
+
     protected static ?int $navigationSort = 4;
 
     protected static function permissionPrefix(): string

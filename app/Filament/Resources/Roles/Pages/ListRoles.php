@@ -12,6 +12,6 @@ class ListRoles extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()->label('Tambah Role')];
+        return [CreateAction::make()->label('Tambah Role / Hak Akses')];
     }
 }

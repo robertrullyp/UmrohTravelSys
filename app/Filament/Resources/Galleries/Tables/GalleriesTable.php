@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
@@ -18,7 +19,7 @@ class GalleriesTable
     {
         return $table
             ->columns([
-                ImageColumn::make('image_path')->label('Foto')->disk('public')->square()->imageSize(58),
+                ImageColumn::make('image_path')->label('Foto')->disk('public')->square()->imageSize(58)->visibleFrom('md'),
                 TextColumn::make('title')->label('Judul')->searchable(),
                 TextColumn::make('taken_at')->label('Tanggal')->date('d F Y')->sortable(),
                 IconColumn::make('is_active')->label('Tampil')->boolean(),
@@ -36,11 +37,12 @@ class GalleriesTable
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
                     ->color('danger'),
-            ])
+            ], position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()->label('Hapus terpilih'),
                 ]),
-            ]);
+            ])
+            ->stackedOnMobile();
     }
 }

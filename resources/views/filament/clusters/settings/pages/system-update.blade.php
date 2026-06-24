@@ -11,11 +11,11 @@
         'up_to_date' => 'Tidak ada tindakan yang perlu dilakukan saat ini.',
         'update_available' => 'Klik Perbarui Sekarang untuk memasang versi terbaru.',
         'remote_empty_or_unreachable' => $tokenConfigured
-            ? 'Sistem belum dapat terhubung ke GitHub. Coba cek kembali beberapa saat lagi.'
-            : 'Klik Atur Akses GitHub, simpan token akses, lalu cek pembaruan kembali.',
+            ? 'Sistem belum dapat terhubung ke server pembaruan. Coba cek kembali beberapa saat lagi.'
+            : 'Klik Atur Akses Pembaruan, simpan kode akses, lalu cek pembaruan kembali.',
         default => $tokenConfigured
             ? 'Klik Cek Pembaruan untuk memastikan aplikasi menggunakan versi terbaru.'
-            : 'Atur akses GitHub terlebih dahulu agar sistem dapat mencari pembaruan.',
+            : 'Atur akses pembaruan terlebih dahulu agar sistem dapat mencari versi terbaru.',
     };
     $statusPanelClass = match ($status) {
         'up_to_date' => 'border-success-200 bg-success-50 dark:border-success-500/30 dark:bg-success-500/10',
@@ -89,7 +89,7 @@
                 <dt class="text-xs font-medium text-gray-500 dark:text-gray-400">Koneksi pembaruan</dt>
                 <dd class="mt-1 flex items-center gap-2 text-sm font-bold {{ $tokenConfigured ? 'text-success-700 dark:text-success-300' : 'text-warning-700 dark:text-warning-300' }}">
                     <span class="system-update-status-dot {{ $tokenConfigured ? 'bg-success-500' : 'bg-warning-500' }}"></span>
-                    {{ $tokenConfigured ? 'Terhubung ke GitHub' : 'Belum terhubung' }}
+                    {{ $tokenConfigured ? 'Akses tersimpan' : 'Belum terhubung' }}
                 </dd>
             </div>
         </dl>

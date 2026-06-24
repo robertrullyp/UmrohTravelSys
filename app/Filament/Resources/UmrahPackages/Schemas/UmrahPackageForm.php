@@ -31,10 +31,18 @@ class UmrahPackageForm
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
                         FileUpload::make('image_path')
-                            ->label('Gambar')
+                            ->label('Gambar Utama Paket')
+                            ->helperText('Muncul di kartu beranda, daftar paket, dan detail paket. Poster/flyer akan tampil utuh di detail paket; thumbnail dapat ter-crop ringan agar grid tetap rapi.')
                             ->image()
                             ->disk('public')
                             ->directory('packages')
+                            ->imageEditor()
+                            ->orientImagesFromExif()
+                            ->imagePreviewHeight('220')
+                            ->maxSize(4096)
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
                             ->columnSpanFull(),
                         TextInput::make('duration_days')
                             ->label('Durasi Hari')
@@ -95,7 +103,7 @@ class UmrahPackageForm
                             ->columnSpanFull(),
                         FileUpload::make('seo_image_path')
                             ->label('Social Preview Image')
-                            ->helperText('Disarankan 1200x630. Jika kosong, gambar utama paket digunakan.')
+                            ->helperText('Khusus preview link WhatsApp/media sosial ukuran 1200x630. Ini bukan gambar utama yang tampil di halaman paket.')
                             ->image()
                             ->disk('public')
                             ->directory('packages/seo')
@@ -107,6 +115,9 @@ class UmrahPackageForm
                             ->automaticallyResizeImagesToHeight('630')
                             ->imageResizeUpscale(false)
                             ->maxSize(4096)
+                            ->previewable()
+                            ->openable()
+                            ->downloadable()
                             ->columnSpanFull(),
                     ]),
             ]);

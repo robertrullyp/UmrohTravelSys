@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Schedules\Pages;
 
+use App\Filament\Resources\Pages\Concerns\RedirectsToViewOrIndexAfterSave;
 use App\Filament\Resources\Schedules\ScheduleResource;
 use App\Models\Schedule;
 use Filament\Actions\DeleteAction;
@@ -9,6 +10,8 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditSchedule extends EditRecord
 {
+    use RedirectsToViewOrIndexAfterSave;
+
     protected static string $resource = ScheduleResource::class;
 
     protected function getHeaderActions(): array

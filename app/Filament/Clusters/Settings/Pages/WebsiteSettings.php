@@ -26,9 +26,9 @@ class WebsiteSettings extends Page
 
     protected static ?string $slug = 'website';
 
-    protected static ?string $title = 'Website Settings';
+    protected static ?string $title = 'Pengaturan Website';
 
-    protected static ?string $navigationLabel = 'Website Settings';
+    protected static ?string $navigationLabel = 'Pengaturan Website';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedPaintBrush;
 
@@ -55,13 +55,13 @@ class WebsiteSettings extends Page
     {
         return $schema
             ->components([
-                Section::make('Branding')
-                    ->description('Atur identitas visual utama yang dipakai di website publik dan panel admin.')
+                Section::make('Logo & Ikon')
+                    ->description('Identitas visual yang terlihat di website publik dan panel admin.')
                     ->columns(2)
                     ->schema([
                         FileUpload::make('brand_logo_path')
                             ->label('Logo Brand')
-                            ->helperText('Digunakan untuk header, footer, login, dan sidebar admin. File otomatis dibatasi maks. 640x360 dan dikompresi.')
+                            ->helperText('Tampil di header/footer publik, login, dan sidebar admin. Gunakan logo jelas dengan latar transparan bila ada.')
                             ->disk('site_public')
                             ->directory('images/site/uploads')
                             ->image()
@@ -79,7 +79,7 @@ class WebsiteSettings extends Page
                             ->columnSpan(1),
                         FileUpload::make('favicon_path')
                             ->label('Favicon')
-                            ->helperText('Gambar akan dipotong persegi, dibatasi maks. 512x512, dan dikompresi.')
+                            ->helperText('Ikon kecil pada tab browser. Gunakan gambar persegi agar tidak gepeng.')
                             ->disk('site_public')
                             ->directory('images/site/uploads')
                             ->image()
@@ -97,13 +97,13 @@ class WebsiteSettings extends Page
                             ->downloadable()
                             ->columnSpan(1),
                     ]),
-                Section::make('Beranda')
-                    ->description('Konten utama hero pada halaman beranda.')
+                Section::make('Hero Beranda')
+                    ->description('Bagian paling atas yang pertama dilihat pengunjung di halaman beranda.')
                     ->columns(2)
                     ->schema([
                         FileUpload::make('hero_image_path')
                             ->label('Gambar Hero Beranda')
-                            ->helperText('Gambar lebar akan tampil paling baik untuk hero beranda.')
+                            ->helperText('Tampil sebagai gambar besar di bagian atas beranda. Pakai foto lebar dan terang.')
                             ->disk('site_public')
                             ->directory('images/site/uploads')
                             ->image()
@@ -114,53 +114,64 @@ class WebsiteSettings extends Page
                             ->previewable()
                             ->openable()
                             ->downloadable()
-                            ->columnSpanFull(),
-                        TextInput::make('hero_title_highlight')
-                            ->label('Highlight Judul')
-                            ->required()
-                            ->maxLength(255),
-                        TextInput::make('hero_title')
-                            ->label('Judul Utama')
-                            ->required()
-                            ->maxLength(255),
+                            ->columnSpan(['default' => 'full', 'lg' => 1]),
+                        Grid::make(1)
+                            ->schema([
+                                TextInput::make('hero_title_highlight')
+                                    ->label('Highlight Judul')
+                                    ->helperText('Teks kecil berwarna pink sebelum judul utama.')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('hero_title')
+                                    ->label('Judul Utama')
+                                    ->helperText('Judul besar pada hero beranda.')
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->columnSpan(['default' => 'full', 'lg' => 1]),
                         Textarea::make('hero_subtitle')
                             ->label('Deskripsi Hero')
+                            ->helperText('Kalimat pendek di bawah judul. Usahakan jelas dalam 1-2 baris.')
                             ->required()
-                            ->rows(3)
+                            ->rows(2)
                             ->maxLength(500)
                             ->columnSpanFull(),
                     ]),
-                Section::make('Kontak / CTA')
-                    ->description('Nomor ini dipakai untuk tombol Hubungi Kami di header publik.')
+                Section::make('Tombol Hubungi Kami')
+                    ->description('Nomor tujuan untuk tombol WhatsApp utama di website publik.')
                     ->schema([
                         TextInput::make('cta_whatsapp')
                             ->label('Nomor WhatsApp CTA')
-                            ->helperText('Format boleh 08... atau 62..., sistem akan menyesuaikan link WhatsApp.')
+                            ->helperText('Boleh diawali 08 atau 62. Sistem akan membuat link WhatsApp otomatis.')
                             ->required()
                             ->maxLength(32)
                             ->regex('/^[0-9+()\s-]{8,32}$/'),
                     ]),
-                Section::make('SEO Global')
-                    ->description('Fallback metadata, social preview, dan verifikasi Google Search Console.')
+                Section::make('SEO Default')
+                    ->description('Cadangan untuk judul Google dan preview link bila halaman belum punya pengaturan khusus.')
+                    ->collapsed()
                     ->columns(2)
                     ->schema([
                         TextInput::make('seo_site_name')
                             ->label('Nama Situs')
+                            ->helperText('Nama brand yang muncul pada metadata website.')
                             ->required()
                             ->maxLength(70),
                         TextInput::make('seo_default_title')
-                            ->label('Judul Default')
+                            ->label('Judul Google Default')
+                            ->helperText('Judul cadangan untuk Google. Maksimal 70 karakter.')
                             ->required()
                             ->maxLength(70),
                         Textarea::make('seo_default_description')
-                            ->label('Deskripsi Default')
+                            ->label('Deskripsi Google Default')
+                            ->helperText('Ringkasan cadangan untuk Google. Maksimal 170 karakter.')
                             ->required()
-                            ->rows(3)
+                            ->rows(2)
                             ->maxLength(170)
                             ->columnSpanFull(),
                         FileUpload::make('seo_default_image_path')
-                            ->label('Social Preview Default')
-                            ->helperText('Disarankan 1200x630. Gambar ini menjadi fallback Open Graph dan Twitter Card.')
+                            ->label('Gambar Preview Link Default')
+                            ->helperText('Untuk preview link WhatsApp/media sosial. Tidak mengganti gambar hero atau gambar paket.')
                             ->disk('site_public')
                             ->directory('images/site/uploads')
                             ->image()
@@ -172,17 +183,17 @@ class WebsiteSettings extends Page
                             ->automaticallyResizeImagesToHeight('630')
                             ->imageResizeUpscale(false)
                             ->maxSize(4096)
-                            ->columnSpanFull(),
+                            ->columnSpan(['default' => 'full', 'lg' => 1]),
                         TextInput::make('google_site_verification')
-                            ->label('Google Site Verification')
-                            ->helperText('Isi hanya token content dari meta tag Google Search Console, bukan seluruh tag HTML.')
+                            ->label('Token Verifikasi Google')
+                            ->helperText('Isi kode dari Google Search Console saja, bukan seluruh tag HTML.')
                             ->maxLength(255)
                             ->regex('/^[A-Za-z0-9_-]+$/')
-                            ->columnSpanFull(),
+                            ->columnSpan(['default' => 'full', 'lg' => 1]),
                     ]),
                 ...$this->seoPageSections(),
-                Section::make('Advanced')
-                    ->description('Nilai teknis key-value. Hanya gunakan jika perlu troubleshooting.')
+                Section::make('Info Teknis')
+                    ->description('Ringkasan nilai internal. Hanya untuk pengecekan oleh super-admin.')
                     ->collapsed()
                     ->visible(fn (): bool => auth()->user()?->hasRole('super-admin') ?? false)
                     ->schema([
@@ -390,23 +401,25 @@ class WebsiteSettings extends Page
     {
         return collect(SiteSetting::SEO_PAGES)
             ->map(function (string $label, string $page): Section {
-                return Section::make('SEO - '.$label)
-                    ->description('Metadata khusus halaman '.strtolower($label).'.')
-                    ->collapsed($page !== 'home')
+                return Section::make('SEO Halaman - '.$label)
+                    ->description('Judul Google, deskripsi, dan gambar preview khusus halaman '.strtolower($label).'.')
+                    ->collapsed()
                     ->columns(2)
                     ->schema([
                         TextInput::make("seo_{$page}_title")
-                            ->label('SEO Title')
+                            ->label('Judul Google')
+                            ->helperText('Maksimal 70 karakter dan tanpa HTML.')
                             ->required()
                             ->maxLength(70),
                         Textarea::make("seo_{$page}_description")
-                            ->label('Meta Description')
+                            ->label('Deskripsi Google')
+                            ->helperText('Ringkasan halaman untuk Google. Maksimal 170 karakter.')
                             ->required()
-                            ->rows(3)
+                            ->rows(2)
                             ->maxLength(170),
                         FileUpload::make("seo_{$page}_image_path")
-                            ->label('Social Preview Image')
-                            ->helperText('Opsional. Jika kosong, social preview default digunakan.')
+                            ->label('Gambar Preview Link')
+                            ->helperText('Opsional untuk preview link halaman ini. Jika kosong, sistem memakai gambar default.')
                             ->disk('site_public')
                             ->directory('images/site/uploads')
                             ->image()

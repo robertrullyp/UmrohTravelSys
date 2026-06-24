@@ -11,17 +11,17 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class Login extends BaseLogin
 {
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         return 'Login Admin';
     }
 
-    public function getHeading(): string | Htmlable | null
+    public function getHeading(): string|Htmlable|null
     {
         return 'Login Admin';
     }
 
-    public function getSubheading(): string | Htmlable | null
+    public function getSubheading(): string|Htmlable|null
     {
         return null;
     }
@@ -38,8 +38,8 @@ class Login extends BaseLogin
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('email')
-            ->label('Username')
-            ->placeholder('Masukkan username')
+            ->label('Email')
+            ->placeholder('Masukkan email admin')
             ->autocomplete('username')
             ->autofocus()
             ->required();
@@ -48,8 +48,8 @@ class Login extends BaseLogin
     protected function getPasswordFormComponent(): Component
     {
         return TextInput::make('password')
-            ->label('Password')
-            ->placeholder('Masukkan password')
+            ->label('Kata Sandi')
+            ->placeholder('Masukkan kata sandi')
             ->password()
             ->revealable()
             ->autocomplete('current-password')

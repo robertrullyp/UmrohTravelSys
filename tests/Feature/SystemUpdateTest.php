@@ -39,7 +39,7 @@ class SystemUpdateTest extends TestCase
             ->assertSee('Pembaruan Terakhir')
             ->assertSee('Cek Pembaruan')
             ->assertSee('Perbarui Sekarang')
-            ->assertSee('Atur Akses GitHub')
+            ->assertSee('Atur Akses Pembaruan')
             ->assertSee(config('admin.version'))
             ->assertSee('Website kini lebih siap ditemukan di Google')
             ->assertDontSee('Detail Update')

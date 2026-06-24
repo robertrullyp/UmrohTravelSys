@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Pages;
 
+use App\Filament\Resources\Pages\Concerns\RedirectsToViewOrIndexAfterSave;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\User;
 use Filament\Actions\DeleteAction;
@@ -12,6 +13,8 @@ use Spatie\Permission\Models\Role;
 
 class EditUser extends EditRecord
 {
+    use RedirectsToViewOrIndexAfterSave;
+
     protected static string $resource = UserResource::class;
 
     protected function beforeSave(): void
@@ -42,6 +45,7 @@ class EditUser extends EditRecord
     {
         return [
             DeleteAction::make()
+                ->label('Hapus Pengguna')
                 ->visible(fn (): bool => UserResource::canDelete($this->getRecord())),
         ];
     }

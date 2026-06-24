@@ -154,7 +154,49 @@ class PublicPagesTest extends TestCase
 
         $this->get(route('packages.show', $package))
             ->assertOk()
-            ->assertSee($package->name);
+            ->assertSee($package->name)
+            ->assertSee('detail-image-frame', false);
+    }
+
+    public function test_schedule_page_shows_booking_links_only_for_available_schedules(): void
+    {
+        $availablePackage = UmrahPackage::query()->firstOrFail();
+        $fullPackage = UmrahPackage::query()->create([
+            'name' => 'Paket Penuh Test',
+            'slug' => 'paket-penuh-test',
+            'duration_days' => 9,
+            'price' => 25000000,
+            'description' => 'Paket untuk memastikan jadwal penuh tidak bisa dibooking.',
+            'is_active' => true,
+            'is_indexable' => true,
+            'sort_order' => 99,
+        ]);
+
+        $availableSchedule = Schedule::query()->create([
+            'umrah_package_id' => $availablePackage->id,
+            'departure_date' => today()->addMonths(6),
+            'capacity' => 20,
+            'quota' => 4,
+            'status' => 'Hampir Penuh',
+            'is_active' => true,
+        ]);
+        $fullSchedule = Schedule::query()->create([
+            'umrah_package_id' => $fullPackage->id,
+            'departure_date' => today()->addMonths(7),
+            'capacity' => 20,
+            'quota' => 0,
+            'status' => 'Penuh',
+            'is_active' => true,
+        ]);
+
+        $this->get('/jadwal')
+            ->assertOk()
+            ->assertSee($availableSchedule->departure_date->translatedFormat('d F Y'))
+            ->assertSee('href="'.route('bookings.package', $availablePackage).'"', false)
+            ->assertSee($fullPackage->name)
+            ->assertSee($fullSchedule->departure_date->translatedFormat('d F Y'))
+            ->assertDontSee('href="'.route('bookings.package', $fullPackage).'"', false)
+            ->assertSee('Tidak tersedia');
     }
 
     public function test_content_models_can_be_updated_for_crud_flow(): void

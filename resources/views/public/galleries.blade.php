@@ -37,12 +37,23 @@
 </section>
 
 <div class="gallery-lightbox" data-gallery-lightbox aria-hidden="true">
-    <button class="lightbox-close" type="button" data-gallery-close aria-label="Tutup preview">&times;</button>
-    <button class="lightbox-nav lightbox-prev" type="button" data-gallery-prev aria-label="Foto sebelumnya">‹</button>
+    <button class="lightbox-close" type="button" data-gallery-close aria-label="Tutup preview">
+        <x-heroicon-o-x-mark class="lightbox-icon" aria-hidden="true" />
+    </button>
+    <button class="lightbox-nav lightbox-prev" type="button" data-gallery-prev aria-label="Foto sebelumnya">
+        <x-heroicon-o-chevron-left class="lightbox-icon" aria-hidden="true" />
+    </button>
     <figure class="lightbox-frame">
-        <img data-gallery-image src="" alt="">
+        <img
+            data-gallery-image
+            data-gallery-placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+            alt=""
+        >
         <figcaption data-gallery-caption></figcaption>
     </figure>
-    <button class="lightbox-nav lightbox-next" type="button" data-gallery-next aria-label="Foto berikutnya">›</button>
+    <button class="lightbox-nav lightbox-next" type="button" data-gallery-next aria-label="Foto berikutnya">
+        <x-heroicon-o-chevron-right class="lightbox-icon" aria-hidden="true" />
+    </button>
 </div>
 @endsection

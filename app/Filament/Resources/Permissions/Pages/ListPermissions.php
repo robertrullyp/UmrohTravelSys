@@ -12,6 +12,6 @@ class ListPermissions extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()->label('Tambah Permission')];
+        return [CreateAction::make()->label('Tambah Permission Teknis')];
     }
 }

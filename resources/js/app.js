@@ -17,13 +17,20 @@ const initializeGalleryLightbox = () => {
     const closeButton = lightbox.querySelector('[data-gallery-close]');
     const previousButton = lightbox.querySelector('[data-gallery-prev]');
     const nextButton = lightbox.querySelector('[data-gallery-next]');
+    const placeholderSrc = image.dataset.galleryPlaceholder || '';
     let activeIndex = 0;
 
     const render = () => {
         const trigger = triggers[activeIndex];
         const title = trigger.dataset.galleryTitle || '';
+        const src = trigger.dataset.gallerySrc || '';
 
-        image.src = trigger.dataset.gallerySrc || '';
+        if (src) {
+            image.src = src;
+        } else {
+            image.removeAttribute('src');
+        }
+
         image.alt = title;
         caption.textContent = title;
     };
@@ -41,7 +48,12 @@ const initializeGalleryLightbox = () => {
         lightbox.classList.remove('is-open');
         lightbox.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('lightbox-open');
-        image.src = '';
+        if (placeholderSrc) {
+            image.src = placeholderSrc;
+        } else {
+            image.removeAttribute('src');
+        }
+        image.alt = '';
     };
 
     const move = (direction) => {

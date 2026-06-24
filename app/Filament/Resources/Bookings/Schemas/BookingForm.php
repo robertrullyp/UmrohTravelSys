@@ -38,7 +38,7 @@ class BookingForm
                         ->relationship('schedule', 'departure_date')
                         ->getOptionLabelFromRecordUsing(
                             fn (Schedule $record): string => $record->departure_date->translatedFormat('d F Y')
-                                . " ({$record->quota} kursi)",
+                                ." ({$record->quota} kursi)",
                         )
                         ->searchable()
                         ->preload()

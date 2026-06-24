@@ -19,19 +19,20 @@ class SiteSettingsTable
                     ->state(fn (SiteSetting $record): string => SiteSetting::groupFor($record->key))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'Branding' => 'primary',
-                        'Beranda' => 'success',
-                        'Kontak' => 'warning',
+                        'Logo & Ikon' => 'primary',
+                        'Hero Beranda' => 'success',
+                        'Tombol Hubungi Kami' => 'warning',
+                        'SEO Default', 'SEO Halaman' => 'info',
                         default => 'gray',
                     }),
                 TextColumn::make('setting_label')
-                    ->label('Parameter')
+                    ->label('Pengaturan')
                     ->state(fn (SiteSetting $record): string => SiteSetting::labelFor($record->key))
                     ->description(fn (SiteSetting $record): string => $record->key)
                     ->searchable(['key'])
                     ->sortable(query: fn ($query, string $direction) => $query->orderBy('key', $direction)),
                 TextColumn::make('value')
-                    ->label('Nilai')
+                    ->label('Isi')
                     ->limit(90)
                     ->wrap()
                     ->placeholder('-'),

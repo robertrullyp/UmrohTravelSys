@@ -37,6 +37,7 @@ body.lightbox-open {
 img {
     display: block;
     max-width: 100%;
+    height: auto;
 }
 
 button,
@@ -377,6 +378,7 @@ a {
 
 .package-card img {
     width: 100%;
+    height: auto;
     aspect-ratio: 16 / 11;
     object-fit: cover;
 }
@@ -423,6 +425,10 @@ a {
     overflow-x: auto;
 }
 
+.schedule-card-list {
+    display: none;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -453,6 +459,83 @@ th {
     font-weight: 800;
 }
 
+.schedule-card {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--white);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.schedule-card + .schedule-card {
+    margin-top: 10px;
+}
+
+.schedule-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.schedule-card h3 {
+    margin: 10px 0 0;
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.35;
+}
+
+.schedule-card-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 12px 0 0;
+}
+
+.schedule-card-meta div {
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--soft);
+}
+
+.schedule-card-meta dt {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.schedule-card-meta dd {
+    margin: 2px 0 0;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.schedule-card-action {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.schedule-card-action .btn {
+    width: 100%;
+    min-height: 40px;
+}
+
+.schedule-empty {
+    margin: 0;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--muted);
+    text-align: center;
+}
+
 .gallery-grid,
 .gallery-page-grid {
     display: grid;
@@ -466,12 +549,14 @@ th {
 
 .gallery-tile,
 .gallery-card {
+    margin: 0;
     overflow: hidden;
 }
 
 .gallery-tile img,
 .gallery-card img {
     width: 100%;
+    height: auto;
     aspect-ratio: 4 / 3;
     object-fit: cover;
     transition: transform 240ms ease;
@@ -534,6 +619,10 @@ th {
     align-items: start;
 }
 
+.package-detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .info-stack {
     display: grid;
     gap: 14px;
@@ -563,18 +652,36 @@ th {
 }
 
 .profile-photo,
-.detail-image {
+.detail-image-frame {
     overflow: hidden;
     border-radius: 8px;
     border: 1px solid var(--line);
     box-shadow: var(--shadow);
 }
 
+.detail-image-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    aspect-ratio: 1 / 1;
+    max-height: 560px;
+    background: linear-gradient(135deg, #f8fbf9, #edf6f1);
+}
+
 .profile-photo img,
 img.detail-image {
     width: 100%;
+    height: auto;
     aspect-ratio: 4 / 5;
     object-fit: cover;
+}
+
+img.detail-image {
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: contain;
+    object-position: center;
 }
 
 .package-list {
@@ -584,16 +691,18 @@ img.detail-image {
 
 .package-wide {
     display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
+    grid-template-columns: 0.82fr 1.18fr;
     overflow: hidden;
 }
 
 .package-wide > img {
     width: 100%;
     height: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
     min-height: 300px;
-    object-fit: cover;
+    background: linear-gradient(135deg, #f8fbf9, #edf6f1);
+    object-fit: contain;
+    object-position: center;
 }
 
 .package-content,
@@ -601,11 +710,41 @@ img.detail-image {
     padding: 24px;
 }
 
+.package-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-content {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--white);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.detail-content > p {
+    margin: 14px 0 0;
+}
+
+.detail-content h2 {
+    margin-top: 16px;
+    font-size: clamp(23px, 2.4vw, 28px);
+}
+
+.detail-content .btn {
+    margin-top: 4px;
+    min-width: 190px;
+}
+
 .package-actions,
 .booking-status-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+.package-content .package-actions {
+    margin-top: auto;
 }
 
 .package-meta {
@@ -627,6 +766,67 @@ img.detail-image {
 
 .package-meta dd {
     margin: 0;
+}
+
+.detail-content .package-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 16px 0 18px;
+}
+
+.detail-content .package-meta div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    min-height: 66px;
+    padding: 10px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--soft);
+}
+
+.detail-content .package-meta dt {
+    font-size: 12px;
+}
+
+.detail-content .package-meta dd {
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.detail-content .check-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px 22px;
+    margin-bottom: 0;
+    line-height: 1.55;
+}
+
+.package-wide .package-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 16px 0 18px;
+}
+
+.package-wide .package-meta div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    min-height: 58px;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--soft);
+}
+
+.package-wide .package-meta dt {
+    font-size: 12px;
+}
+
+.package-wide .package-meta dd {
+    color: var(--text);
+    font-weight: 800;
+    line-height: 1.35;
 }
 
 .contact-layout {
@@ -1210,11 +1410,13 @@ html.motion-ready .site-footer [data-reveal] {
     position: absolute;
     display: grid;
     place-items: center;
+    padding: 0;
     border: 0;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.92);
     color: #111827;
     cursor: pointer;
+    line-height: 1;
 }
 
 .lightbox-close {
@@ -1222,8 +1424,6 @@ html.motion-ready .site-footer [data-reveal] {
     right: 24px;
     width: 42px;
     height: 42px;
-    font-size: 30px;
-    line-height: 1;
 }
 
 .lightbox-nav {
@@ -1231,8 +1431,18 @@ html.motion-ready .site-footer [data-reveal] {
     width: 48px;
     height: 48px;
     transform: translateY(-50%);
-    font-size: 38px;
-    line-height: 1;
+}
+
+.lightbox-icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+    stroke-width: 2.4;
+}
+
+.lightbox-nav .lightbox-icon {
+    width: 26px;
+    height: 26px;
 }
 
 .lightbox-prev {
@@ -1345,12 +1555,19 @@ html.motion-ready .site-footer [data-reveal] {
     .contact-public-card,
     .map-panel,
     .table-card,
+    .schedule-card,
+    .schedule-empty,
     .gallery-card,
+    .detail-content,
     .profile-photo,
-    .detail-image {
+    .detail-image-frame {
         border-color: var(--line);
         background: #10251a;
         box-shadow: var(--shadow);
+    }
+
+    .detail-image-frame {
+        background: linear-gradient(135deg, #0b1a13, #10251a);
     }
 
     .booking-intro,
@@ -1401,6 +1618,25 @@ html.motion-ready .site-footer [data-reveal] {
         background: var(--soft);
     }
 
+    .schedule-card-meta div {
+        border-color: var(--line);
+        background: #0b1a13;
+    }
+
+    .detail-content .package-meta div,
+    .package-wide .package-meta div {
+        border-color: var(--line);
+        background: #0b1a13;
+    }
+
+    .schedule-card-header,
+    .schedule-card h3,
+    .schedule-card-meta dd,
+    .detail-content .package-meta dd,
+    .package-wide .package-meta dd {
+        color: #f8fafc;
+    }
+
     th {
         color: #f8fafc;
         background: #153424;
@@ -1427,6 +1663,16 @@ html.motion-ready .site-footer [data-reveal] {
 }
 
 @media (min-width: 1000px) {
+    .package-detail {
+        align-items: stretch;
+    }
+
+    .detail-image-frame {
+        height: 100%;
+        max-height: none;
+        aspect-ratio: auto;
+    }
+
     .contact-section {
         padding: 24px 0 24px;
     }
@@ -1541,6 +1787,14 @@ html.motion-ready .site-footer [data-reveal] {
         padding: 0 12px;
         font-size: 13px;
         box-shadow: none;
+    }
+
+    .schedule-table {
+        display: none;
+    }
+
+    .schedule-card-list {
+        display: block;
     }
 
     .header-cta-icon {
@@ -1711,6 +1965,27 @@ html.motion-ready .site-footer [data-reveal] {
     .package-meta div {
         grid-template-columns: 1fr;
         gap: 4px;
+    }
+
+    .detail-content {
+        padding: 18px;
+    }
+
+    .detail-content .package-meta,
+    .detail-content .check-list {
+        grid-template-columns: 1fr;
+    }
+
+    .package-wide .package-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-content .btn {
+        width: 100%;
+    }
+
+    .detail-image-frame {
+        max-height: min(460px, 58vh);
     }
 
     .booking-form,

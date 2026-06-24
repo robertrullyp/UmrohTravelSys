@@ -322,6 +322,42 @@
     .fi-company-profile-singleton textarea {
         min-height: 86px;
     }
+
+    .fi-panel-admin .fi-resource-contacts .fi-page-main,
+    .fi-panel-admin .fi-resource-galleries .fi-page-main,
+    .fi-panel-admin .fi-resource-schedules .fi-page-main {
+        max-width: none !important;
+        width: 100%;
+        padding-inline: 18px;
+    }
+
+    .fi-panel-admin .fi-resource-contacts .fi-page-content,
+    .fi-panel-admin .fi-resource-galleries .fi-page-content,
+    .fi-panel-admin .fi-resource-schedules .fi-page-content,
+    .fi-panel-admin .fi-resource-contacts .fi-form,
+    .fi-panel-admin .fi-resource-galleries .fi-form,
+    .fi-panel-admin .fi-resource-schedules .fi-form,
+    .fi-panel-admin .fi-resource-contacts form,
+    .fi-panel-admin .fi-resource-galleries form,
+    .fi-panel-admin .fi-resource-schedules form {
+        max-width: none;
+        width: 100%;
+    }
+
+    .fi-panel-admin .fi-resource-contacts .fi-section,
+    .fi-panel-admin .fi-resource-galleries .fi-section,
+    .fi-panel-admin .fi-resource-schedules .fi-section {
+        height: 100%;
+    }
+
+    .fi-panel-admin .fi-resource-contacts textarea,
+    .fi-panel-admin .fi-resource-schedules textarea {
+        min-height: 76px;
+    }
+
+    .fi-panel-admin .fi-resource-galleries .fi-fo-file-upload {
+        min-height: 0;
+    }
 }
 
 .admin-user-menu-card {
@@ -625,6 +661,118 @@
     padding-block: 14px;
 }
 
+@media (min-width: 1024px) {
+    .fi-panel-admin .fi-page {
+        gap: 10px;
+    }
+
+    .fi-panel-admin .fi-page-header-main-ctn {
+        padding-block: 8px;
+    }
+
+    .fi-panel-admin .fi-page-content {
+        gap: 10px;
+    }
+
+    .fi-panel-admin .fi-ta-header,
+    .fi-panel-admin .fi-section-header {
+        padding-block: 10px;
+        padding-inline: 16px;
+    }
+
+    .fi-panel-admin .fi-section-content-ctn {
+        padding: 14px 16px;
+    }
+
+    .fi-panel-admin .fi-fo-component-ctn,
+    .fi-panel-admin .fi-sc-has-gap {
+        gap: 12px;
+    }
+
+    .fi-panel-admin .fi-fo-field-wrp-helper-text,
+    .fi-panel-admin .fi-sc-text {
+        line-height: 1.4;
+    }
+
+    .fi-panel-admin .fi-resource-roles .fi-fo-field-wrp {
+        min-width: 0;
+    }
+
+    .fi-panel-admin .fi-resource-roles .fi-fo-field-wrp-label,
+    .fi-panel-admin .fi-resource-roles .fi-fo-field-wrp-label span {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.25;
+    }
+
+    .fi-panel-admin .role-permission-group {
+        position: relative;
+        min-width: 0;
+        padding: 34px 12px 12px;
+        border-radius: 8px;
+        background: rgba(248, 250, 252, 0.52);
+    }
+
+    .fi-panel-admin .role-permission-group legend {
+        position: absolute;
+        top: 10px;
+        left: 12px;
+        max-width: calc(100% - 12px);
+        margin: 0;
+        padding: 0;
+        line-height: 1.25;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .fi-panel-admin .role-permission-checklist {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+        min-height: 0;
+        margin-top: 10px;
+        padding: 0;
+        gap: 4px 10px;
+        border: 0;
+        background: transparent;
+    }
+
+    .fi-panel-admin .role-permission-checklist .fi-fo-checkbox-list-option-ctn {
+        padding-top: 2px;
+    }
+
+    .fi-panel-admin .role-permission-checklist .fi-fo-checkbox-list-option {
+        align-items: center;
+        gap: 8px;
+    }
+
+    .fi-panel-admin .role-permission-checklist .fi-checkbox-input {
+        margin-top: 0;
+    }
+
+    .fi-panel-admin .role-permission-checklist .fi-fo-checkbox-list-option-label {
+        font-weight: 800;
+    }
+
+    .fi-panel-admin .role-permission-checklist-compact {
+        grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+        gap: 4px 8px;
+    }
+
+    .fi-panel-admin .role-permission-checklist-compact .fi-fo-checkbox-list-option {
+        gap: 4px;
+    }
+
+    .fi-panel-admin .role-permission-checklist-compact .fi-fo-checkbox-list-option-label {
+        font-size: 12px;
+        line-height: 1.2;
+    }
+
+    .fi-panel-admin .role-permission-checklist .fi-fo-checkbox-list-option-description {
+        font-size: 12px;
+        line-height: 1.35;
+    }
+}
+
 .fi-section-header-heading,
 .fi-fo-field-wrp-label,
 .fi-fo-field-wrp-label span,
@@ -873,6 +1021,11 @@
 
 .dark .admin-info-list div {
     background: #0b1a13;
+}
+
+.dark .role-permission-group {
+    border-color: rgba(148, 163, 184, 0.22);
+    background: rgba(11, 26, 19, 0.72);
 }
 
 .dark .admin-user-menu-card {

@@ -14,6 +14,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -27,10 +28,15 @@ class UserResource extends PermissionResource
     protected static ?string $model = User::class;
 
     protected static ?string $cluster = Settings::class;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
-    protected static ?string $navigationLabel = 'Users';
-    protected static ?string $modelLabel = 'User';
-    protected static ?string $pluralModelLabel = 'Users';
+
+    protected static ?string $navigationLabel = 'Pengguna';
+
+    protected static ?string $modelLabel = 'Pengguna';
+
+    protected static ?string $pluralModelLabel = 'Pengguna';
+
     protected static ?int $navigationSort = 1;
 
     protected static function permissionPrefix(): string
@@ -41,50 +47,85 @@ class UserResource extends PermissionResource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Informasi Akun')
-                ->columns(2)
+            Grid::make([
+                'default' => 1,
+                'lg' => 12,
+            ])
                 ->schema([
-                    FileUpload::make('avatar_path')
-                        ->label('Foto Avatar')
-                        ->disk('public')
-                        ->directory('avatars')
-                        ->image()
-                        ->imageEditor()
-                        ->maxSize(2048)
-                        ->columnSpanFull(),
-                    TextInput::make('name')
-                        ->label('Nama')
-                        ->required()
-                        ->maxLength(255),
-                    TextInput::make('email')
-                        ->label('Email')
-                        ->email()
-                        ->required()
-                        ->unique(ignoreRecord: true)
-                        ->maxLength(255),
-                    TextInput::make('password')
-                        ->label('Kata Sandi')
-                        ->password()
-                        ->revealable()
-                        ->required(fn (string $operation): bool => $operation === 'create')
-                        ->dehydrated(fn (?string $state): bool => filled($state))
-                        ->minLength(8),
-                    TextInput::make('password_confirmation')
-                        ->label('Konfirmasi Kata Sandi')
-                        ->password()
-                        ->revealable()
-                        ->same('password')
-                        ->requiredWith('password')
-                        ->dehydrated(false),
-                    Select::make('roles')
-                        ->label('Role')
-                        ->relationship('roles', 'name')
-                        ->multiple()
-                        ->preload()
-                        ->searchable()
-                        ->required()
-                        ->columnSpanFull(),
-                ]),
+                    Section::make('Foto Profil')
+                        ->description('Tampil di menu akun admin. Opsional.')
+                        ->schema([
+                            FileUpload::make('avatar_path')
+                                ->label('Foto Profil')
+                                ->disk('public')
+                                ->directory('avatars')
+                                ->image()
+                                ->avatar()
+                                ->imageEditor()
+                                ->imageCropAspectRatio('1:1')
+                                ->maxSize(2048)
+                                ->previewable()
+                                ->openable()
+                                ->downloadable()
+                                ->columnSpanFull(),
+                        ])
+                        ->columnSpan([
+                            'default' => 'full',
+                            'lg' => 3,
+                        ]),
+                    Section::make('Data Pengguna Admin')
+                        ->description('Akun yang bisa masuk panel admin. Role menentukan menu dan aksi yang boleh digunakan.')
+                        ->columns([
+                            'default' => 1,
+                            'md' => 2,
+                        ])
+                        ->schema([
+                            TextInput::make('name')
+                                ->label('Nama')
+                                ->helperText('Nama yang tampil di panel admin.')
+                                ->required()
+                                ->maxLength(255),
+                            TextInput::make('email')
+                                ->label('Email')
+                                ->helperText('Dipakai untuk login. Pastikan email aktif dan unik.')
+                                ->email()
+                                ->required()
+                                ->unique(ignoreRecord: true)
+                                ->maxLength(255),
+                            TextInput::make('password')
+                                ->label('Kata Sandi')
+                                ->helperText('Wajib saat tambah pengguna. Saat edit, kosongkan jika tidak ingin mengganti kata sandi.')
+                                ->password()
+                                ->autocomplete('new-password')
+                                ->revealable()
+                                ->required(fn (string $operation): bool => $operation === 'create')
+                                ->dehydrated(fn (?string $state): bool => filled($state))
+                                ->minLength(8),
+                            TextInput::make('password_confirmation')
+                                ->label('Konfirmasi Kata Sandi')
+                                ->helperText('Isi ulang kata sandi baru agar tidak salah ketik.')
+                                ->password()
+                                ->autocomplete('new-password')
+                                ->revealable()
+                                ->same('password')
+                                ->requiredWith('password')
+                                ->dehydrated(false),
+                            Select::make('roles')
+                                ->label('Role / Hak Akses')
+                                ->helperText('Pilih sesuai tugas pengguna. Super-admin memiliki akses penuh.')
+                                ->relationship('roles', 'name')
+                                ->multiple()
+                                ->preload()
+                                ->searchable()
+                                ->required()
+                                ->columnSpanFull(),
+                        ])
+                        ->columnSpan([
+                            'default' => 'full',
+                            'lg' => 9,
+                        ]),
+                ])
+                ->columnSpanFull(),
         ]);
     }
 
@@ -96,14 +137,15 @@ class UserResource extends PermissionResource
                     ->label('')
                     ->disk('public')
                     ->circular()
-                    ->defaultImageUrl(asset('images/site/logo.png')),
+                    ->defaultImageUrl(asset('images/site/logo.png'))
+                    ->visibleFrom('md'),
                 TextColumn::make('name')->label('Nama')->searchable()->sortable(),
                 TextColumn::make('email')->label('Email')->searchable()->sortable(),
                 TextColumn::make('roles.name')
-                    ->label('Role')
+                    ->label('Role / Hak Akses')
                     ->badge()
                     ->separator(','),
-                TextColumn::make('created_at')->label('Dibuat')->dateTime('d M Y H:i')->sortable(),
+                TextColumn::make('created_at')->label('Dibuat')->dateTime('d M Y H:i')->sortable()->visibleFrom('lg')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
                 EditAction::make()->label('Edit'),
@@ -111,6 +153,7 @@ class UserResource extends PermissionResource
                     ->label('Hapus')
                     ->visible(fn (User $record): bool => static::canDelete($record)),
             ])
+            ->stackedOnMobile()
             ->defaultSort('name');
     }
 

@@ -29,7 +29,7 @@ class ListCompanyProfiles extends EditRecord
         return 'Profil';
     }
 
-    public function getMaxContentWidth(): Width | string | null
+    public function getMaxContentWidth(): Width|string|null
     {
         return Width::Full;
     }

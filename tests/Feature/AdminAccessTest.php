@@ -25,8 +25,8 @@ class AdminAccessTest extends TestCase
         $this->get('/admin/login')
             ->assertOk()
             ->assertSee('Login Admin')
-            ->assertSee('Username')
-            ->assertSee('Masukkan username');
+            ->assertSee('Email')
+            ->assertSee('Masukkan email admin');
     }
 
     public function test_admin_can_open_filament_dashboard(): void
@@ -63,10 +63,10 @@ class AdminAccessTest extends TestCase
         $this->actingAs($admin)
             ->get('/admin/profile')
             ->assertOk()
-            ->assertSee('My Account')
-            ->assertSee('Foto Avatar')
-            ->assertSee('Kata sandi baru')
-            ->assertSee('Konfirmasi Kata sandi baru')
+            ->assertSee('Akun Saya')
+            ->assertSee('Foto Profil')
+            ->assertSee('Kata Sandi Baru')
+            ->assertSee('Konfirmasi Kata Sandi Baru')
             ->assertSee('Mode Terang')
             ->assertSee('Keluar')
             ->assertDontSee('admin-topbar-theme-switcher');

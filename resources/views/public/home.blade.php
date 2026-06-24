@@ -77,7 +77,7 @@
             <h2>Jadwal Keberangkatan</h2>
             <p>Informasi jadwal dapat berubah sesuai ketersediaan dan konfirmasi admin.</p>
         </div>
-        <div class="table-card">
+        <div class="table-card schedule-table">
             <table>
                 <thead>
                     <tr>
@@ -99,6 +99,12 @@
                 </tbody>
             </table>
         </div>
+        @include('public.partials.schedule-cards', [
+            'schedules' => $schedules,
+            'showPackage' => true,
+            'showStatus' => false,
+            'showAction' => false,
+        ])
         <div class="section-action">
             <a class="btn btn-green" href="{{ route('schedules') }}">Lihat Semua Jadwal</a>
         </div>

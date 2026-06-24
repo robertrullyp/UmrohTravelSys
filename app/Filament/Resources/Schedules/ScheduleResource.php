@@ -19,9 +19,13 @@ class ScheduleResource extends PermissionResource
     protected static ?string $model = Schedule::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
+
     protected static ?string $navigationLabel = 'Jadwal';
+
     protected static ?string $modelLabel = 'Jadwal';
+
     protected static ?string $pluralModelLabel = 'Jadwal';
+
     protected static ?int $navigationSort = 3;
 
     protected static function permissionPrefix(): string

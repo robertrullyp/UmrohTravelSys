@@ -25,17 +25,18 @@ class SiteSettingsTest extends TestCase
         $this->actingAs($admin)
             ->get('/admin/settings/website')
             ->assertOk()
-            ->assertSee('Website Settings')
-            ->assertSee('Branding')
+            ->assertSee('Pengaturan Website')
+            ->assertSee('Logo &amp; Ikon', false)
             ->assertSee('Logo Brand')
             ->assertSee('Favicon')
             ->assertSee('Gambar Hero Beranda')
             ->assertSee('Highlight Judul')
             ->assertSee('Nomor WhatsApp CTA')
-            ->assertSee('SEO Global')
-            ->assertSee('Google Site Verification')
-            ->assertSee('SEO - Beranda')
-            ->assertSee('SEO - Booking');
+            ->assertSee('SEO Default')
+            ->assertSee('Judul Google Default')
+            ->assertSee('Token Verifikasi Google')
+            ->assertSee('SEO Halaman - Beranda')
+            ->assertSee('SEO Halaman - Booking');
     }
 
     public function test_legacy_settings_routes_redirect_to_settings_cluster(): void

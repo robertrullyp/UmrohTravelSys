@@ -12,7 +12,9 @@
 
 <section class="section">
     <div class="container package-detail">
-        <img class="detail-image" src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}" width="800" height="1000" loading="lazy" decoding="async">
+        <figure class="detail-image-frame">
+            <img class="detail-image" src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}" width="1000" height="1000" loading="lazy" decoding="async">
+        </figure>
         <div class="detail-content">
             <span class="price">Rp {{ number_format((float) $package->price, 0, ',', '.') }} / Orang</span>
             <p>{{ $package->description }}</p>
@@ -40,7 +42,7 @@
             <h2>Jadwal Paket Ini</h2>
             <p>Pilih jadwal yang tersedia dan ajukan booking langsung.</p>
         </div>
-        <div class="table-card">
+        <div class="table-card schedule-table">
             <table>
                 <thead><tr><th>Tanggal</th><th>Kuota</th><th>Tersedia</th><th>Status</th><th>Aksi</th></tr></thead>
                 <tbody>
@@ -64,6 +66,13 @@
                 </tbody>
             </table>
         </div>
+        @include('public.partials.schedule-cards', [
+            'schedules' => $schedules,
+            'showPackage' => false,
+            'showStatus' => true,
+            'showAction' => true,
+            'bookingPackage' => $package,
+        ])
     </div>
 </section>
 @endsection

@@ -11,8 +11,11 @@ class Booking extends Model
     use HasFactory;
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_APPROVED = 'approved';
+
     public const STATUS_REJECTED = 'rejected';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     public const STATUSES = [
@@ -80,7 +83,7 @@ class Booking extends Model
             return $digits;
         }
 
-        return substr($digits, 0, 4) . str_repeat('*', max(strlen($digits) - 7, 3)) . substr($digits, -3);
+        return substr($digits, 0, 4).str_repeat('*', max(strlen($digits) - 7, 3)).substr($digits, -3);
     }
 
     public function getMaskedEmailAttribute(): ?string
@@ -91,6 +94,6 @@ class Booking extends Model
 
         [$name, $domain] = explode('@', $this->email, 2);
 
-        return substr($name, 0, 1) . str_repeat('*', max(strlen($name) - 1, 3)) . '@' . $domain;
+        return substr($name, 0, 1).str_repeat('*', max(strlen($name) - 1, 3)).'@'.$domain;
     }
 }

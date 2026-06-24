@@ -18,6 +18,18 @@ Validasi terakhir:
 - Seluruh migration production berstatus `Ran`.
 - Tidak ada failed queue job dan tidak ada scheduled task aktif.
 
+## Catatan Audit Lanjutan 23 Juni 2026
+
+Audit visual dan dokumentasi dilakukan ulang untuk memastikan UI publik/admin tetap rapi serta README sesuai source code terkini. Fokus pemeriksaan mencakup halaman publik, booking, status booking, login admin, dashboard, resource admin, pengaturan website, pembaruan sistem, dan halaman akun.
+
+Hasil tindak lanjut:
+
+- Jadwal publik di mobile diperbaiki dari tabel horizontal menjadi kartu ringkas agar tanggal, paket, kuota, sisa kursi, status, dan aksi booking tetap terbaca.
+- Tabel admin dibuat lebih responsif dengan layout stacked pada mobile dan aksi baris yang lebih mudah ditemukan.
+- Label admin yang terlihat user awam dilokalkan, seperti Pengaturan, Pengaturan Website, Pengguna, Role / Hak Akses, Permission, Akun Saya, Email, dan Kata Sandi.
+- Lightbox galeri dibersihkan agar tidak membuat elemen gambar kosong yang terbaca sebagai gambar rusak oleh audit otomatis.
+- README ditulis ulang berdasarkan source code aktual dan dibuat lebih rinci untuk pemula: setup lokal, konfigurasi `.env`, deploy, test, update sistem, Google Search, dan troubleshooting.
+
 ## Cakupan dan Hasil
 
 | Area | Kondisi | Kontrol utama |

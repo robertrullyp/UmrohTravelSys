@@ -8,6 +8,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
@@ -30,7 +31,7 @@ class SchedulesTable
                         'Penuh' => 'danger',
                         default => 'gray',
                     }),
-                IconColumn::make('is_active')->label('Tampil')->boolean(),
+                IconColumn::make('is_active')->label('Tampil')->boolean()->visibleFrom('md'),
             ])
             ->defaultSort('departure_date')
             ->filters([
@@ -45,11 +46,12 @@ class SchedulesTable
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
                     ->color('danger'),
-            ])
+            ], position: RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()->label('Hapus terpilih'),
                 ]),
-            ]);
+            ])
+            ->stackedOnMobile();
     }
 }

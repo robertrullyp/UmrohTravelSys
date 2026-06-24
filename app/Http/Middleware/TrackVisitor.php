@@ -26,7 +26,7 @@ class TrackVisitor
         VisitorLog::query()->create([
             'visited_on' => $now->toDateString(),
             'visited_at' => $now,
-            'path' => $request->path() === '/' ? '/' : '/' . trim($request->path(), '/'),
+            'path' => $request->path() === '/' ? '/' : '/'.trim($request->path(), '/'),
             'route_name' => $request->route()?->getName(),
             'ip_hash' => $this->hashValue((string) $request->ip()),
             'user_agent_hash' => $userAgent !== '' ? $this->hashValue($userAgent) : null,

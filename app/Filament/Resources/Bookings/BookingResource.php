@@ -13,6 +13,7 @@ use App\Models\Booking;
 use App\Services\BookingStatusService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -24,9 +25,13 @@ class BookingResource extends PermissionResource
     protected static ?string $model = Booking::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
+
     protected static ?string $navigationLabel = 'Booking';
+
     protected static ?string $modelLabel = 'Booking';
+
     protected static ?string $pluralModelLabel = 'Booking';
+
     protected static ?int $navigationSort = 2;
 
     protected static function permissionPrefix(): string
@@ -95,7 +100,7 @@ class BookingResource extends PermissionResource
             ->modalHeading('Setujui booking?')
             ->modalDescription('Kuota jadwal akan langsung dikurangi sesuai jumlah jamaah.')
             ->schema([
-                \Filament\Forms\Components\Textarea::make('admin_notes')
+                Textarea::make('admin_notes')
                     ->label('Catatan Admin')
                     ->rows(3),
             ])
@@ -124,11 +129,11 @@ class BookingResource extends PermissionResource
             ->requiresConfirmation()
             ->modalHeading('Tolak booking?')
             ->schema([
-                \Filament\Forms\Components\Textarea::make('rejection_reason')
+                Textarea::make('rejection_reason')
                     ->label('Alasan Penolakan')
                     ->required()
                     ->rows(3),
-                \Filament\Forms\Components\Textarea::make('admin_notes')
+                Textarea::make('admin_notes')
                     ->label('Catatan Internal')
                     ->rows(3),
             ])
@@ -159,7 +164,7 @@ class BookingResource extends PermissionResource
             ->modalHeading('Batalkan booking?')
             ->modalDescription('Jika booking sudah disetujui, kuota akan dikembalikan ke jadwal.')
             ->schema([
-                \Filament\Forms\Components\Textarea::make('admin_notes')
+                Textarea::make('admin_notes')
                     ->label('Catatan Pembatalan')
                     ->rows(3),
             ])

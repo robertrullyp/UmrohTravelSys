@@ -48,7 +48,7 @@ class AdminPanelProvider extends PanelProvider
                 'success' => Color::hex('#0b8a4a'),
             ])
             ->userMenuItems([
-                'profile' => fn (Action $action): Action => $action->label('My Account'),
+                'profile' => fn (Action $action): Action => $action->label('Akun Saya'),
                 'logout' => fn (Action $action): Action => $action
                     ->label('Keluar')
                     ->color('danger')

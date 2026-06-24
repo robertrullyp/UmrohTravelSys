@@ -14,7 +14,7 @@ class ListSiteSettings extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Tambah Pengaturan')
+                ->label('Tambah Pengaturan Custom')
                 ->icon('heroicon-o-plus'),
         ];
     }

@@ -15,25 +15,25 @@ class SiteSettingForm
     {
         return $schema
             ->components([
-                Section::make('Pengaturan Website')
-                    ->description('Kelola parameter yang dipakai halaman publik tanpa perlu mengubah kode.')
+                Section::make('Pengaturan Teknis')
+                    ->description('Untuk pengelola teknis. Edit harian sebaiknya lewat menu Pengaturan Website.')
                     ->schema([
                         Select::make('key')
-                            ->label('Parameter')
+                            ->label('Jenis Pengaturan')
                             ->options(fn (): array => SiteSetting::optionLabels())
                             ->getSearchResultsUsing(function (string $search): array {
                                 $systemOptions = collect(SiteSetting::optionLabels())
-                                    ->filter(fn (string $label, string $key): bool => str_contains(strtolower($label . ' ' . $key), strtolower($search)));
+                                    ->filter(fn (string $label, string $key): bool => str_contains(strtolower($label.' '.$key), strtolower($search)));
 
                                 return $systemOptions
                                     ->when(
                                         filled($search),
-                                        fn ($options) => $options->put($search, 'Advanced - ' . $search),
+                                        fn ($options) => $options->put($search, 'Custom - '.$search),
                                     )
                                     ->all();
                             })
                             ->getOptionLabelUsing(fn (?string $value): ?string => filled($value)
-                                ? (SiteSetting::isSystemKey($value) ? SiteSetting::optionLabels()[$value] : 'Advanced - ' . $value)
+                                ? (SiteSetting::isSystemKey($value) ? SiteSetting::optionLabels()[$value] : 'Custom - '.$value)
                                 : null)
                             ->searchable()
                             ->live()
@@ -42,7 +42,7 @@ class SiteSettingForm
                             ->unique(ignoreRecord: true)
                             ->rules(['max:255']),
                         Textarea::make('value')
-                            ->label(fn (Get $get): string => 'Nilai ' . SiteSetting::labelFor($get('key')))
+                            ->label(fn (Get $get): string => 'Isi '.SiteSetting::labelFor($get('key')))
                             ->helperText(fn (Get $get): string => SiteSetting::helperFor($get('key')))
                             ->placeholder(fn (Get $get): string => SiteSetting::definitionFor($get('key'))['placeholder'])
                             ->rows(fn (Get $get): int => SiteSetting::definitionFor($get('key'))['rows'])

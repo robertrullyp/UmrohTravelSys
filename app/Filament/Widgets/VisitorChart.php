@@ -67,7 +67,7 @@ class VisitorChart extends ChartWidget
         ];
     }
 
-    public function getDescription(): string | Htmlable | null
+    public function getDescription(): string|Htmlable|null
     {
         return match ($this->filter ?: '14d') {
             '30d' => 'Pengunjung unik dan page views 30 hari terakhir.',
@@ -112,7 +112,7 @@ class VisitorChart extends ChartWidget
         return $date ? Carbon::parse($date)->startOfMonth() : now()->startOfMonth();
     }
 
-    protected function getBucketKey(CarbonInterface | string | null $date, bool $isMonthly): string
+    protected function getBucketKey(CarbonInterface|string|null $date, bool $isMonthly): string
     {
         $carbon = $date instanceof CarbonInterface ? $date->copy() : Carbon::parse($date);
 

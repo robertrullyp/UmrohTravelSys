@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\VisitorLogs\VisitorLogResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class RbacAccessTest extends TestCase
@@ -52,9 +54,55 @@ class RbacAccessTest extends TestCase
         $this->assertTrue($superAdmin->hasRole('super-admin'));
 
         $this->actingAs($superAdmin)->get('/admin/settings')->assertRedirect('/admin/settings/website');
-        $this->actingAs($superAdmin)->get('/admin/settings/users')->assertOk()->assertSee('Users');
-        $this->actingAs($superAdmin)->get('/admin/settings/roles')->assertOk()->assertSee('Roles');
-        $this->actingAs($superAdmin)->get('/admin/settings/permissions')->assertOk()->assertSee('Permissions');
+        $this->actingAs($superAdmin)->get('/admin/settings/users')->assertOk()->assertSee('Pengguna');
+        $this->actingAs($superAdmin)->get('/admin/settings/roles')->assertOk()->assertSee('Role / Hak Akses');
+        $this->actingAs($superAdmin)->get('/admin/settings/logs')->assertOk()->assertSee('Log');
+        $this->actingAs($superAdmin)->get('/admin/settings/permissions')->assertForbidden();
         $this->actingAs($superAdmin)->get('/admin/users')->assertRedirect('/admin/settings/users');
+    }
+
+    public function test_log_menu_access_is_controlled_by_role_permission(): void
+    {
+        $this->assertDatabaseHas('permissions', ['name' => 'logs.view']);
+        $this->assertDatabaseHas('permissions', ['name' => 'logs.delete']);
+        $this->assertTrue(Role::findByName('super-admin')->hasPermissionTo('logs.delete'));
+        $this->assertTrue(Role::findByName('admin')->hasPermissionTo('logs.view'));
+        $this->assertFalse(Role::findByName('admin')->hasPermissionTo('logs.delete'));
+
+        $viewer = User::query()->create([
+            'name' => 'Log Viewer',
+            'email' => 'log-viewer@example.test',
+            'password' => 'password',
+        ]);
+        $viewerRole = Role::query()->create(['name' => 'log-viewer', 'guard_name' => 'web']);
+        $viewerRole->givePermissionTo(['panel.access', 'logs.view']);
+        $viewer->assignRole($viewerRole);
+
+        $blocked = User::query()->create([
+            'name' => 'No Log Viewer',
+            'email' => 'no-log-viewer@example.test',
+            'password' => 'password',
+        ]);
+        $blockedRole = Role::query()->create(['name' => 'no-log-viewer', 'guard_name' => 'web']);
+        $blockedRole->givePermissionTo(['panel.access', 'settings.view']);
+        $blocked->assignRole($blockedRole);
+
+        $this->actingAs($viewer)
+            ->get(VisitorLogResource::getUrl())
+            ->assertOk()
+            ->assertSee('Log');
+
+        $this->assertTrue(VisitorLogResource::canViewAny());
+
+        $this->actingAs($blocked)
+            ->get(VisitorLogResource::getUrl())
+            ->assertRedirect();
+
+        $this->assertFalse(VisitorLogResource::canViewAny());
+
+        $this->actingAs($blocked)
+            ->get('/admin/settings/website')
+            ->assertOk()
+            ->assertDontSee('/admin/settings/logs', false);
     }
 }

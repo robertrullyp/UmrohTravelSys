@@ -17,6 +17,11 @@ final class AdminPermissions
         'updates.run',
     ];
 
+    public const LOG_ACTIONS = [
+        'logs.view',
+        'logs.delete',
+    ];
+
     public const RESOURCES = [
         'packages',
         'schedules',
@@ -42,7 +47,7 @@ final class AdminPermissions
      */
     public static function all(): array
     {
-        $permissions = [self::PANEL_ACCESS, ...self::BOOKING_ACTIONS, ...self::UPDATE_ACTIONS];
+        $permissions = [self::PANEL_ACCESS, ...self::BOOKING_ACTIONS, ...self::UPDATE_ACTIONS, ...self::LOG_ACTIONS];
 
         foreach (self::RESOURCES as $resource) {
             foreach (self::OPERATIONS as $operation) {
@@ -63,7 +68,8 @@ final class AdminPermissions
             fn (string $permission): bool => ! str_starts_with($permission, 'users.')
                 && ! str_starts_with($permission, 'roles.')
                 && ! str_starts_with($permission, 'permissions.')
-                && ! str_starts_with($permission, 'updates.'),
+                && ! str_starts_with($permission, 'updates.')
+                && $permission !== 'logs.delete',
         ));
     }
 }
