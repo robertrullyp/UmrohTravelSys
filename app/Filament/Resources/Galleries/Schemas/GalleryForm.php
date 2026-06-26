@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Galleries\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
@@ -21,30 +22,8 @@ class GalleryForm
                     'lg' => 12,
                 ])
                     ->schema([
-                        Section::make('Foto Galeri')
-                            ->description('Foto utama yang tampil di grid galeri publik.')
-                            ->schema([
-                                FileUpload::make('image_path')
-                                    ->label('Foto')
-                                    ->helperText('Tampil di halaman Galeri. Thumbnail publik memakai rasio 4:3, sedangkan preview/lightbox menampilkan foto lebih besar.')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('galleries')
-                                    ->imageEditor()
-                                    ->orientImagesFromExif()
-                                    ->imagePreviewHeight('180')
-                                    ->maxSize(4096)
-                                    ->previewable()
-                                    ->openable()
-                                    ->downloadable()
-                                    ->required(),
-                            ])
-                            ->columnSpan([
-                                'default' => 'full',
-                                'lg' => 7,
-                            ]),
-                        Section::make('Detail Foto')
-                            ->description('Judul, tanggal, dan urutan tampil di halaman publik.')
+                        Section::make('Detail Album')
+                            ->description('Judul, tanggal, dan urutan album di halaman publik.')
                             ->columns([
                                 'default' => 1,
                                 'md' => 2,
@@ -68,7 +47,58 @@ class GalleryForm
                             ])
                             ->columnSpan([
                                 'default' => 'full',
-                                'lg' => 5,
+                                'lg' => 4,
+                            ]),
+                        Section::make('Foto Album')
+                            ->description('Foto pertama menjadi sampul album di beranda dan halaman Galeri.')
+                            ->schema([
+                                Repeater::make('photos')
+                                    ->label('Foto Album')
+                                    ->relationship()
+                                    ->schema([
+                                        FileUpload::make('image_path')
+                                            ->label('Foto')
+                                            ->helperText('Thumbnail publik memakai rasio 4:3. Preview popup menampilkan foto lebih besar.')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('galleries')
+                                            ->imageEditor()
+                                            ->orientImagesFromExif()
+                                            ->imagePreviewHeight('150')
+                                            ->maxSize(4096)
+                                            ->previewable()
+                                            ->openable()
+                                            ->downloadable()
+                                            ->required()
+                                            ->columnSpan([
+                                                'default' => 'full',
+                                                'md' => 7,
+                                            ]),
+                                        TextInput::make('caption')
+                                            ->label('Keterangan Foto')
+                                            ->helperText('Opsional. Jika kosong, judul album dipakai di popup.')
+                                            ->maxLength(255)
+                                            ->columnSpan([
+                                                'default' => 'full',
+                                                'md' => 5,
+                                            ]),
+                                    ])
+                                    ->columns([
+                                        'default' => 1,
+                                        'md' => 12,
+                                    ])
+                                    ->minItems(1)
+                                    ->defaultItems(1)
+                                    ->addActionLabel('Tambah Foto')
+                                    ->itemLabel(fn (array $state): string => filled($state['caption'] ?? null) ? $state['caption'] : 'Foto Album')
+                                    ->orderColumn('sort_order')
+                                    ->reorderableWithButtons()
+                                    ->collapsible()
+                                    ->columnSpanFull(),
+                            ])
+                            ->columnSpan([
+                                'default' => 'full',
+                                'lg' => 8,
                             ]),
                     ])
                     ->columnSpanFull(),

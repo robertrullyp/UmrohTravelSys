@@ -27,7 +27,7 @@ Halaman publik dirender server-side memakai Blade, sehingga konten, metadata SEO
 - Gambar hero memakai `loading="eager"` dan `fetchpriority="high"`.
 - Gambar di bawah fold memakai `loading="lazy"` dan `decoding="async"`.
 - Jadwal publik memakai tabel di desktop dan kartu ringkas di mobile agar tidak terpotong.
-- Galeri memiliki preview/lightbox tanpa membuat request gambar kosong.
+- Galeri memakai album; setiap album bisa berisi banyak foto dan lightbox menampilkan thumbnail foto di album tersebut.
 
 ### Booking dan Kuota
 
@@ -44,11 +44,11 @@ Halaman publik dirender server-side memakai Blade, sehingga konten, metadata SEO
 ### Panel Admin
 
 - Dashboard statistik konten, booking, dan pengunjung.
-- Kelola Paket Umrah, Jadwal, Galeri, Profil Perusahaan, Kontak, dan Booking.
+- Kelola Paket Umrah, Jadwal, Album Galeri, Profil Perusahaan, Kontak, dan Booking.
 - Review booking: Detail, Edit, Setujui, Tolak, Batalkan, catatan admin, dan audit reviewer/waktu.
 - Pengaturan Website untuk logo, favicon, gambar hero, CTA WhatsApp, SEO global, SEO halaman, dan verifikasi Google.
 - SEO paket dapat diatur per paket: title, description, social image, dan pilihan tampil di Google.
-- Akun Saya untuk avatar, nama, email, password, mode tampilan, dan logout.
+- Akun Saya untuk avatar, nama, email, nomor telepon, password, mode tampilan, dan logout.
 - Pengguna dan Role / Hak Akses untuk RBAC. Permission teknis tetap ada di database, tetapi tidak ditampilkan sebagai menu harian agar admin awam tidak salah mengubah izin internal.
 - Log untuk melihat riwayat kunjungan publik secara anonim. Log lama dapat dibersihkan manual mulai dari yang lebih dari 1 hari, dan sistem menjadwalkan penghapusan otomatis untuk log yang lebih dari 90 hari.
 - Pembaruan Sistem untuk cek update, mengatur akses GitHub, dan menjalankan update.
@@ -374,7 +374,7 @@ Gunakan panduan singkat ini saat mengubah konten:
 
 - **Paket Umrah**: gambar utama tampil di kartu beranda, daftar paket, dan detail paket. Poster/flyer tampil utuh di detail, sedangkan thumbnail dapat crop ringan agar grid rapi.
 - **Jadwal**: jadwal aktif, mendatang, dan masih punya kuota akan tampil di Beranda, `/jadwal`, dan detail paket.
-- **Galeri**: foto aktif tampil di halaman Galeri dan lightbox publik.
+- **Galeri**: album aktif tampil di halaman Galeri; foto pertama menjadi sampul, dan seluruh foto album tampil di lightbox publik.
 - **Profil**: data perusahaan dan foto profil tampil di halaman Profil.
 - **Kontak**: kontak aktif tampil di halaman Kontak; kontak utama dipakai footer, tombol telepon/email/WhatsApp, peta, dan structured data.
 - **Pengaturan Website**: logo, favicon, hero beranda, tombol WhatsApp, SEO default, SEO per halaman, dan verifikasi Google berasal dari menu ini.

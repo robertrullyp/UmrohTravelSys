@@ -5,11 +5,14 @@ namespace App\Filament\Clusters\Settings\Pages;
 use App\Filament\Clusters\Settings;
 use App\Models\SiteSetting;
 use App\Services\SiteImageOptimizer;
+use App\Services\WhatsAppGatewayService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Actions;
@@ -17,8 +20,10 @@ use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Throwable;
 
 class WebsiteSettings extends Page
 {
@@ -147,6 +152,121 @@ class WebsiteSettings extends Page
                             ->maxLength(32)
                             ->regex('/^[0-9+()\s-]{8,32}$/'),
                     ]),
+                Section::make('WhatsApp Gateway & OTP Admin')
+                    ->description('Koneksi gateway untuk OTP login admin dan notifikasi booking baru.')
+                    ->collapsed()
+                    ->headerActions([
+                        Action::make('testWhatsAppGateway')
+                            ->label('Test Kirim WhatsApp')
+                            ->icon(Heroicon::OutlinedPaperAirplane)
+                            ->color('success')
+                            ->visible(fn (): bool => auth()->user()?->can('settings.update') ?? false)
+                            ->modalHeading('Test Kirim WhatsApp')
+                            ->modalDescription('Gunakan setelah pengaturan gateway disimpan.')
+                            ->modalSubmitActionLabel('Kirim Test')
+                            ->schema([
+                                TextInput::make('test_whatsapp')
+                                    ->label('Nomor WhatsApp Tujuan')
+                                    ->helperText('Boleh diawali 08 atau 62. Pesan test dikirim memakai konfigurasi gateway yang sudah tersimpan.')
+                                    ->placeholder('082252239507')
+                                    ->tel()
+                                    ->required()
+                                    ->maxLength(32)
+                                    ->regex('/^[0-9+()\s-]{8,32}$/'),
+                            ])
+                            ->action(fn (array $data): null => $this->sendWhatsAppGatewayTest($data)),
+                    ])
+                    ->columns(2)
+                    ->schema([
+                        Toggle::make('wa_gateway_enabled')
+                            ->label('Aktifkan Gateway WhatsApp')
+                            ->helperText('Aktifkan setelah URL endpoint dan auth gateway benar.')
+                            ->inline(false),
+                        Toggle::make('admin_otp_enabled')
+                            ->label('Wajibkan OTP Login Admin')
+                            ->helperText('Jika aktif, admin harus punya nomor telepon dan menerima OTP WhatsApp sebelum masuk.')
+                            ->inline(false),
+                        TextInput::make('wa_gateway_post_url')
+                            ->label('URL POST Send WhatsApp')
+                            ->helperText('URL dari DRNet Gateway, contoh: https://host/ext/secret/wa. Kosongkan jika tidak ingin mengganti nilai yang tersimpan.')
+                            ->placeholder(fn (): string => SiteSetting::hasEncryptedValue('wa_gateway_post_url') ? 'URL gateway sudah tersimpan' : 'https://gateway.example/ext/secret/wa')
+                            ->password()
+                            ->revealable()
+                            ->required(fn (Get $get): bool => (bool) $get('wa_gateway_enabled') && ! SiteSetting::hasEncryptedValue('wa_gateway_post_url'))
+                            ->maxLength(2048)
+                            ->columnSpanFull(),
+                        Select::make('wa_gateway_auth_mode')
+                            ->label('Mode Auth Gateway')
+                            ->options([
+                                'none' => 'None',
+                                'basic' => 'Basic Auth',
+                                'header' => 'Custom Header',
+                                'bearer' => 'Bearer Token',
+                                'jwt_static' => 'JWT Static Token',
+                            ])
+                            ->default('none')
+                            ->native(false)
+                            ->required(),
+                        TextInput::make('wa_gateway_basic_username')
+                            ->label('Basic Username')
+                            ->helperText('Dipakai hanya bila mode auth Basic.')
+                            ->maxLength(255),
+                        TextInput::make('wa_gateway_basic_password')
+                            ->label('Basic Password')
+                            ->helperText('Kosongkan jika tidak ingin mengganti password tersimpan.')
+                            ->placeholder(fn (): string => SiteSetting::hasEncryptedValue('wa_gateway_basic_password') ? 'Password sudah tersimpan' : '')
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255),
+                        TextInput::make('wa_gateway_header_name')
+                            ->label('Nama Header')
+                            ->helperText('Dipakai hanya bila mode auth Custom Header.')
+                            ->placeholder('X-API-Key')
+                            ->maxLength(255),
+                        TextInput::make('wa_gateway_header_value')
+                            ->label('Nilai Header / API Key')
+                            ->helperText('Kosongkan jika tidak ingin mengganti API key tersimpan.')
+                            ->placeholder(fn (): string => SiteSetting::hasEncryptedValue('wa_gateway_header_value') ? 'API key sudah tersimpan' : '')
+                            ->password()
+                            ->revealable()
+                            ->maxLength(1024),
+                        TextInput::make('wa_gateway_bearer_token')
+                            ->label('Bearer / JWT Static Token')
+                            ->helperText('Dipakai hanya bila mode auth Bearer atau JWT Static.')
+                            ->placeholder(fn (): string => SiteSetting::hasEncryptedValue('wa_gateway_bearer_token') ? 'Token sudah tersimpan' : '')
+                            ->password()
+                            ->revealable()
+                            ->maxLength(2048)
+                            ->columnSpanFull(),
+                        TextInput::make('admin_otp_expires_minutes')
+                            ->label('Masa Berlaku OTP')
+                            ->helperText('Dalam menit. Default 5 menit.')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(30)
+                            ->required(),
+                        TextInput::make('admin_otp_resend_interval_seconds')
+                            ->label('Jeda Kirim Ulang OTP')
+                            ->helperText('Dalam detik. Default 60 detik.')
+                            ->numeric()
+                            ->minValue(30)
+                            ->maxValue(600)
+                            ->required(),
+                        TextInput::make('booking_followup_link_expires_minutes')
+                            ->label('Masa Berlaku Link Tindak Lanjut')
+                            ->helperText('Dalam menit. Default 1440 menit atau 24 jam.')
+                            ->numeric()
+                            ->minValue(15)
+                            ->maxValue(10080)
+                            ->required(),
+                        TextInput::make('booking_followup_otp_expires_minutes')
+                            ->label('Masa Berlaku OTP Tindak Lanjut')
+                            ->helperText('Dalam menit. Default 60 menit. Kode ini wajib saat admin submit aksi dari link WhatsApp.')
+                            ->numeric()
+                            ->minValue(5)
+                            ->maxValue(1440)
+                            ->required(),
+                    ]),
                 Section::make('SEO Default')
                     ->description('Cadangan untuk judul Google dan preview link bila halaman belum punya pengaturan khusus.')
                     ->collapsed()
@@ -244,6 +364,14 @@ class WebsiteSettings extends Page
         foreach ($this->settingsKeys() as $key) {
             $value = $this->normalizeSettingValue($data[$key] ?? null, $key);
 
+            if ($this->isEncryptedSetting($key)) {
+                if ($value !== '') {
+                    SiteSetting::setEncryptedValue($key, $value);
+                }
+
+                continue;
+            }
+
             if ($value === '' && $this->isAssetSetting($key)) {
                 $value = SiteSetting::getValue($key, $this->settingDefaults()[$key]);
             }
@@ -265,6 +393,62 @@ class WebsiteSettings extends Page
     }
 
     /**
+     * @param  array<string, mixed>  $data
+     */
+    public function sendWhatsAppGatewayTest(array $data): null
+    {
+        abort_unless(auth()->user()?->can('settings.update'), 403);
+
+        $number = trim((string) ($data['test_whatsapp'] ?? ''));
+
+        validator(
+            ['test_whatsapp' => $number],
+            ['test_whatsapp' => ['required', 'string', 'max:32', 'regex:/^[0-9+()\s-]{8,32}$/']],
+            ['test_whatsapp.regex' => 'Format nomor WhatsApp tidak valid.'],
+        )->validate();
+
+        try {
+            app(WhatsAppGatewayService::class)->sendText(
+                $number,
+                'Tes WhatsApp Gateway PT Amara Al Medina Travel berhasil dikirim pada '.now()->translatedFormat('d F Y H:i').'.',
+                'wa-gateway-test-'.auth()->id().'-'.now()->timestamp,
+            );
+
+            Notification::make()
+                ->success()
+                ->title('Pesan test berhasil dikirim.')
+                ->send();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            Notification::make()
+                ->danger()
+                ->title('Pesan test gagal dikirim.')
+                ->body($this->whatsAppGatewayTestErrorMessage($exception))
+                ->send();
+        }
+
+        return null;
+    }
+
+    private function whatsAppGatewayTestErrorMessage(Throwable $exception): string
+    {
+        $safeMessages = [
+            'Gateway WhatsApp belum diaktifkan.',
+            'URL gateway WhatsApp belum diisi.',
+            'Nomor WhatsApp tujuan tidak valid.',
+            'Gateway WhatsApp menolak request.',
+            'Gateway WhatsApp gagal mengirim pesan.',
+        ];
+
+        if (in_array($exception->getMessage(), $safeMessages, true)) {
+            return $exception->getMessage();
+        }
+
+        return 'Koneksi gateway gagal. Periksa status gateway, URL, dan auth yang tersimpan.';
+    }
+
+    /**
      * @return array<string, string>
      */
     private function settingsState(): array
@@ -281,6 +465,14 @@ class WebsiteSettings extends Page
 
         foreach ($this->seoSettingDefaults() as $key => $default) {
             $state[$key] = SiteSetting::getValue($key, $default);
+        }
+
+        foreach ($this->whatsappGatewaySettingDefaults() as $key => $default) {
+            $state[$key] = SiteSetting::getValue($key, $default);
+        }
+
+        foreach ($this->encryptedSettings() as $key) {
+            $state[$key] = '';
         }
 
         return $state;
@@ -317,6 +509,8 @@ class WebsiteSettings extends Page
             'hero_subtitle',
             'cta_whatsapp',
             ...array_keys($this->seoSettingDefaults()),
+            ...array_keys($this->whatsappGatewaySettingDefaults()),
+            ...$this->encryptedSettings(),
         ];
     }
 
@@ -354,6 +548,42 @@ class WebsiteSettings extends Page
     private function displaySettingValue(string $key): string
     {
         return $this->normalizeSettingValue(data_get($this->data, $key), $key);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function whatsappGatewaySettingDefaults(): array
+    {
+        return [
+            'wa_gateway_enabled' => '0',
+            'wa_gateway_auth_mode' => 'none',
+            'wa_gateway_basic_username' => '',
+            'wa_gateway_header_name' => 'X-API-Key',
+            'admin_otp_enabled' => '0',
+            'admin_otp_expires_minutes' => '5',
+            'admin_otp_resend_interval_seconds' => '60',
+            'booking_followup_link_expires_minutes' => '1440',
+            'booking_followup_otp_expires_minutes' => '60',
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function encryptedSettings(): array
+    {
+        return [
+            'wa_gateway_post_url',
+            'wa_gateway_basic_password',
+            'wa_gateway_header_value',
+            'wa_gateway_bearer_token',
+        ];
+    }
+
+    private function isEncryptedSetting(string $key): bool
+    {
+        return in_array($key, $this->encryptedSettings(), true);
     }
 
     /**

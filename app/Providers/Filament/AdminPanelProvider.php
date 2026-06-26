@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Auth\MultiFactor\WhatsAppOtpAuthentication;
 use App\Filament\Pages\Auth\EditProfile as AdminEditProfile;
 use App\Filament\Pages\Auth\Login as AdminLogin;
 use App\Filament\Pages\Dashboard;
@@ -35,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(AdminLogin::class)
             ->profile(page: AdminEditProfile::class, isSimple: false)
+            ->multiFactorAuthentication([WhatsAppOtpAuthentication::make()], setUpRequiredAction: null)
             ->brandName('PT Amara Al Medina Travel')
             ->brandLogo(SiteSetting::assetUrl('brand_logo_path', 'images/site/logo.png'))
             ->brandLogoHeight('4.75rem')

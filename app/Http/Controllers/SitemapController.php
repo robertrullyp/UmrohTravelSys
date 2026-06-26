@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CompanyProfile;
 use App\Models\Contact;
 use App\Models\Gallery;
+use App\Models\GalleryPhoto;
 use App\Models\Schedule;
 use App\Models\SiteSetting;
 use App\Models\UmrahPackage;
@@ -32,6 +33,9 @@ class SitemapController extends Controller
             'packages' => UmrahPackage::query()->where('is_active', true)->where('is_indexable', true)->max('updated_at'),
             'schedules' => Schedule::query()->where('is_active', true)->max('updated_at'),
             'galleries' => Gallery::query()->where('is_active', true)->max('updated_at'),
+            'gallery_photos' => GalleryPhoto::query()
+                ->whereHas('gallery', fn ($query) => $query->where('is_active', true))
+                ->max('updated_at'),
         ];
 
         $entries = collect([
@@ -39,7 +43,7 @@ class SitemapController extends Controller
             $this->entry($seo->routeUrl('profile'), $this->latest([$updated['profile'], $updated['settings']])),
             $this->entry($seo->routeUrl('packages'), $this->latest([$updated['packages'], $updated['settings']])),
             $this->entry($seo->routeUrl('schedules'), $this->latest([$updated['schedules'], $updated['settings']])),
-            $this->entry($seo->routeUrl('galleries'), $this->latest([$updated['galleries'], $updated['settings']])),
+            $this->entry($seo->routeUrl('galleries'), $this->latest([$updated['galleries'], $updated['gallery_photos'], $updated['settings']])),
             $this->entry($seo->routeUrl('contact'), $this->latest([$updated['contacts'], $updated['settings']])),
             $this->entry($seo->routeUrl('bookings.create'), $this->latest([$updated['packages'], $updated['schedules'], $updated['settings']])),
         ])->merge($packages->map(function (UmrahPackage $package) use ($seo): array {

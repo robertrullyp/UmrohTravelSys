@@ -48,7 +48,9 @@ class PublicPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Galeri Kegiatan')
             ->assertSee('data-gallery-lightbox', false)
-            ->assertSee('data-gallery-trigger', false);
+            ->assertSee('data-gallery-trigger', false)
+            ->assertSee('data-gallery-albums', false)
+            ->assertSee('data-gallery-thumbnails', false);
         $this->get('/kontak')
             ->assertOk()
             ->assertSee('Informasi Kontak')
@@ -199,17 +201,59 @@ class PublicPagesTest extends TestCase
             ->assertSee('Tidak tersedia');
     }
 
+    public function test_gallery_page_renders_album_cover_and_lightbox_photos(): void
+    {
+        Gallery::query()->update(['is_active' => false]);
+
+        $album = Gallery::query()->create([
+            'title' => 'Album Kegiatan Test',
+            'taken_at' => '2026-06-26',
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+        $album->photos()->createMany([
+            [
+                'image_path' => 'galleries/album-cover.jpg',
+                'caption' => 'Sampul album test',
+                'sort_order' => 0,
+            ],
+            [
+                'image_path' => 'galleries/album-second.jpg',
+                'caption' => 'Foto kedua album test',
+                'sort_order' => 1,
+            ],
+        ]);
+
+        $this->get('/galeri')
+            ->assertOk()
+            ->assertSee('Album Kegiatan Test')
+            ->assertSee('2 foto')
+            ->assertSee('galleries/album-cover.jpg')
+            ->assertSee('Sampul album test')
+            ->assertSee('Foto kedua album test')
+            ->assertSee('lightbox-thumbnails', false);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('galleries/album-cover.jpg')
+            ->assertSee('aria-label="Lihat album Album Kegiatan Test"', false);
+    }
+
     public function test_content_models_can_be_updated_for_crud_flow(): void
     {
         $package = UmrahPackage::query()->firstOrFail();
         $package->update(['price' => 62000000]);
 
         $gallery = Gallery::query()->create([
-            'title' => 'Test Upload Foto',
-            'image_path' => 'galleries/test.jpeg',
+            'title' => 'Test Album Foto',
             'taken_at' => '2026-06-14',
             'is_active' => true,
             'sort_order' => 99,
+        ]);
+        $gallery->photos()->create([
+            'image_path' => 'galleries/test.jpeg',
+            'caption' => 'Foto test',
+            'sort_order' => 0,
         ]);
 
         $this->assertDatabaseHas('umrah_packages', [
@@ -217,9 +261,12 @@ class PublicPagesTest extends TestCase
             'price' => 62000000,
         ]);
         $this->assertDatabaseHas('galleries', ['id' => $gallery->id]);
+        $this->assertSame('galleries/test.jpeg', $gallery->cover_image_path);
+        $this->assertDatabaseHas('gallery_photos', ['gallery_id' => $gallery->id]);
 
         $gallery->delete();
 
         $this->assertDatabaseMissing('galleries', ['id' => $gallery->id]);
+        $this->assertDatabaseMissing('gallery_photos', ['gallery_id' => $gallery->id]);
     }
 }

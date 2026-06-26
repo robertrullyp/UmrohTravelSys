@@ -118,9 +118,11 @@
     </div>
     <div class="container gallery-grid">
         @foreach ($galleries as $gallery)
-            <a href="{{ route('galleries') }}" class="gallery-tile">
-                <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}" width="1200" height="900" loading="lazy" decoding="async">
-            </a>
+            @if ($gallery->cover_image_path)
+                <a href="{{ route('galleries') }}" class="gallery-tile" aria-label="Lihat album {{ $gallery->title }}">
+                    <img src="{{ asset('storage/' . $gallery->cover_image_path) }}" alt="{{ $gallery->title }}" width="1200" height="900" loading="lazy" decoding="async">
+                </a>
+            @endif
         @endforeach
     </div>
     <div class="section-action">

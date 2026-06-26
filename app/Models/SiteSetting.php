@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
 use Throwable;
 
 class SiteSetting extends Model
@@ -68,6 +69,97 @@ class SiteSetting extends Model
             'group' => 'Tombol Hubungi Kami',
             'helper' => 'Nomor WhatsApp untuk tombol Hubungi Kami. Format boleh 08 atau 62.',
             'placeholder' => '082252239507',
+            'rows' => 2,
+        ],
+        'wa_gateway_enabled' => [
+            'label' => 'Aktifkan Gateway WhatsApp',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Mengaktifkan gateway untuk OTP login admin dan notifikasi booking.',
+            'placeholder' => '0',
+            'rows' => 2,
+        ],
+        'wa_gateway_post_url' => [
+            'label' => 'URL POST Send WhatsApp',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'URL rahasia DRNet Gateway untuk POST Send WhatsApp. Nilai disimpan terenkripsi.',
+            'placeholder' => 'https://host/ext/secret/wa',
+            'rows' => 2,
+        ],
+        'wa_gateway_auth_mode' => [
+            'label' => 'Mode Auth Gateway',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Mode auth tambahan gateway: none, basic, header, bearer, atau jwt_static.',
+            'placeholder' => 'none',
+            'rows' => 2,
+        ],
+        'wa_gateway_basic_username' => [
+            'label' => 'Basic Username',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Username Basic Auth gateway bila mode basic dipakai.',
+            'placeholder' => '',
+            'rows' => 2,
+        ],
+        'wa_gateway_basic_password' => [
+            'label' => 'Basic Password',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Password Basic Auth gateway. Nilai disimpan terenkripsi.',
+            'placeholder' => '',
+            'rows' => 2,
+        ],
+        'wa_gateway_header_name' => [
+            'label' => 'Nama Header',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Nama header custom gateway, misalnya X-API-Key.',
+            'placeholder' => 'X-API-Key',
+            'rows' => 2,
+        ],
+        'wa_gateway_header_value' => [
+            'label' => 'Nilai Header / API Key',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Nilai header custom gateway. Nilai disimpan terenkripsi.',
+            'placeholder' => '',
+            'rows' => 2,
+        ],
+        'wa_gateway_bearer_token' => [
+            'label' => 'Bearer / JWT Static Token',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Token Authorization Bearer atau JWT static. Nilai disimpan terenkripsi.',
+            'placeholder' => '',
+            'rows' => 2,
+        ],
+        'admin_otp_enabled' => [
+            'label' => 'Wajibkan OTP Login Admin',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Jika aktif, admin harus memasukkan OTP WhatsApp setelah email dan kata sandi benar.',
+            'placeholder' => '0',
+            'rows' => 2,
+        ],
+        'admin_otp_expires_minutes' => [
+            'label' => 'Masa Berlaku OTP',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Durasi kode OTP dalam menit.',
+            'placeholder' => '5',
+            'rows' => 2,
+        ],
+        'admin_otp_resend_interval_seconds' => [
+            'label' => 'Jeda Kirim Ulang OTP',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Jeda minimal permintaan ulang OTP dalam detik.',
+            'placeholder' => '60',
+            'rows' => 2,
+        ],
+        'booking_followup_link_expires_minutes' => [
+            'label' => 'Masa Berlaku Link Tindak Lanjut',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Durasi link tindak lanjut booking dari WhatsApp dalam menit.',
+            'placeholder' => '1440',
+            'rows' => 2,
+        ],
+        'booking_followup_otp_expires_minutes' => [
+            'label' => 'Masa Berlaku OTP Tindak Lanjut',
+            'group' => 'WhatsApp Gateway & OTP Admin',
+            'helper' => 'Durasi kode OTP untuk submit aksi booking dari link WhatsApp.',
+            'placeholder' => '60',
             'rows' => 2,
         ],
         'seo_site_name' => [
@@ -266,6 +358,58 @@ class SiteSetting extends Model
         } catch (Throwable) {
             return $default;
         }
+    }
+
+    public static function getBoolean(string $key, bool $default = false): bool
+    {
+        $value = static::getValue($key);
+
+        if ($value === null || $value === '') {
+            return $default;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? $default;
+    }
+
+    public static function getInteger(string $key, int $default, int $min = 1, ?int $max = null): int
+    {
+        $value = static::getValue($key);
+
+        if ($value === null || $value === '' || ! is_numeric($value)) {
+            return $default;
+        }
+
+        $integer = max($min, (int) $value);
+
+        return $max === null ? $integer : min($integer, $max);
+    }
+
+    public static function getEncryptedValue(string $key, ?string $default = null): ?string
+    {
+        $value = static::getValue($key);
+
+        if (blank($value)) {
+            return $default;
+        }
+
+        try {
+            return Crypt::decryptString($value);
+        } catch (Throwable) {
+            return $default;
+        }
+    }
+
+    public static function setEncryptedValue(string $key, ?string $value): void
+    {
+        static::query()->updateOrCreate(
+            ['key' => $key],
+            ['value' => filled($value) ? Crypt::encryptString($value) : ''],
+        );
+    }
+
+    public static function hasEncryptedValue(string $key): bool
+    {
+        return filled(static::getValue($key));
     }
 
     public static function assetPath(string $key, string $default): string

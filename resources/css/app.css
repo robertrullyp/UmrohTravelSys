@@ -1128,6 +1128,66 @@ img.detail-image {
     line-height: 1.55;
 }
 
+.booking-follow-up-actions {
+    display: grid;
+    gap: 14px;
+}
+
+.booking-follow-up-form {
+    display: grid;
+    gap: 9px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--soft);
+}
+
+.booking-follow-up-form h3 {
+    margin: 0 0 4px;
+    color: #111827;
+    font-size: 18px;
+}
+
+.booking-follow-up-form label {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.booking-follow-up-form input,
+.booking-follow-up-form textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 11px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--text);
+    font: inherit;
+}
+
+.booking-follow-up-form input {
+    max-width: 190px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.booking-follow-up-form textarea {
+    min-height: 84px;
+    resize: vertical;
+}
+
+.booking-follow-up-form input:focus,
+.booking-follow-up-form textarea:focus {
+    border-color: var(--green);
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(7, 129, 67, 0.12);
+}
+
+.booking-follow-up-form .btn {
+    justify-self: start;
+}
+
 .table-link {
     color: var(--green);
     font-weight: 800;
@@ -1375,6 +1435,8 @@ html.motion-ready .site-footer [data-reveal] {
     display: none;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    gap: 14px;
     padding: 72px 84px;
     background: rgba(6, 17, 13, 0.88);
 }
@@ -1391,7 +1453,7 @@ html.motion-ready .site-footer [data-reveal] {
 
 .lightbox-frame img {
     width: 100%;
-    max-height: calc(100vh - 170px);
+    max-height: calc(100vh - 250px);
     object-fit: contain;
     border-radius: 8px;
     background: #111827;
@@ -1399,10 +1461,52 @@ html.motion-ready .site-footer [data-reveal] {
 }
 
 .lightbox-frame figcaption {
+    display: grid;
+    gap: 4px;
     margin-top: 14px;
     color: #ffffff;
     font-size: 15px;
     font-weight: 700;
+}
+
+.lightbox-frame figcaption span {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.lightbox-thumbnails {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    max-width: 100%;
+    margin-top: 14px;
+    padding: 2px 0 4px;
+    overflow-x: auto;
+}
+
+.lightbox-thumbnail {
+    width: 66px;
+    height: 50px;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.72;
+}
+
+.lightbox-thumbnail.is-active {
+    border-color: #ffffff;
+    opacity: 1;
+}
+
+.lightbox-thumbnail img {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    object-fit: cover;
 }
 
 .lightbox-close,
@@ -1451,6 +1555,11 @@ html.motion-ready .site-footer [data-reveal] {
 
 .lightbox-next {
     right: 24px;
+}
+
+.lightbox-nav:disabled {
+    cursor: default;
+    opacity: 0.45;
 }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 901px) {
@@ -2020,9 +2129,13 @@ html.motion-ready .site-footer [data-reveal] {
         padding: 70px 18px;
     }
 
+    .lightbox-frame img {
+        max-height: calc(100vh - 280px);
+    }
+
     .lightbox-nav {
         top: auto;
-        bottom: 18px;
+        bottom: 88px;
         transform: none;
     }
 

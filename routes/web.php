@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\BookingFollowUpController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\TrackVisitor;
@@ -47,3 +48,14 @@ Route::middleware(TrackVisitor::class)->controller(BookingController::class)->gr
     Route::post('/booking/status', 'lookup')->middleware('throttle:10,5')->name('bookings.status.lookup');
     Route::get('/booking/{booking:public_token}', 'show')->middleware(['throttle:60,1', 'robots.private'])->name('bookings.show');
 });
+
+Route::middleware(['signed', 'throttle:20,1', 'robots.private'])
+    ->prefix('booking-follow-up/{booking}')
+    ->name('booking-follow-up.')
+    ->controller(BookingFollowUpController::class)
+    ->group(function (): void {
+        Route::get('/', 'show')->name('show');
+        Route::post('/approve', 'approve')->name('approve');
+        Route::post('/reject', 'reject')->name('reject');
+        Route::post('/cancel', 'cancel')->name('cancel');
+    });

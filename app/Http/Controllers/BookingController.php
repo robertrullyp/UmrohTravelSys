@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LookupBookingStatusRequest;
 use App\Http\Requests\StoreBookingRequest;
+use App\Jobs\SendBookingFollowUpWhatsApp;
 use App\Models\Booking;
 use App\Models\Schedule;
 use App\Models\UmrahPackage;
@@ -71,6 +72,8 @@ class BookingController extends PublicPageController
                 'status' => Booking::STATUS_PENDING,
             ]);
         }, 3);
+
+        SendBookingFollowUpWhatsApp::dispatch($booking->getKey())->afterCommit();
 
         return redirect()
             ->route('bookings.show', $booking->public_token)

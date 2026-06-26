@@ -36,6 +36,7 @@ class EditProfile extends BaseEditProfile
                         $this->getAvatarFormComponent(),
                         $this->getNameFormComponent(),
                         $this->getEmailFormComponent(),
+                        $this->getPhoneFormComponent(),
                         $this->getPasswordFormComponent(),
                         $this->getPasswordConfirmationFormComponent(),
                         $this->getCurrentPasswordFormComponent(),
@@ -81,6 +82,16 @@ class EditProfile extends BaseEditProfile
         return $component
             ->label('Email')
             ->helperText('Dipakai untuk login ke panel admin.');
+    }
+
+    protected function getPhoneFormComponent(): Component
+    {
+        return TextInput::make('phone')
+            ->label('Nomor Telepon')
+            ->helperText('Opsional. Dipakai sebagai kontak internal admin.')
+            ->tel()
+            ->maxLength(32)
+            ->rule('regex:/^[0-9+()\s-]{8,32}$/');
     }
 
     protected function getPasswordFormComponent(): Component

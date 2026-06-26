@@ -18,11 +18,19 @@ class Login extends BaseLogin
 
     public function getHeading(): string|Htmlable|null
     {
+        if (filled($this->userUndertakingMultiFactorAuthentication)) {
+            return 'Verifikasi OTP WhatsApp';
+        }
+
         return 'Login Admin';
     }
 
     public function getSubheading(): string|Htmlable|null
     {
+        if (filled($this->userUndertakingMultiFactorAuthentication)) {
+            return 'Masukkan kode OTP yang dikirim ke nomor WhatsApp admin.';
+        }
+
         return null;
     }
 

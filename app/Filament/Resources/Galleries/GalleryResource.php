@@ -22,7 +22,7 @@ class GalleryResource extends PermissionResource
 
     protected static ?string $navigationLabel = 'Galeri';
 
-    protected static ?string $modelLabel = 'Galeri';
+    protected static ?string $modelLabel = 'Album';
 
     protected static ?string $pluralModelLabel = 'Galeri';
 

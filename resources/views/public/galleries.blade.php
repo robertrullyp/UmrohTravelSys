@@ -12,29 +12,34 @@
 
 <section class="section">
     <div class="container gallery-page-grid">
-        @foreach ($galleries as $index => $gallery)
+        @forelse ($galleryAlbums as $index => $album)
             <figure class="gallery-card">
                 <button
                     class="gallery-preview-trigger"
                     type="button"
                     data-gallery-trigger
                     data-gallery-index="{{ $index }}"
-                    data-gallery-src="{{ asset('storage/' . $gallery->image_path) }}"
-                    data-gallery-title="{{ $gallery->title }}"
-                    aria-label="Lihat foto {{ $gallery->title }}"
+                    aria-label="Lihat album {{ $album['title'] }}"
                 >
-                    <img src="{{ asset('storage/' . $gallery->image_path) }}" alt="{{ $gallery->title }}" width="1200" height="900" loading="lazy" decoding="async">
+                    <img src="{{ $album['cover'] }}" alt="{{ $album['coverAlt'] }}" width="1200" height="900" loading="lazy" decoding="async">
                 </button>
                 <figcaption>
-                    <strong>{{ $gallery->title }}</strong>
-                    @if ($gallery->taken_at)
-                        <span>{{ $gallery->taken_at->translatedFormat('d F Y') }}</span>
+                    <strong>{{ $album['title'] }}</strong>
+                    @if ($album['date'])
+                        <span>{{ $album['date'] }}</span>
                     @endif
+                    <span>{{ $album['photoCount'] }} foto</span>
                 </figcaption>
             </figure>
-        @endforeach
+        @empty
+            <p class="empty-state">Belum ada album galeri yang ditampilkan.</p>
+        @endforelse
     </div>
 </section>
+
+<script type="application/json" data-gallery-albums>
+    @json($galleryAlbums)
+</script>
 
 <div class="gallery-lightbox" data-gallery-lightbox aria-hidden="true">
     <button class="lightbox-close" type="button" data-gallery-close aria-label="Tutup preview">
@@ -50,7 +55,11 @@
             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
             alt=""
         >
-        <figcaption data-gallery-caption></figcaption>
+        <figcaption>
+            <strong data-gallery-caption></strong>
+            <span data-gallery-counter></span>
+        </figcaption>
+        <div class="lightbox-thumbnails" data-gallery-thumbnails></div>
     </figure>
     <button class="lightbox-nav lightbox-next" type="button" data-gallery-next aria-label="Foto berikutnya">
         <x-heroicon-o-chevron-right class="lightbox-icon" aria-hidden="true" />

@@ -14,8 +14,8 @@ class ListGalleries extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Upload Foto')
-                ->icon('heroicon-o-arrow-up-tray'),
+                ->label('Tambah Album')
+                ->icon('heroicon-o-plus'),
         ];
     }
 }

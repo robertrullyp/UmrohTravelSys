@@ -13,6 +13,11 @@ class EditGallery extends EditRecord
 
     protected static string $resource = GalleryResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Edit Album';
+    }
+
     protected function getHeaderActions(): array
     {
         return [

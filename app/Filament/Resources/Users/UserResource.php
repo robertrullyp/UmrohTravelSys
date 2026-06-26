@@ -92,6 +92,12 @@ class UserResource extends PermissionResource
                                 ->required()
                                 ->unique(ignoreRecord: true)
                                 ->maxLength(255),
+                            TextInput::make('phone')
+                                ->label('Nomor Telepon')
+                                ->helperText('Opsional. Dipakai sebagai kontak internal admin.')
+                                ->tel()
+                                ->maxLength(32)
+                                ->rule('regex:/^[0-9+()\s-]{8,32}$/'),
                             TextInput::make('password')
                                 ->label('Kata Sandi')
                                 ->helperText('Wajib saat tambah pengguna. Saat edit, kosongkan jika tidak ingin mengganti kata sandi.')
@@ -141,6 +147,7 @@ class UserResource extends PermissionResource
                     ->visibleFrom('md'),
                 TextColumn::make('name')->label('Nama')->searchable()->sortable(),
                 TextColumn::make('email')->label('Email')->searchable()->sortable(),
+                TextColumn::make('phone')->label('Nomor Telepon')->searchable()->toggleable(),
                 TextColumn::make('roles.name')
                     ->label('Role / Hak Akses')
                     ->badge()

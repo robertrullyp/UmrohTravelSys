@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Filament\Resources\Bookings\BookingResource;
 use App\Filament\Resources\Bookings\Pages\EditBooking;
 use App\Filament\Resources\CompanyProfiles\CompanyProfileResource;
+use App\Filament\Resources\Galleries\GalleryResource;
 use App\Filament\Resources\Permissions\PermissionResource;
 use App\Filament\Resources\Roles\Pages\EditRole;
 use App\Filament\Resources\Roles\RoleResource;
@@ -106,7 +107,10 @@ class AdminResourcePolishTest extends TestCase
         $this->actingAs($admin)
             ->get("/admin/galleries/{$gallery->id}/edit")
             ->assertOk()
-            ->assertSee('Tampil di halaman Galeri.')
+            ->assertSee('Edit Album')
+            ->assertSee('Detail Album')
+            ->assertSee('Foto Album')
+            ->assertSee('Foto pertama menjadi sampul album')
             ->assertSee('Thumbnail publik memakai rasio 4:3');
 
         $this->actingAs($admin)
@@ -137,6 +141,7 @@ class AdminResourcePolishTest extends TestCase
             ->get(UserResource::getUrl('create'))
             ->assertOk()
             ->assertSee('Data Pengguna Admin')
+            ->assertSee('Nomor Telepon')
             ->assertSee('Role / Hak Akses')
             ->assertSee('Saat edit, kosongkan jika tidak ingin mengganti kata sandi.');
 
@@ -156,6 +161,57 @@ class AdminResourcePolishTest extends TestCase
             ->assertDontSee('Permission Teknis');
     }
 
+    public function test_gallery_admin_uses_album_copy_and_saves_multiple_photos(): void
+    {
+        $admin = User::query()->where('email', config('admin.initial_email'))->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(GalleryResource::getUrl())
+            ->assertOk()
+            ->assertSee('Tambah Album')
+            ->assertDontSee('Upload Foto');
+
+        $this->actingAs($admin)
+            ->get(GalleryResource::getUrl('create'))
+            ->assertOk()
+            ->assertSee('Tambah Album')
+            ->assertSee('Detail Album')
+            ->assertSee('Foto Album')
+            ->assertSee('Tambah Foto');
+
+        $album = Gallery::query()->create([
+            'title' => 'Album Test Jamaah',
+            'taken_at' => '2026-06-26',
+            'sort_order' => 77,
+            'is_active' => true,
+        ]);
+        $album->photos()->createMany([
+            [
+                'image_path' => 'galleries/album-test-1.jpg',
+                'caption' => 'Foto pertama album',
+                'sort_order' => 0,
+            ],
+            [
+                'image_path' => 'galleries/album-test-2.jpg',
+                'caption' => 'Foto kedua album',
+                'sort_order' => 1,
+            ],
+        ]);
+
+        $this->assertNull($album->image_path);
+        $this->assertSame('galleries/album-test-1.jpg', $album->cover_image_path);
+        $this->assertDatabaseHas('gallery_photos', [
+            'gallery_id' => $album->id,
+            'image_path' => 'galleries/album-test-1.jpg',
+            'caption' => 'Foto pertama album',
+        ]);
+        $this->assertDatabaseHas('gallery_photos', [
+            'gallery_id' => $album->id,
+            'image_path' => 'galleries/album-test-2.jpg',
+            'caption' => 'Foto kedua album',
+        ]);
+    }
+
     public function test_user_edit_password_fields_start_blank_and_disable_saved_password_autofill(): void
     {
         $admin = User::query()->where('email', config('admin.initial_email'))->firstOrFail();
@@ -171,6 +227,7 @@ class AdminResourcePolishTest extends TestCase
             ->get(UserResource::getUrl('edit', ['record' => $user]));
 
         $response->assertOk()
+            ->assertSee('Nomor Telepon')
             ->assertSee('Saat edit, kosongkan jika tidak ingin mengganti kata sandi.')
             ->assertSee('autocomplete="new-password"', false)
             ->assertDontSee($user->password, false);
@@ -221,6 +278,7 @@ class AdminResourcePolishTest extends TestCase
             ->fillForm([
                 'name' => 'Operational Admin',
                 'email' => 'operational-admin@example.test',
+                'phone' => '081234567890',
                 'password' => '',
                 'password_confirmation' => '',
                 'roles' => [(string) $role->getKey()],
@@ -230,6 +288,7 @@ class AdminResourcePolishTest extends TestCase
             ->assertRedirect(UserResource::getUrl());
 
         $this->assertSame($currentPasswordHash, $user->refresh()->password);
+        $this->assertSame('081234567890', $user->phone);
     }
 
     public function test_role_permission_checklists_save_multiple_module_groups(): void

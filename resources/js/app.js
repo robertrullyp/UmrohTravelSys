@@ -14,16 +14,101 @@ const initializeGalleryLightbox = () => {
 
     const image = lightbox.querySelector('[data-gallery-image]');
     const caption = lightbox.querySelector('[data-gallery-caption]');
+    const counter = lightbox.querySelector('[data-gallery-counter]');
+    const thumbnailContainer = lightbox.querySelector('[data-gallery-thumbnails]');
     const closeButton = lightbox.querySelector('[data-gallery-close]');
     const previousButton = lightbox.querySelector('[data-gallery-prev]');
     const nextButton = lightbox.querySelector('[data-gallery-next]');
+    const albumDataElement = document.querySelector('[data-gallery-albums]');
     const placeholderSrc = image.dataset.galleryPlaceholder || '';
-    let activeIndex = 0;
+    let albums = [];
+    let activeAlbumIndex = 0;
+    let activePhotoIndex = 0;
+
+    if (albumDataElement) {
+        try {
+            albums = JSON.parse(albumDataElement.textContent || '[]');
+        } catch {
+            albums = [];
+        }
+    }
+
+    if (!albums.length) {
+        albums = triggers.map((trigger) => ({
+            title: trigger.dataset.galleryTitle || '',
+            photos: [
+                {
+                    src: trigger.dataset.gallerySrc || '',
+                    thumb: trigger.dataset.gallerySrc || '',
+                    caption: trigger.dataset.galleryTitle || '',
+                    alt: trigger.dataset.galleryTitle || '',
+                },
+            ],
+        }));
+    }
+
+    albums = albums
+        .map((album) => ({
+            ...album,
+            photos: Array.isArray(album.photos)
+                ? album.photos.filter((photo) => photo?.src)
+                : [],
+        }))
+        .filter((album) => album.photos.length > 0);
+
+    if (!albums.length) {
+        return;
+    }
+
+    const getActiveAlbum = () => albums[activeAlbumIndex] || albums[0];
+
+    const getActivePhoto = () => {
+        const album = getActiveAlbum();
+
+        return album.photos[activePhotoIndex] || album.photos[0];
+    };
+
+    const renderThumbnails = () => {
+        if (!thumbnailContainer) {
+            return;
+        }
+
+        const album = getActiveAlbum();
+        const thumbnails = album.photos.map((photo, index) => {
+            const button = document.createElement('button');
+            const thumb = document.createElement('img');
+
+            button.type = 'button';
+            button.className = 'lightbox-thumbnail';
+            button.setAttribute('aria-label', `Lihat foto ${index + 1}`);
+
+            if (index === activePhotoIndex) {
+                button.classList.add('is-active');
+                button.setAttribute('aria-current', 'true');
+            }
+
+            thumb.src = photo.thumb || photo.src;
+            thumb.alt = photo.alt || photo.caption || album.title || '';
+            thumb.loading = 'lazy';
+            thumb.decoding = 'async';
+
+            button.append(thumb);
+            button.addEventListener('click', () => {
+                activePhotoIndex = index;
+                render();
+            });
+
+            return button;
+        });
+
+        thumbnailContainer.replaceChildren(...thumbnails);
+    };
 
     const render = () => {
-        const trigger = triggers[activeIndex];
-        const title = trigger.dataset.galleryTitle || '';
-        const src = trigger.dataset.gallerySrc || '';
+        const album = getActiveAlbum();
+        const photo = getActivePhoto();
+        const title = photo.caption || album.title || '';
+        const src = photo.src || '';
 
         if (src) {
             image.src = src;
@@ -31,12 +116,19 @@ const initializeGalleryLightbox = () => {
             image.removeAttribute('src');
         }
 
-        image.alt = title;
+        image.alt = photo.alt || title;
         caption.textContent = title;
+        counter.textContent = album.photos.length > 1
+            ? `${activePhotoIndex + 1} / ${album.photos.length}`
+            : '';
+        previousButton.disabled = album.photos.length <= 1;
+        nextButton.disabled = album.photos.length <= 1;
+        renderThumbnails();
     };
 
     const open = (index) => {
-        activeIndex = index;
+        activeAlbumIndex = index;
+        activePhotoIndex = 0;
         render();
         lightbox.classList.add('is-open');
         lightbox.setAttribute('aria-hidden', 'false');
@@ -54,10 +146,19 @@ const initializeGalleryLightbox = () => {
             image.removeAttribute('src');
         }
         image.alt = '';
+        caption.textContent = '';
+        counter.textContent = '';
+        thumbnailContainer?.replaceChildren();
     };
 
     const move = (direction) => {
-        activeIndex = (activeIndex + direction + triggers.length) % triggers.length;
+        const album = getActiveAlbum();
+
+        if (album.photos.length <= 1) {
+            return;
+        }
+
+        activePhotoIndex = (activePhotoIndex + direction + album.photos.length) % album.photos.length;
         render();
     };
 

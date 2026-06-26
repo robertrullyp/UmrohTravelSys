@@ -65,6 +65,7 @@ class AdminAccessTest extends TestCase
             ->assertOk()
             ->assertSee('Akun Saya')
             ->assertSee('Foto Profil')
+            ->assertSee('Nomor Telepon')
             ->assertSee('Kata Sandi Baru')
             ->assertSee('Konfirmasi Kata Sandi Baru')
             ->assertSee('Mode Terang')

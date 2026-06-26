@@ -34,6 +34,7 @@ class PublicPageController extends Controller
                 ->limit(5)
                 ->get(),
             'galleries' => Gallery::query()
+                ->with('photos')
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->limit(6)
@@ -84,11 +85,15 @@ class PublicPageController extends Controller
 
     public function galleries(): View
     {
+        $galleries = Gallery::query()
+            ->with('photos')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+
         return view('public.galleries', $this->publicViewData('galleries', [
-            'galleries' => Gallery::query()
-                ->where('is_active', true)
-                ->orderBy('sort_order')
-                ->get(),
+            'galleries' => $galleries,
+            'galleryAlbums' => $this->galleryAlbums($galleries),
         ]));
     }
 
@@ -125,5 +130,51 @@ class PublicPageController extends Controller
             'contacts' => $contacts,
             'settings' => SiteSetting::query()->pluck('value', 'key'),
         ];
+    }
+
+    /**
+     * @param  iterable<int, Gallery>  $galleries
+     * @return array<int, array<string, mixed>>
+     */
+    private function galleryAlbums(iterable $galleries): array
+    {
+        return collect($galleries)
+            ->map(function (Gallery $gallery): ?array {
+                $photos = $gallery->photos
+                    ->map(fn ($photo): array => [
+                        'src' => asset('storage/'.$photo->image_path),
+                        'thumb' => asset('storage/'.$photo->image_path),
+                        'caption' => $photo->caption ?: $gallery->title,
+                        'alt' => $photo->caption ?: $gallery->title,
+                    ]);
+
+                if ($photos->isEmpty() && filled($gallery->image_path)) {
+                    $photos->push([
+                        'src' => asset('storage/'.$gallery->image_path),
+                        'thumb' => asset('storage/'.$gallery->image_path),
+                        'caption' => $gallery->title,
+                        'alt' => $gallery->title,
+                    ]);
+                }
+
+                $cover = $photos->first();
+
+                if ($cover === null) {
+                    return null;
+                }
+
+                return [
+                    'id' => $gallery->id,
+                    'title' => $gallery->title,
+                    'date' => $gallery->taken_at?->translatedFormat('d F Y'),
+                    'cover' => $cover['thumb'],
+                    'coverAlt' => $gallery->title,
+                    'photoCount' => $photos->count(),
+                    'photos' => $photos->values()->all(),
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 }

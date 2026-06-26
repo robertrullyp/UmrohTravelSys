@@ -19,9 +19,10 @@ class GalleriesTable
     {
         return $table
             ->columns([
-                ImageColumn::make('image_path')->label('Foto')->disk('public')->square()->imageSize(58)->visibleFrom('md'),
-                TextColumn::make('title')->label('Judul')->searchable(),
+                ImageColumn::make('cover_image_path')->label('Sampul')->disk('public')->square()->imageSize(58)->visibleFrom('md'),
+                TextColumn::make('title')->label('Album')->searchable(),
                 TextColumn::make('taken_at')->label('Tanggal')->date('d F Y')->sortable(),
+                TextColumn::make('photos_count')->label('Foto')->counts('photos')->badge(),
                 IconColumn::make('is_active')->label('Tampil')->boolean(),
             ])
             ->defaultSort('sort_order')
