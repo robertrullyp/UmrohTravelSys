@@ -346,6 +346,76 @@ const initializeHeroParallax = () => {
     window.addEventListener('resize', schedule, { passive: true });
 };
 
+const initializeScrollDepthMotion = () => {
+    if (prefersReducedMotion || !document.querySelector('.hero-frame')) {
+        return;
+    }
+
+    const selectors = [
+        '.hero-frame',
+        '.trust-card',
+        '.package-card',
+        '.compact-schedule .table-card',
+        '.gallery-tile',
+    ];
+
+    const items = Array.from(document.querySelectorAll(selectors.join(','))).filter(
+        (element) => !element.closest('.site-footer'),
+    );
+
+    if (!items.length) {
+        return;
+    }
+
+    items.forEach((element, index) => {
+        element.classList.add('scroll-3d-item');
+        element.style.setProperty('--scroll-3d-index', String(index % 6));
+    });
+
+    let frame = null;
+
+    const update = () => {
+        frame = null;
+
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+        const centerY = viewportHeight / 2;
+        const centerX = viewportWidth / 2;
+        const compact = viewportWidth < 720;
+
+        items.forEach((element, index) => {
+            const rect = element.getBoundingClientRect();
+            const elementCenterY = rect.top + rect.height / 2;
+            const elementCenterX = rect.left + rect.width / 2;
+            const progress = Math.max(-1, Math.min(1, (centerY - elementCenterY) / viewportHeight));
+            const horizontal = Math.max(-1, Math.min(1, (elementCenterX - centerX) / viewportWidth));
+            const strength = element.matches('.hero-frame') ? 1.05 : 0.72;
+            const rotateX = compact ? progress * -2.2 : progress * -5.2 * strength;
+            const rotateY = compact ? horizontal * 1.8 : horizontal * 7.5 * strength;
+            const translateY = compact ? progress * 12 : progress * 26 * strength;
+            const translateZ = compact ? 0 : (1 - Math.abs(progress)) * 18 * strength;
+            const delayOffset = (index % 4) * 0.18;
+
+            element.style.setProperty(
+                '--scroll-3d-transform',
+                `perspective(1100px) translate3d(0, ${translateY.toFixed(2)}px, ${translateZ.toFixed(2)}px) rotateX(${(rotateX + delayOffset).toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`,
+            );
+        });
+    };
+
+    const schedule = () => {
+        if (frame !== null) {
+            return;
+        }
+
+        frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+};
+
 const initializeBookingForm = () => {
     const form = document.querySelector('[data-booking-form]');
 
@@ -415,6 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializePublicNavigation();
     initializeRevealMotion();
     initializeHeroParallax();
+    initializeScrollDepthMotion();
     initializeGalleryLightbox();
     initializeBookingForm();
 });

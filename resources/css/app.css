@@ -173,6 +173,8 @@ a {
 
 .hero {
     position: relative;
+    isolation: isolate;
+    overflow: hidden;
     min-height: 516px;
     padding: 24px 0 0;
     background: var(--soft);
@@ -180,6 +182,7 @@ a {
 
 .hero-frame {
     position: relative;
+    z-index: 2;
     min-height: 516px;
     overflow: hidden;
     border: 1px solid var(--line);
@@ -1409,16 +1412,33 @@ img.detail-image {
 }
 
 html.motion-ready [data-reveal] {
+    --reveal-y: 14px;
+    --scroll-3d-transform: translateZ(0);
+
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, var(--reveal-y), 0) var(--scroll-3d-transform);
     transition:
         opacity 520ms ease var(--reveal-delay, 0ms),
         transform 520ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
 }
 
 html.motion-ready [data-reveal].is-visible {
+    --reveal-y: 0px;
+
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+}
+
+html.motion-ready .scroll-3d-item {
+    --scroll-3d-transform: perspective(1100px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg);
+
+    transform-style: preserve-3d;
+    transform-origin: center;
+    will-change: transform;
+}
+
+html.motion-ready .scroll-3d-item:not([data-reveal]) {
+    transform: var(--scroll-3d-transform);
+    transition: transform 120ms linear;
 }
 
 .site-footer [data-reveal],

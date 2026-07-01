@@ -24,14 +24,18 @@
 }
 
 .fi-simple-layout {
+    position: relative;
+    isolation: isolate;
     min-height: 100svh;
     overflow: hidden;
     background:
-        linear-gradient(150deg, rgba(214, 26, 106, 0.94) 0%, rgba(214, 26, 106, 0.92) 49%, rgba(7, 129, 67, 0.95) 50%, rgba(7, 129, 67, 0.98) 100%),
-        radial-gradient(circle at 22% 12%, rgba(255, 255, 255, 0.24), transparent 32%);
+        linear-gradient(150deg, rgba(214, 26, 106, 0.94) 0%, rgba(214, 26, 106, 0.9) 49%, rgba(7, 129, 67, 0.95) 50%, rgba(7, 129, 67, 0.98) 100%),
+        #078143;
 }
 
 .fi-simple-main-ctn {
+    position: relative;
+    z-index: 2;
     min-height: 100svh;
     padding: 16px 18px 34px;
     display: flex;
@@ -45,6 +49,7 @@
     border: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
+    perspective: 1100px;
 }
 
 .fi-simple-page {
@@ -55,9 +60,12 @@
     gap: 14px;
     padding: 24px 28px 22px;
     border-radius: 8px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.96);
     color-scheme: light;
     box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(10px);
+    transform-origin: center;
+    animation: admin-login-card-3d-in 720ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
 }
 
 .fi-simple-page .fi-logo {
@@ -66,10 +74,58 @@
     height: auto !important;
     margin: 0 auto;
     object-fit: contain;
+    animation: admin-login-logo-in 820ms cubic-bezier(0.2, 0.9, 0.2, 1) 90ms both;
 }
 
 .fi-simple-page .fi-sc-form {
     gap: 16px;
+    animation: admin-login-form-in 640ms ease 150ms both;
+}
+
+@keyframes admin-login-card-3d-in {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 28px, 72px) rotateX(8deg) scale(0.965);
+        filter: blur(2px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) rotateX(0deg) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes admin-login-logo-in {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 38px) rotateX(10deg) scale(0.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) rotateX(0deg) scale(1);
+    }
+}
+
+@keyframes admin-login-form-in {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 12px, 28px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-simple-page-content,
+    .fi-simple-page .fi-logo,
+    .fi-simple-page .fi-sc-form {
+        animation: none;
+    }
 }
 
 .fi-simple-page .fi-simple-header-heading {
@@ -152,6 +208,7 @@
 
 .fi-simple-layout::after {
     position: fixed;
+    z-index: 2;
     right: 0;
     bottom: 10px;
     left: 0;
