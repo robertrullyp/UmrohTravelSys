@@ -49,4 +49,23 @@ class Schedule extends Model
             default => 'Tersedia',
         };
     }
+
+    public function isPastDeparture(): bool
+    {
+        return $this->departure_date?->lt(today()) ?? false;
+    }
+
+    public function canBook(): bool
+    {
+        return $this->is_active && ! $this->isPastDeparture() && $this->quota > 0;
+    }
+
+    public function publicAvailabilityLabel(): string
+    {
+        if (! $this->is_active || $this->isPastDeparture()) {
+            return 'Tidak Tersedia';
+        }
+
+        return $this->status;
+    }
 }

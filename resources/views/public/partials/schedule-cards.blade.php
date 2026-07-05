@@ -12,14 +12,13 @@
             $canBook = $showAction
                 && $bookingTarget
                 && $bookingTarget->is_active
-                && $schedule->quota > 0
-                && ! $schedule->departure_date->lt(today());
+                && $schedule->canBook();
         @endphp
         <article class="schedule-card">
             <div class="schedule-card-header">
                 <span>{{ $schedule->departure_date->translatedFormat('d F Y') }}</span>
                 @if ($showStatus)
-                    <span class="status">{{ $schedule->status }}</span>
+                    <span class="status">{{ $schedule->publicAvailabilityLabel() }}</span>
                 @endif
             </div>
 

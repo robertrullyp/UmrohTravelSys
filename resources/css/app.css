@@ -2398,6 +2398,10 @@ html.motion-ready .site-footer [data-reveal] {
         width: min(100%, calc(100% - 24px));
     }
 
+    .public-home .hero {
+        margin-top: 4px;
+    }
+
     .hero {
         padding-top: 16px;
     }
@@ -2416,6 +2420,7 @@ html.motion-ready .site-footer [data-reveal] {
     .hero-visual {
         position: relative;
         height: clamp(220px, 42vw, 330px);
+        overflow: hidden;
     }
 
     .hero-visual img {
@@ -2423,6 +2428,7 @@ html.motion-ready .site-footer [data-reveal] {
         inset: 0;
         width: 100%;
         height: 100%;
+        transform: none;
     }
 
     .hero-visual::after {
@@ -2452,6 +2458,12 @@ html.motion-ready .site-footer [data-reveal] {
     .hero-actions .btn {
         width: 100%;
         justify-content: center;
+    }
+
+    .public-home .hero-copy,
+    .public-packages .page-hero.compact .container,
+    .public-package-detail .page-hero.compact .container {
+        padding-inline: 0;
     }
 
     .trust-grid {
@@ -2485,6 +2497,12 @@ html.motion-ready .site-footer [data-reveal] {
         padding: 16px;
     }
 
+    .public-packages .package-content,
+    .public-packages .package-wide,
+    .public-package-detail .detail-content {
+        gap: 12px;
+    }
+
     .package-actions {
         flex-direction: column;
     }
@@ -2501,6 +2519,57 @@ html.motion-ready .site-footer [data-reveal] {
     .package-detail .detail-image-frame {
         max-height: none;
         aspect-ratio: 16 / 10;
+    }
+
+    .public-package-detail .detail-content .check-list {
+        grid-template-columns: 1fr;
+    }
+
+    .public-profile .profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .public-profile .info-panel {
+        padding: 16px;
+    }
+
+    .public-profile .profile-photo {
+        min-height: 0;
+        aspect-ratio: 16 / 10;
+        max-height: none;
+    }
+
+    .public-profile .profile-photo img {
+        min-height: 0;
+        aspect-ratio: 16 / 10;
+        object-position: center;
+    }
+
+    .public-contact .contact-layout {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .public-contact .contact-list {
+        gap: 12px;
+    }
+
+    .public-contact .contact-public-card {
+        padding: 14px;
+    }
+
+    .public-contact .contact-public-list dd,
+    .public-contact .contact-public-list dt {
+        overflow-wrap: anywhere;
+    }
+
+    .public-contact .map-panel {
+        min-height: 290px;
+    }
+
+    .public-contact .map-panel iframe,
+    .public-contact .map-panel img {
+        min-height: 290px;
     }
 
     .table-card.schedule-table {
@@ -2545,9 +2614,51 @@ html.motion-ready .site-footer [data-reveal] {
     .section-heading h2 {
         font-size: clamp(24px, 7vw, 30px);
     }
+
+    .public-packages .package-wide h2,
+    .public-package-detail .detail-content h2 {
+        font-size: clamp(22px, 6vw, 28px);
+    }
+
+    .public-package-detail .detail-content .check-list {
+        gap: 8px;
+        grid-template-columns: 1fr;
+    }
+
+    .public-package-detail .detail-content .btn {
+        width: 100%;
+    }
+
+    .public-profile .profile-layout {
+        gap: 12px;
+    }
+
+    .public-profile .info-panel h2,
+    .public-contact .contact-public-card-header h2 {
+        font-size: 19px;
+    }
+
+    .public-contact .contact-public-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
 }
 
 @media (min-width: 769px) and (max-width: 915px) {
+    .public-home .schedule-card-list,
+    .public-packages .schedule-card-list,
+    .public-package-detail .schedule-card-list,
+    .schedule-card-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .schedule-card {
+        margin: 0;
+    }
+
     .hero-frame {
         min-height: 480px;
     }
@@ -2568,5 +2679,172 @@ html.motion-ready .site-footer [data-reveal] {
 
     .package-detail .detail-image-frame {
         max-height: 520px;
+    }
+}
+
+@media (min-width: 916px) and (max-width: 1024px) {
+    .public-home .hero-frame {
+        min-height: auto;
+        display: block;
+        align-items: stretch;
+    }
+
+    .public-home .hero-copy {
+        width: 100%;
+        min-height: auto;
+        padding: 24px 26px;
+    }
+
+    .public-home .hero-visual {
+        position: relative;
+        height: 330px;
+        min-height: 0;
+    }
+
+    .public-home .hero-visual::after {
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.94) 0%,
+            rgba(255, 255, 255, 0.78) 42%,
+            rgba(255, 255, 255, 0.2) 100%
+        );
+    }
+
+    .public-home .hero-actions {
+        flex-direction: row;
+    }
+
+    .public-home .hero-actions .btn {
+        width: auto;
+        min-width: 200px;
+    }
+
+    .public-home .trust-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .public-home .package-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .public-home .gallery-grid,
+    .public-home .gallery-page-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .public-packages .package-wide {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .public-packages .package-wide > img {
+        aspect-ratio: 16 / 10;
+        min-height: 240px;
+    }
+
+    .public-packages .package-content {
+        gap: 14px;
+    }
+
+    .public-packages .package-list {
+        gap: 16px;
+    }
+
+    .public-packages .package-actions {
+        flex-direction: column;
+    }
+
+    .public-packages .package-actions .btn {
+        width: 100%;
+    }
+
+    .public-package-detail .package-detail {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .public-package-detail .detail-image-frame {
+        max-height: none;
+        min-height: 0;
+        aspect-ratio: 16 / 10;
+    }
+
+    .public-package-detail .detail-content {
+        padding: 22px;
+    }
+
+    .public-package-detail .detail-content .check-list {
+        grid-template-columns: 1fr;
+    }
+
+    .public-package-detail .detail-content .btn {
+        width: 100%;
+    }
+
+    .public-home .schedule-card-list,
+    .public-packages .schedule-card-list,
+    .public-package-detail .schedule-card-list,
+    .schedule-card-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .schedule-card {
+        margin: 0;
+    }
+
+    .public-package-detail .schedule-table {
+        display: none;
+    }
+
+    .public-package-detail .schedule-table table {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .public-package-detail .schedule-card-list {
+        display: block;
+    }
+
+    .public-home .section-muted-frame {
+        overflow: visible;
+    }
+
+    .public-home .table-card {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .public-profile .profile-layout {
+        grid-template-columns: 1.12fr 0.88fr;
+        gap: 16px;
+    }
+
+    .public-profile .profile-photo {
+        min-height: 420px;
+    }
+
+    .public-profile .profile-photo img {
+        aspect-ratio: auto;
+        object-fit: cover;
+    }
+
+    .public-contact .contact-layout {
+        grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .public-contact .map-panel {
+        min-height: 460px;
+        height: 460px;
+    }
+
+    .public-contact .map-panel iframe,
+    .public-contact .map-panel img {
+        min-height: 460px;
+        height: 460px;
     }
 }

@@ -3,76 +3,81 @@
 @section('title', $package->name . ' - PT Amara Al Medina Travel')
 
 @section('content')
-<section class="page-hero compact">
-    <div class="container">
-        <h1>{{ $package->name }}</h1>
-        <p>Informasi fasilitas, jadwal, dan ketersediaan booking {{ $package->name }}.</p>
-    </div>
-</section>
+<div class="public-package-detail">
+    <section class="page-hero compact">
+        <div class="container">
+            <h1>{{ $package->name }}</h1>
+            <p>Informasi fasilitas, jadwal, dan ketersediaan booking {{ $package->name }}.</p>
+        </div>
+    </section>
 
-<section class="section">
-    <div class="container package-detail">
-        <figure class="detail-image-frame">
-            <img class="detail-image" src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}" width="1000" height="1000" loading="lazy" decoding="async">
-        </figure>
-        <div class="detail-content">
-            <span class="price">Rp {{ number_format((float) $package->price, 0, ',', '.') }} / Orang</span>
-            <p>{{ $package->description }}</p>
-            <dl class="package-meta">
-                <div><dt>Durasi</dt><dd>{{ $package->duration_days }} Hari</dd></div>
-                <div><dt>Maskapai</dt><dd>{{ $package->airline }}</dd></div>
-                <div><dt>Hotel Makkah</dt><dd>{{ $package->makkah_hotel }}</dd></div>
-                <div><dt>Hotel Madinah</dt><dd>{{ $package->madinah_hotel }}</dd></div>
-                <div><dt>Keberangkatan</dt><dd>{{ $package->departure_month }}</dd></div>
-            </dl>
-            <h2>Fasilitas</h2>
-            <ul class="check-list">
-                @foreach (($package->includes ?? []) as $include)
-                    <li>{{ is_array($include) ? ($include['item'] ?? '') : $include }}</li>
-                @endforeach
-            </ul>
-            <a class="btn btn-pink" href="{{ route('bookings.package', $package) }}">Booking Paket Ini</a>
+    <section class="section">
+        <div class="container package-detail">
+            <figure class="detail-image-frame">
+                <img class="detail-image" src="{{ $package->image_path ? asset('storage/' . $package->image_path) : asset('images/seed/package-plus-tarim.jpeg') }}" alt="{{ $package->name }}" width="1000" height="1000" loading="lazy" decoding="async">
+            </figure>
+            <div class="detail-content">
+                <span class="price">Rp {{ number_format((float) $package->price, 0, ',', '.') }} / Orang</span>
+                <p>{{ $package->description }}</p>
+                <dl class="package-meta">
+                    <div><dt>Durasi</dt><dd>{{ $package->duration_days }} Hari</dd></div>
+                    <div><dt>Maskapai</dt><dd>{{ $package->airline }}</dd></div>
+                    <div><dt>Hotel Makkah</dt><dd>{{ $package->makkah_hotel }}</dd></div>
+                    <div><dt>Hotel Madinah</dt><dd>{{ $package->madinah_hotel }}</dd></div>
+                    <div><dt>Keberangkatan</dt><dd>{{ $package->departure_month }}</dd></div>
+                </dl>
+                <h2>Fasilitas</h2>
+                <ul class="check-list">
+                    @foreach (($package->includes ?? []) as $include)
+                        <li>{{ is_array($include) ? ($include['item'] ?? '') : $include }}</li>
+                    @endforeach
+                </ul>
+                <a class="btn btn-pink" href="{{ route('bookings.package', $package) }}">Booking Paket Ini</a>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="section section-muted">
-    <div class="container section-muted-frame">
-        <div class="section-heading">
-            <h2>Jadwal Paket Ini</h2>
-            <p>Pilih jadwal yang tersedia dan ajukan booking langsung.</p>
+    <section class="section section-muted">
+        <div class="container section-muted-frame">
+            <div class="section-heading">
+                <h2>Jadwal Paket Ini</h2>
+                <p>Pilih jadwal yang tersedia dan ajukan booking langsung.</p>
+            </div>
+            <div class="table-card schedule-table">
+                <table>
+                    <thead><tr><th>Tanggal</th><th>Kuota</th><th>Tersedia</th><th>Status</th><th>Aksi</th></tr></thead>
+                    <tbody>
+                        @forelse ($schedules as $schedule)
+                            @php
+                                $canBook = $package && $package->is_active && $schedule->canBook();
+                            @endphp
+                            <tr>
+                                <td>{{ $schedule->departure_date->translatedFormat('d F Y') }}</td>
+                                <td>{{ $schedule->capacity }}</td>
+                                <td>{{ $schedule->quota }}</td>
+                                <td><span class="status">{{ $schedule->publicAvailabilityLabel() }}</span></td>
+                                <td>
+                                    @if ($canBook)
+                                        <a class="table-link" href="{{ route('bookings.package', $package) }}">Booking</a>
+                                    @else
+                                        <span class="muted-text">Tidak tersedia</span>
+                                    @endif
+                                    </td>
+                                </tr>
+                        @empty
+                            <tr><td colspan="5">Belum ada jadwal untuk paket ini.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @include('public.partials.schedule-cards', [
+                'schedules' => $schedules,
+                'showPackage' => false,
+                'showStatus' => true,
+                'showAction' => true,
+                'bookingPackage' => $package,
+            ])
         </div>
-        <div class="table-card schedule-table">
-            <table>
-                <thead><tr><th>Tanggal</th><th>Kuota</th><th>Tersedia</th><th>Status</th><th>Aksi</th></tr></thead>
-                <tbody>
-                    @forelse ($schedules as $schedule)
-                        <tr>
-                            <td>{{ $schedule->departure_date->translatedFormat('d F Y') }}</td>
-                            <td>{{ $schedule->capacity }}</td>
-                            <td>{{ $schedule->quota }}</td>
-                            <td><span class="status">{{ $schedule->status }}</span></td>
-                            <td>
-                                @if ($schedule->quota > 0 && ! $schedule->departure_date->lt(today()))
-                                    <a class="table-link" href="{{ route('bookings.package', $package) }}">Booking</a>
-                                @else
-                                    <span class="muted-text">Tidak tersedia</span>
-                                @endif
-                            </td>
-                            </tr>
-                    @empty
-                        <tr><td colspan="5">Belum ada jadwal untuk paket ini.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        @include('public.partials.schedule-cards', [
-            'schedules' => $schedules,
-            'showPackage' => false,
-            'showStatus' => true,
-            'showAction' => true,
-            'bookingPackage' => $package,
-        ])
-    </div>
-</section>
+    </section>
+</div>
 @endsection

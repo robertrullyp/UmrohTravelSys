@@ -29,10 +29,7 @@
                     @foreach ($schedules as $schedule)
                         @php
                             $package = $schedule->umrahPackage;
-                            $canBook = $package
-                                && $package->is_active
-                                && $schedule->quota > 0
-                                && ! $schedule->departure_date->lt(today());
+                            $canBook = $package && $package->is_active && $schedule->canBook();
                         @endphp
                         <tr>
                             <td>{{ $loop->iteration }}</td>
@@ -40,7 +37,7 @@
                             <td>{{ $schedule->umrahPackage?->name }}</td>
                             <td>{{ $schedule->capacity }}</td>
                             <td>{{ $schedule->quota }}</td>
-                            <td><span class="status">{{ $schedule->status }}</span></td>
+                            <td><span class="status">{{ $schedule->publicAvailabilityLabel() }}</span></td>
                             <td>
                                 @if ($canBook)
                                     <a class="table-link" href="{{ route('bookings.package', $package) }}">Booking</a>
