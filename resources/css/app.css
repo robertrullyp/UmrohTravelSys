@@ -1899,6 +1899,7 @@ html.motion-ready .site-footer [data-reveal] {
         justify-content: center;
         min-height: 38px;
         padding: 6px 9px;
+        font-size: 13px;
         border-radius: 6px;
         text-align: center;
     }
@@ -1926,6 +1927,16 @@ html.motion-ready .site-footer [data-reveal] {
         display: block;
     }
 
+    .schedule-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .schedule-card-action .btn {
+        width: 100%;
+    }
+
     .header-cta-icon {
         display: block;
     }
@@ -1940,12 +1951,13 @@ html.motion-ready .site-footer [data-reveal] {
     }
 
     .hero-frame {
-        min-height: 500px;
+        min-height: 440px;
     }
 
     .hero-copy {
         width: 100%;
-        min-height: 500px;
+        min-height: 440px;
+        padding: 26px 24px 58px;
     }
 
     .hero-visual {
@@ -1966,11 +1978,51 @@ html.motion-ready .site-footer [data-reveal] {
         }
     }
 
+    .eyebrow {
+        font-size: clamp(22px, 6.4vw, 32px);
+        line-height: 1.16;
+    }
+
+    .hero h1,
+    .page-hero h1 {
+        font-size: clamp(30px, 6.8vw, 42px);
+    }
+
+    .hero p {
+        max-width: 62ch;
+        font-size: 16px;
+    }
+
+    .section-heading h2,
+    .split-section h2,
+    .info-panel h2,
+    .contact-panel h2,
+    .detail-content h2 {
+        font-size: clamp(22px, 4.8vw, 30px);
+    }
+
+    .section-heading p,
+    .split-section p {
+        font-size: 15px;
+        line-height: 1.55;
+    }
+
     .trust-grid,
     .package-grid,
     .gallery-grid,
     .gallery-page-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .empty-state {
+        margin: 0;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--soft);
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.5;
     }
 
     .form-grid {
@@ -1986,11 +2038,17 @@ html.motion-ready .site-footer [data-reveal] {
         gap: 8px;
     }
 
+    .package-wide > img {
+        min-height: 240px;
+    }
+
     .footer-brand {
         align-items: center;
     }
 
     .footer-compact {
+        grid-template-columns: 1fr;
+        justify-items: stretch;
         gap: 9px;
     }
 
@@ -2004,6 +2062,14 @@ html.motion-ready .site-footer [data-reveal] {
         flex-wrap: wrap;
         justify-self: stretch;
         gap: 4px 18px;
+    }
+
+    .booking-follow-up-form input {
+        max-width: 100%;
+    }
+
+    .booking-follow-up-form .btn {
+        justify-self: stretch;
     }
 
     html.motion-ready [data-reveal] {
@@ -2042,12 +2108,41 @@ html.motion-ready .site-footer [data-reveal] {
 
     .hero,
     .hero-frame {
-        min-height: 500px;
+        min-height: 430px;
     }
 
     .hero-copy {
-        min-height: 500px;
-        padding: 32px 24px 64px;
+        min-height: 430px;
+        padding: 24px 16px 52px;
+    }
+
+    .hero-actions {
+        width: 100%;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+    }
+
+    .hero p {
+        font-size: 15px;
+        line-height: 1.58;
+    }
+
+    .eyebrow {
+        font-size: clamp(20px, 7vw, 28px);
+    }
+
+    .hero h1,
+    .page-hero h1 {
+        font-size: clamp(26px, 9vw, 36px);
+    }
+
+    .section-heading h2 {
+        font-size: clamp(22px, 7.8vw, 28px);
     }
 
     .trust-grid,
@@ -2109,6 +2204,16 @@ html.motion-ready .site-footer [data-reveal] {
         grid-template-columns: 1fr;
     }
 
+    .package-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .package-actions .btn {
+        width: 100%;
+    }
+
     .detail-content .btn {
         width: 100%;
     }
@@ -2123,10 +2228,35 @@ html.motion-ready .site-footer [data-reveal] {
         padding: 18px;
     }
 
+    .booking-status-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .booking-status-actions .btn {
+        width: 100%;
+    }
+
+    .contact-public-card-header {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
     .booking-submit,
     .booking-status-heading {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .booking-status-heading h2 {
+        font-size: 24px;
+    }
+
+    .booking-status-badge {
+        align-self: flex-start;
+        max-width: fit-content;
+        font-size: 11px;
     }
 
     .booking-summary {
@@ -2135,6 +2265,22 @@ html.motion-ready .site-footer [data-reveal] {
 
     .booking-summary div:nth-child(odd) {
         border-right: 0;
+    }
+
+    .booking-summary dd {
+        word-break: break-word;
+    }
+
+    .schedule-card-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-follow-up-form input {
+        max-width: 100%;
+    }
+
+    .booking-follow-up-form .btn {
+        justify-self: stretch;
     }
 
     .section {
@@ -2177,6 +2323,48 @@ html.motion-ready .site-footer [data-reveal] {
         width: 36px;
         padding: 0;
     }
+
+    .site-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-copy {
+        padding: 20px 14px 44px;
+    }
+
+    .eyebrow {
+        font-size: 19px;
+    }
+
+    .hero h1,
+    .page-hero h1 {
+        font-size: 25px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    .section-heading h2 {
+        font-size: 24px;
+    }
+
+    .booking-status-card,
+    .booking-intro,
+    .booking-form,
+    .contact-panel {
+        padding: 14px;
+    }
+
+    .booking-status-heading h2 {
+        font-size: 20px;
+    }
+
+    .booking-status-actions .btn,
+    .package-actions .btn,
+    .detail-content .btn {
+        min-height: 42px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2201,5 +2389,184 @@ html.motion-ready .site-footer [data-reveal] {
 
     .hero-visual img {
         transform: scale(1.035);
+    }
+}
+
+/* Mobile/tablet polish for public pages */
+@media (max-width: 1024px) {
+    .container {
+        width: min(100%, calc(100% - 24px));
+    }
+
+    .hero {
+        padding-top: 16px;
+    }
+
+    .hero-frame {
+        min-height: auto;
+        display: block;
+    }
+
+    .hero-copy {
+        width: 100%;
+        min-height: auto;
+        padding: clamp(24px, 5vw, 36px);
+    }
+
+    .hero-visual {
+        position: relative;
+        height: clamp(220px, 42vw, 330px);
+    }
+
+    .hero-visual img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .hero-visual::after {
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.94) 0%,
+            rgba(255, 255, 255, 0.87) 38%,
+            rgba(255, 255, 255, 0.2) 100%
+        );
+    }
+
+    .hero h1,
+    .page-hero h1 {
+        font-size: clamp(30px, 8vw, 42px);
+    }
+
+    .hero p,
+    .section-heading p,
+    .page-hero p {
+        font-size: clamp(14px, 4vw, 16px);
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .trust-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .trust-card {
+        min-height: 82px;
+    }
+
+    .package-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .package-list {
+        gap: 14px;
+    }
+
+    .package-wide,
+    .package-detail {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .package-wide > img {
+        aspect-ratio: 16 / 10;
+    }
+
+    .package-content,
+    .detail-content {
+        padding: 16px;
+    }
+
+    .package-actions {
+        flex-direction: column;
+    }
+
+    .package-actions .btn {
+        width: 100%;
+    }
+
+    .detail-content .package-meta,
+    .package-wide .package-meta {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .package-detail .detail-image-frame {
+        max-height: none;
+        aspect-ratio: 16 / 10;
+    }
+
+    .table-card.schedule-table {
+        display: none;
+    }
+
+    .schedule-card-list {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-visual {
+        height: min(44vw, 250px);
+    }
+
+    .trust-grid {
+        gap: 12px;
+    }
+
+    .package-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .package-meta {
+        gap: 8px;
+    }
+
+    .package-meta div {
+        padding: 10px;
+    }
+
+    .gallery-grid,
+    .gallery-page-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .section {
+        padding: 20px 0;
+    }
+
+    .section-heading h2 {
+        font-size: clamp(24px, 7vw, 30px);
+    }
+}
+
+@media (min-width: 769px) and (max-width: 915px) {
+    .hero-frame {
+        min-height: 480px;
+    }
+
+    .hero-copy {
+        min-height: 480px;
+        width: min(62%, 560px);
+        padding: 28px;
+    }
+
+    .hero-visual {
+        height: 480px;
+    }
+
+    .package-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .package-detail .detail-image-frame {
+        max-height: 520px;
     }
 }
